@@ -2,164 +2,1594 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-<title>PaceForge</title>
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PaceForge — Marathon Training</title>
+<link rel="preconnect" href="https://api.fontshare.com">
+<link href="https://api.fontshare.com/v2/css?f[]=cabinet-grotesk@700,800&display=swap" rel="stylesheet">
+<link href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
-  --bg:#1a1a1a;--card:#242424;--elevated:#2e2e2e;
-  --accent:#e8602a;--text:#f0f0f0;--muted:#a0a0a0;--border:#3a3a3a;
-  --base:#60a5fa;--build:#fb923c;--peak:#f87171;--taper:#34d399;
-  --nav-bg:#1f1f1f;--radius-card:14px;--radius-btn:10px;
+  --bg:#1a1a1a;--surface:#242424;--surface2:#2e2e2e;--surface3:#383838;
+  --primary:#e8602a;--primary-dark:#c44e1f;--secondary:#4caf50;
+  --text:#f0f0f0;--text2:#a0a0a0;--text3:#606060;
+  --danger:#ef4444;--warning:#f59e0b;--info:#3b82f6;
+  --border:#3a3a3a;--radius:10px;--radius-lg:16px;
+  --font-head:'Cabinet Grotesk',system-ui,sans-serif;
+  --font-body:'Satoshi',system-ui,sans-serif;
+  --font-mono:'JetBrains Mono',monospace;
+  --sidebar:240px;--bottom-nav:60px;
 }
-html,body{height:100%;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:15px;line-height:1.5;overflow-x:hidden}
-a{color:var(--accent);text-decoration:none}
-button{cursor:pointer;border:none;background:none;color:inherit;font-family:inherit}
-input,select,textarea{font-family:inherit;color:var(--text);background:var(--elevated);border:1px solid var(--border);border-radius:8px;outline:none;font-size:16px}
-input:focus,select:focus{border-color:var(--accent)}
+html{scroll-behavior:smooth}
+body{font-family:var(--font-body);background:var(--bg);color:var(--text);min-height:100vh;display:flex;font-size:15px;line-height:1.5}
 
-/* Layout */
-#app{display:flex;flex-direction:column;height:100vh;height:100dvh;overflow:hidden}
-#main-content{flex:1;overflow-y:auto;overflow-x:hidden;padding-bottom:calc(64px + env(safe-area-inset-bottom))}
-.tab-section{display:none;min-height:calc(100vh - 64px);padding-bottom:24px}
-.tab-section.active{display:block}
+/* SIDEBAR */
+#sidebar{width:var(--sidebar);min-height:100vh;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;position:fixed;top:0;left:0;z-index:100;padding:0 0 24px}
+.logo{padding:20px 20px 16px;display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--border);margin-bottom:8px}
+.logo-icon{width:36px;height:36px;flex-shrink:0}
+.logo-text{font-family:var(--font-head);font-size:18px;font-weight:800;color:var(--primary);letter-spacing:-0.5px}
+.logo-sub{font-size:10px;color:var(--text2);letter-spacing:1px;text-transform:uppercase;margin-top:-2px}
+nav{flex:1;padding:4px 12px}
+.nav-item{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:8px;cursor:pointer;color:var(--text2);font-size:13.5px;font-weight:500;transition:all .15s;text-decoration:none;margin-bottom:2px;border:none;background:none;width:100%;text-align:left}
+.nav-item:hover{background:var(--surface2);color:var(--text)}
+.nav-item.active{background:rgba(232,96,42,.15);color:var(--primary)}
+.nav-item svg{flex-shrink:0;opacity:.8}
+.nav-item.active svg{opacity:1}
+.nav-section{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:1px;padding:12px 12px 4px;font-weight:600}
 
-/* Bottom Nav */
-#bottom-nav{position:fixed;bottom:0;left:0;right:0;height:calc(60px + env(safe-area-inset-bottom));padding-bottom:env(safe-area-inset-bottom);background:var(--nav-bg);border-top:1px solid var(--border);display:flex;align-items:stretch;z-index:100}
-.nav-tab{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;min-width:44px;min-height:44px;font-size:12px;color:var(--muted);transition:color .2s;padding:6px 2px;padding-bottom:0}
-.nav-tab.active{color:var(--accent)}
-.nav-tab .tab-icon{font-size:20px;line-height:1}
-.nav-tab .tab-label{font-size:11px;font-weight:500}
+/* MAIN */
+#main{margin-left:var(--sidebar);flex:1;min-height:100vh;padding:28px 32px}
 
-/* Cards */
-.card{background:var(--card);border-radius:var(--radius-card);padding:16px;margin:0 12px 12px}
-.card-elevated{background:var(--elevated)}
+/* BOTTOM NAV (mobile) */
+#bottom-nav{display:none;position:fixed;bottom:0;left:0;right:0;height:var(--bottom-nav);background:var(--surface);border-top:1px solid var(--border);z-index:100;justify-content:space-around;align-items:center}
+.bn-item{display:flex;flex-direction:column;align-items:center;gap:2px;color:var(--text2);cursor:pointer;font-size:10px;padding:4px 8px;border-radius:8px;transition:color .15s;border:none;background:none;flex:1}
+.bn-item.active{color:var(--primary)}
 
-/* Section header */
-.section-header{position:sticky;top:0;z-index:10;background:var(--bg);padding:16px 12px 8px;border-bottom:1px solid var(--border)}
-.section-header h2{font-size:18px;font-weight:700}
-.page-pad{padding:12px}
+@media(max-width:767px){
+  #sidebar{display:none}
+  #main{margin-left:0;padding:16px 16px calc(var(--bottom-nav)+16px)}
+  #bottom-nav{display:flex}
+}
 
-/* Stat grid */
-.stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:0 12px 12px}
-.stat-card{background:var(--card);border-radius:12px;padding:14px;display:flex;flex-direction:column;gap:4px}
-.stat-label{font-size:12px;color:var(--muted)}
-.stat-value{font-size:22px;font-weight:700;color:var(--text)}
-.stat-sub{font-size:12px;color:var(--muted)}
+/* PAGES */
+.page{display:none}
+.page.active{display:block}
 
-/* Progress bar */
-.progress-bar{height:6px;background:var(--elevated);border-radius:3px;overflow:hidden}
-.progress-fill{height:100%;background:var(--accent);border-radius:3px;transition:width .5s}
+/* TYPOGRAPHY */
+h1{font-family:var(--font-head);font-size:24px;font-weight:800;letter-spacing:-0.5px;margin-bottom:4px}
+h2{font-family:var(--font-head);font-size:20px;font-weight:700;letter-spacing:-0.3px}
+h3{font-family:var(--font-head);font-size:16px;font-weight:700}
+.page-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:24px;gap:16px;flex-wrap:wrap}
+.page-title{}
+.page-title p{color:var(--text2);font-size:14px;margin-top:2px}
 
-/* Badges & chips */
-.badge{display:inline-block;padding:2px 8px;border-radius:20px;font-size:11px;font-weight:600}
-.badge-base{background:rgba(96,165,250,.18);color:var(--base)}
-.badge-build{background:rgba(251,146,60,.18);color:var(--build)}
-.badge-peak{background:rgba(248,113,113,.18);color:var(--peak)}
-.badge-taper{background:rgba(52,211,153,.18);color:var(--taper)}
-.badge-upcoming{background:rgba(232,96,42,.18);color:var(--accent)}
-.badge-completed{background:rgba(52,211,153,.18);color:var(--taper)}
-.badge-5k{background:rgba(96,165,250,.18);color:var(--base)}
-.badge-10k{background:rgba(251,146,60,.18);color:var(--build)}
-.badge-hm{background:rgba(248,113,113,.18);color:var(--peak)}
-.badge-fm{background:rgba(232,96,42,.18);color:var(--accent)}
+/* CARDS */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:20px}
+.card-sm{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px}
 
-/* Horizontal scroll chips */
-.chip-scroll{display:flex;gap:8px;overflow-x:auto;padding:0 12px 8px;scrollbar-width:none}
-.chip-scroll::-webkit-scrollbar{display:none}
-.chip{padding:8px 16px;border-radius:20px;font-size:13px;font-weight:500;border:1px solid var(--border);color:var(--muted);background:var(--card);min-height:36px;white-space:nowrap;transition:all .2s}
-.chip.active{background:var(--accent);border-color:var(--accent);color:#fff}
+/* GRID */
+.grid-2{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
+.grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.grid-4{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+@media(max-width:900px){.grid-4{grid-template-columns:repeat(2,1fr)}.grid-3{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:600px){.grid-4,.grid-3,.grid-2{grid-template-columns:1fr}}
 
-/* Workout item */
-.workout-item{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--border)}
-.workout-item:last-child{border-bottom:none}
-.workout-icon{width:40px;height:40px;border-radius:10px;background:var(--elevated);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
-.workout-info{flex:1;min-width:0}
-.workout-name{font-size:14px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.workout-meta{font-size:12px;color:var(--muted)}
-.workout-km{font-size:13px;font-weight:600;color:var(--accent)}
+/* STAT CARDS */
+.stat-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:20px}
+.stat-label{font-size:12px;color:var(--text2);text-transform:uppercase;letter-spacing:.8px;font-weight:600;margin-bottom:8px}
+.stat-value{font-family:var(--font-mono);font-size:28px;font-weight:600;color:var(--text);line-height:1}
+.stat-sub{font-size:12px;color:var(--text2);margin-top:6px}
+.stat-card.accent .stat-value{color:var(--primary)}
 
-/* Chart containers */
-.chart-wrap{position:relative;width:100%;overflow:hidden}
+/* BUTTONS */
+.btn{display:inline-flex;align-items:center;gap:6px;padding:9px 18px;border-radius:8px;font-family:var(--font-body);font-size:14px;font-weight:500;cursor:pointer;border:none;transition:all .15s;white-space:nowrap}
+.btn-primary{background:var(--primary);color:#fff}
+.btn-primary:hover{background:var(--primary-dark)}
+.btn-secondary{background:var(--surface2);color:var(--text);border:1px solid var(--border)}
+.btn-secondary:hover{background:var(--surface3)}
+.btn-danger{background:rgba(239,68,68,.15);color:var(--danger);border:1px solid rgba(239,68,68,.3)}
+.btn-danger:hover{background:rgba(239,68,68,.25)}
+.btn-ghost{background:transparent;color:var(--text2);padding:6px 10px}
+.btn-ghost:hover{color:var(--text);background:var(--surface2)}
+.btn-sm{padding:6px 12px;font-size:13px}
+.btn-icon{padding:8px;border-radius:6px}
 
-/* FAB */
-.fab{position:fixed;bottom:calc(76px + env(safe-area-inset-bottom));right:16px;width:52px;height:52px;border-radius:50%;background:var(--accent);color:#fff;font-size:24px;display:flex;align-items:center;justify-content:center;z-index:50;box-shadow:0 4px 16px rgba(232,96,42,.4);transition:transform .15s}
-.fab:active{transform:scale(.92)}
-.fab.hidden{display:none}
+/* BADGES */
+.badge{display:inline-flex;align-items:center;padding:3px 10px;border-radius:20px;font-size:12px;font-weight:600}
+.badge-upcoming{background:rgba(232,96,42,.15);color:var(--primary)}
+.badge-completed{background:rgba(76,175,80,.15);color:var(--secondary)}
+.badge-high{background:rgba(239,68,68,.15);color:var(--danger)}
+.badge-medium{background:rgba(245,158,11,.15);color:var(--warning)}
+.badge-low{background:rgba(59,130,246,.15);color:var(--info)}
 
-/* Bottom sheet / drawer */
-.overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:200;opacity:0;pointer-events:none;transition:opacity .3s}
-.overlay.open{opacity:1;pointer-events:all}
-.sheet{position:fixed;bottom:0;left:0;right:0;background:var(--card);border-radius:20px 20px 0 0;z-index:201;transform:translateY(100%);transition:transform .35s cubic-bezier(.32,1,.4,1);max-height:92vh;overflow-y:auto;padding-bottom:env(safe-area-inset-bottom)}
-.sheet.open{transform:translateY(0)}
-.sheet-handle{width:40px;height:4px;background:var(--border);border-radius:2px;margin:12px auto 0}
-.sheet-header{display:flex;align-items:center;justify-content:space-between;padding:16px 16px 8px}
-.sheet-header h3{font-size:17px;font-weight:700}
-.sheet-close{width:32px;height:32px;border-radius:50%;background:var(--elevated);display:flex;align-items:center;justify-content:center;font-size:18px;color:var(--muted)}
+/* FORMS */
+.form-group{margin-bottom:16px}
+.form-label{display:block;font-size:13px;color:var(--text2);margin-bottom:6px;font-weight:500}
+.form-input,.form-select,.form-textarea{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:9px 12px;color:var(--text);font-family:var(--font-body);font-size:14px;outline:none;transition:border .15s}
+.form-input:focus,.form-select:focus,.form-textarea:focus{border-color:var(--primary)}
+.form-select option{background:var(--surface2)}
+.form-textarea{resize:vertical;min-height:80px}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:500px){.form-row{grid-template-columns:1fr}}
+.form-check{display:flex;align-items:center;gap:8px;cursor:pointer;font-size:14px}
+.form-check input{width:16px;height:16px;accent-color:var(--primary)}
 
-/* Form inputs */
-.form-group{margin-bottom:14px}
-.form-label{font-size:13px;color:var(--muted);margin-bottom:6px;display:block}
-.form-input{width:100%;padding:12px;font-size:16px;border-radius:8px}
-.form-select{width:100%;padding:12px;font-size:16px;border-radius:8px;appearance:none}
-.form-row{display:flex;gap:10px}
-.form-row .form-group{flex:1}
-.btn-primary{background:var(--accent);color:#fff;border-radius:var(--radius-btn);padding:13px 20px;font-size:15px;font-weight:600;width:100%;min-height:44px;transition:opacity .15s}
-.btn-primary:active{opacity:.8}
-.btn-outline{border:1px solid var(--border);border-radius:var(--radius-btn);padding:9px 14px;font-size:13px;font-weight:500;color:var(--text);min-height:40px;white-space:nowrap;transition:all .15s}
-.btn-outline:active{background:var(--elevated)}
+/* MODAL */
+#modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:200;align-items:center;justify-content:center;padding:16px}
+#modal-overlay.open{display:flex}
+.modal{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:24px;width:100%;max-width:520px;max-height:90vh;overflow-y:auto}
+.modal-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px}
+.modal-header h3{font-family:var(--font-head);font-size:18px;font-weight:700}
+.modal-footer{display:flex;gap:10px;justify-content:flex-end;margin-top:20px;padding-top:16px;border-top:1px solid var(--border)}
 
-/* Race card */
-.race-card{background:var(--card);border-radius:var(--radius-card);padding:16px;margin:0 12px 12px;cursor:pointer;transition:background .15s}
-.race-card:active{background:var(--elevated)}
-.race-card-header{display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
-.race-card-title{font-size:16px;font-weight:700}
-.race-card-meta{font-size:13px;color:var(--muted);margin-top:4px}
-.race-expand{display:none;margin-top:14px;padding-top:14px;border-top:1px solid var(--border)}
-.race-expand.open{display:block}
-.race-notes{font-size:14px;color:var(--muted);line-height:1.6}
-.alert-item{display:flex;align-items:center;gap:8px;padding:8px 0;font-size:13px;border-bottom:1px solid var(--border)}
-.alert-item:last-child{border-bottom:none}
-.alert-dot{width:8px;height:8px;border-radius:50%;background:var(--accent);flex-shrink:0}
+/* TOAST */
+#toast{position:fixed;top:20px;right:20px;z-index:300;display:flex;flex-direction:column;gap:8px;pointer-events:none}
+.toast-item{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:12px 16px;font-size:14px;min-width:220px;animation:slideIn .2s ease;box-shadow:0 4px 20px rgba(0,0,0,.4)}
+.toast-item.success{border-color:rgba(76,175,80,.5);background:rgba(76,175,80,.1)}
+.toast-item.error{border-color:rgba(239,68,68,.5);background:rgba(239,68,68,.1)}
+@keyframes slideIn{from{transform:translateX(60px);opacity:0}to{transform:translateX(0);opacity:1}}
 
-/* Planner */
-.inputs-row{display:flex;gap:10px;padding:0 12px;margin-bottom:12px}
-.inputs-row .form-group{flex:1}
-.inputs-row .form-input{padding:10px;font-size:16px}
-.phase-bar{height:10px;display:flex;border-radius:5px;overflow:hidden;margin:0 12px 12px}
-.phase-seg{transition:flex .4s}
-.summary-row{display:flex;gap:8px;margin:0 12px 12px;flex-wrap:wrap}
-.summary-item{flex:1;min-width:70px;background:var(--card);border-radius:10px;padding:10px;text-align:center}
-.summary-item .sv{font-size:16px;font-weight:700}
-.summary-item .sl{font-size:11px;color:var(--muted);margin-top:2px}
+/* DIVIDER */
+.divider{height:1px;background:var(--border);margin:20px 0}
 
-/* Week accordion */
-.week-row{border-bottom:1px solid var(--border);padding:0 12px}
-.week-header{display:flex;align-items:center;gap:10px;padding:12px 0;cursor:pointer;min-height:44px}
-.week-num{font-size:13px;font-weight:700;width:28px;flex-shrink:0}
-.week-info{flex:1}
-.week-km{font-size:14px;font-weight:600;color:var(--accent)}
-.week-focus{font-size:12px;color:var(--muted)}
-.week-chevron{color:var(--muted);transition:transform .25s;font-size:14px}
-.week-chevron.open{transform:rotate(180deg)}
-.week-days{display:none;padding-bottom:12px}
-.week-days.open{display:block}
-.day-row{display:flex;align-items:center;gap:8px;padding:6px 0;font-size:13px;border-bottom:1px solid var(--border)}
-.day-row:last-child{border-bottom:none}
-.day-label{width:36px;font-size:12px;color:var(--muted);font-weight:600;flex-shrink:0}
-.day-icon{width:28px;height:28px;border-radius:7px;background:var(--elevated);display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0}
-.day-name{flex:1;font-size:13px}
-.day-km{font-size:12px;font-weight:600;color:var(--accent)}
+/* TABS */
+.tabs{display:flex;gap:4px;background:var(--surface2);border-radius:10px;padding:4px;margin-bottom:24px;flex-wrap:wrap}
+.tab{padding:8px 16px;border-radius:8px;cursor:pointer;font-size:13.5px;font-weight:500;color:var(--text2);border:none;background:none;transition:all .15s;white-space:nowrap}
+.tab.active{background:var(--surface);color:var(--text);box-shadow:0 1px 4px rgba(0,0,0,.3)}
+.tab-content{display:none}
+.tab-content.active{display:block}
 
-/* Nutrition */
-.pill-tabs{display:flex;gap:6px;padding:12px;background:var(--bg);position:sticky;top:49px;z-index:9}
-.pill-tab{flex:1;padding:9px 6px;border-radius:20px;font-size:13px;font-weight:500;text-align:center;border:1px solid var(--border);color:var(--muted);min-height:36px;transition:all .2s}
-.pill-tab.active{background:var(--accent);border-color:var(--accent);color:#fff}
-.pill-content{display:none}
-.pill-content.active{display:block}
+/* TABLE */
+.table-wrap{overflow-x:auto;border-radius:var(--radius);border:1px solid var(--border)}
+table{width:100%;border-collapse:collapse;font-size:13.5px}
+th{background:var(--surface2);padding:10px 12px;text-align:left;font-size:12px;color:var(--text2);text-transform:uppercase;letter-spacing:.6px;font-weight:600;white-space:nowrap}
+td{padding:10px 12px;border-top:1px solid var(--border);vertical-align:top}
+tr:hover td{background:rgba(255,255,255,.02)}
 
-/* Expandable card */
-.expand-card{background:var(--card);border-radius:var(--radius-card);margin:0 12px 10px;overflow:hidden}
-.expand-header{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;cursor:pointer;min-height:44px}
-.expand-title{font-size:15px;font-wei
+/* CALENDAR */
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:2px;margin-top:8px}
+.cal-header-day{text-align:center;font-size:11px;color:var(--text2);font-weight:600;padding:6px 0;text-transform:uppercase;letter-spacing:.5px}
+.cal-day{background:var(--surface2);border-radius:8px;padding:6px;min-height:64px;cursor:pointer;border:1px solid transparent;transition:all .15s;position:relative}
+.cal-day:hover{border-color:var(--border);background:var(--surface3)}
+.cal-day.today{border-color:var(--primary)}
+.cal-day.selected{background:rgba(232,96,42,.1);border-color:var(--primary)}
+.cal-day.other-month{opacity:.3}
+.cal-day-num{font-size:12px;font-weight:600;color:var(--text2);margin-bottom:4px}
+.cal-day.today .cal-day-num{color:var(--primary)}
+.cal-dots{display:flex;flex-wrap:wrap;gap:2px}
+.cal-dot{width:6px;height:6px;border-radius:50%}
+.dot-easy{background:#4caf50}.dot-long{background:#e8602a}.dot-tempo{background:#f59e0b}
+.dot-interval{background:#3b82f6}.dot-rest{background:#606060}.dot-cross{background:#8b5cf6}.dot-race{background:#ef4444}
+
+/* PLANNER */
+.plan-cell{text-align:center;font-size:11.5px;padding:4px 6px !important;min-width:60px}
+.plan-rest{color:var(--text3)}
+.plan-easy{color:var(--secondary)}
+.plan-training{color:var(--primary)}
+.plan-long{color:var(--warning)}
+.plan-recovery{color:#81c784}
+.plan-week-num{font-family:var(--font-mono);font-weight:600;color:var(--text2)}
+.plan-total{font-family:var(--font-mono);font-weight:600;color:var(--primary)}
+
+/* NUTRITION */
+.nutrient-card{background:var(--surface2);border-radius:var(--radius);padding:16px;border-left:3px solid var(--primary)}
+.nutrient-card h3{margin-bottom:4px}
+.nutrient-target{font-family:var(--font-mono);font-size:20px;color:var(--primary);font-weight:600}
+.food-list{margin:8px 0;padding-left:0;list-style:none}
+.food-list li{padding:3px 0;font-size:13.5px;color:var(--text2)}
+.food-list li::before{content:"•";color:var(--primary);margin-right:8px}
+.phase-card{background:var(--surface2);border-radius:var(--radius);overflow:hidden;margin-bottom:12px}
+.phase-header{padding:14px 16px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;background:var(--surface3)}
+.phase-body{padding:0 16px;max-height:0;overflow:hidden;transition:max-height .3s ease,padding .3s ease}
+.phase-body.open{max-height:400px;padding:16px}
+
+/* PROGRESS BAR */
+.progress-bar{height:8px;background:var(--surface3);border-radius:4px;overflow:hidden;margin:6px 0}
+.progress-fill{height:100%;border-radius:4px;transition:width .4s ease}
+.progress-green{background:var(--secondary)}
+.progress-yellow{background:var(--warning)}
+.progress-red{background:var(--danger)}
+
+/* NUTRITION CHECK inputs */
+.nc-input{width:70px;background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:5px 8px;color:var(--text);font-family:var(--font-mono);font-size:13px;text-align:center;outline:none}
+.nc-input.green{border-color:var(--secondary);background:rgba(76,175,80,.1)}
+.nc-input.yellow{border-color:var(--warning);background:rgba(245,158,11,.1)}
+.nc-input.red{border-color:var(--danger);background:rgba(239,68,68,.1)}
+.nc-table{width:100%;border-collapse:collapse;font-size:13px}
+.nc-table th,.nc-table td{padding:8px 10px;border:1px solid var(--border);text-align:center}
+.nc-table th{background:var(--surface2);font-size:11px;text-transform:uppercase;letter-spacing:.5px}
+
+/* INTEGRATIONS */
+.int-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:20px;display:flex;align-items:center;gap:16px}
+.int-icon{width:48px;height:48px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:22px}
+.int-info{flex:1}
+.int-info h3{margin-bottom:2px}
+.int-info p{font-size:13px;color:var(--text2)}
+
+/* EMPTY STATE */
+.empty{text-align:center;padding:48px 24px;color:var(--text2)}
+.empty svg{opacity:.3;margin-bottom:12px}
+.empty p{margin-bottom:16px;font-size:15px}
+
+/* ALERT CARDS */
+.alert-card{background:var(--surface2);border-radius:var(--radius);padding:14px 16px;border-left:3px solid var(--warning);margin-bottom:10px}
+.alert-card.info{border-left-color:var(--info)}
+.alert-card.danger{border-left-color:var(--danger)}
+.alert-card.success{border-left-color:var(--secondary)}
+.alert-title{font-weight:600;font-size:14px;margin-bottom:3px}
+.alert-body{font-size:13px;color:var(--text2)}
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside id="sidebar">
+  <div class="logo">
+    <svg class="logo-icon" viewBox="0 0 36 36" fill="none">
+      <circle cx="18" cy="18" r="18" fill="rgba(232,96,42,.15)"/>
+      <circle cx="22" cy="10" r="3" fill="#e8602a"/>
+      <path d="M20 13 L16 22 L19 20 L17 28" stroke="#e8602a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+      <path d="M16 22 L12 26" stroke="#e8602a" stroke-width="2" stroke-linecap="round" fill="none"/>
+      <path d="M19 20 L23 25" stroke="#e8602a" stroke-width="2" stroke-linecap="round" fill="none"/>
+    </svg>
+    <div>
+      <div class="logo-text">PaceForge</div>
+      <div class="logo-sub">Marathon Training</div>
+    </div>
+  </div>
+  <nav>
+    <button class="nav-item active" onclick="nav('dashboard')">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+      Dashboard
+    </button>
+    <button class="nav-item" onclick="nav('races')">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg>
+      My Races
+    </button>
+    <button class="nav-item" onclick="nav('calendar')">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+      Calendar
+    </button>
+    <button class="nav-item" onclick="nav('planner')">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><circle cx="4" cy="6" r="1" fill="currentColor"/><circle cx="4" cy="12" r="1" fill="currentColor"/><circle cx="4" cy="18" r="1" fill="currentColor"/></svg>
+      Planner
+    </button>
+    <button class="nav-item" onclick="nav('pace')">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 15"/><line x1="12" y1="2" x2="12" y2="4"/></svg>
+      Pace Calc
+    </button>
+    <div class="nav-section">Nutrition</div>
+    <button class="nav-item" onclick="nav('nutrition')">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a10 10 0 0 1 10 10c0 4-2.5 7.5-6 9.5"/><path d="M12 2C8 4 6 8 6 12c0 3 1 5.5 3 7.5"/><path d="M12 2v20"/></svg>
+      Nutrition Guide
+    </button>
+    <button class="nav-item" onclick="nav('nutrition-check')">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/><line x1="9" y1="12" x2="15" y2="12"/><line x1="9" y1="16" x2="12" y2="16"/></svg>
+      Nutrition Check
+    </button>
+    <div class="nav-section">Connect</div>
+    <button class="nav-item" onclick="nav('integrations')">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+      Integrations
+    </button>
+  </nav>
+</aside>
+
+<!-- BOTTOM NAV (mobile) -->
+<nav id="bottom-nav">
+  <button class="bn-item active" onclick="nav('dashboard')">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+    Home
+  </button>
+  <button class="bn-item" onclick="nav('races')">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg>
+    Races
+  </button>
+  <button class="bn-item" onclick="nav('calendar')">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+    Log
+  </button>
+  <button class="bn-item" onclick="nav('planner')">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><circle cx="4" cy="6" r="1" fill="currentColor"/><circle cx="4" cy="12" r="1" fill="currentColor"/><circle cx="4" cy="18" r="1" fill="currentColor"/></svg>
+    Plan
+  </button>
+  <button class="bn-item" onclick="nav('nutrition')">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a10 10 0 0 1 10 10c0 4-2.5 7.5-6 9.5"/><path d="M12 2C8 4 6 8 6 12c0 3 1 5.5 3 7.5"/><path d="M12 2v20"/></svg>
+    Nutrition
+  </button>
+</nav>
+
+<!-- MODAL -->
+<div id="modal-overlay" onclick="if(event.target===this)closeModal()">
+  <div class="modal" id="modal-content"></div>
+</div>
+
+<!-- TOAST -->
+<div id="toast"></div>
+
+<!-- MAIN -->
+<main id="main">
+
+<!-- DASHBOARD -->
+<div class="page active" id="page-dashboard">
+  <div class="page-header">
+    <div class="page-title">
+      <h1>Dashboard</h1>
+      <p id="dash-date"></p>
+    </div>
+    <button class="btn btn-primary" onclick="openLogWorkout()">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      Log Workout
+    </button>
+  </div>
+  <div class="grid-4" style="margin-bottom:24px" id="dash-stats"></div>
+  <div class="grid-2" style="margin-bottom:24px">
+    <div class="card" id="next-race-card"></div>
+    <div class="card" id="recent-workouts-card"></div>
+  </div>
+</div>
+
+<!-- MY RACES -->
+<div class="page" id="page-races">
+  <div class="page-header">
+    <div class="page-title"><h1>My Races</h1><p>Track your race calendar</p></div>
+    <button class="btn btn-primary" onclick="openAddRace()">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      Add Race
+    </button>
+  </div>
+  <div id="races-list"></div>
+</div>
+
+<!-- CALENDAR -->
+<div class="page" id="page-calendar">
+  <div class="page-header">
+    <div class="page-title"><h1>Workout Log</h1><p>Track every session</p></div>
+    <button class="btn btn-primary" onclick="openLogWorkout()">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      Log Workout
+    </button>
+  </div>
+  <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px">
+    <button class="btn btn-secondary btn-sm" onclick="changeMonth(-1)">◀</button>
+    <h2 id="cal-month-label" style="flex:1;text-align:center"></h2>
+    <button class="btn btn-secondary btn-sm" onclick="changeMonth(1)">▶</button>
+  </div>
+  <div class="card" style="margin-bottom:20px">
+    <div class="cal-grid" id="cal-headers"></div>
+    <div class="cal-grid" id="cal-grid"></div>
+  </div>
+  <div id="cal-selected-day"></div>
+</div>
+
+<!-- PLANNER -->
+<div class="page" id="page-planner">
+  <div class="page-header">
+    <div class="page-title"><h1>12-Week Planner</h1><p>Progressive marathon training plan</p></div>
+  </div>
+  <div class="card" style="margin-bottom:24px">
+    <h3 style="margin-bottom:16px">Plan Settings</h3>
+    <div class="grid-3" style="gap:12px;margin-bottom:16px">
+      <div class="form-group" style="margin:0">
+        <label class="form-label">Fitness Level</label>
+        <select class="form-select" id="plan-level">
+          <option value="beginner">Beginner</option>
+          <option value="intermediate" selected>Intermediate</option>
+          <option value="advanced">Advanced</option>
+        </select>
+      </div>
+      <div class="form-group" style="margin:0">
+        <label class="form-label">Base KM/Week</label>
+        <input type="number" class="form-input" id="plan-base" value="40" min="20" max="150">
+      </div>
+      <div class="form-group" style="margin:0">
+        <label class="form-label">Long Run Max (km)</label>
+        <input type="number" class="form-input" id="plan-longrun" value="30" min="10" max="42">
+      </div>
+      <div class="form-group" style="margin:0">
+        <label class="form-label">Peak KM Override (opt)</label>
+        <input type="number" class="form-input" id="plan-peak" placeholder="Auto" min="30" max="150">
+      </div>
+      <div class="form-group" style="margin:0">
+        <label class="form-label">Start Date</label>
+        <input type="date" class="form-input" id="plan-start">
+      </div>
+    </div>
+    <button class="btn btn-primary" onclick="generatePlan()">Generate Plan</button>
+    <button class="btn btn-secondary" id="copy-plan-btn" style="display:none;margin-left:8px" onclick="copyPlan()">Copy to Clipboard</button>
+  </div>
+  <div id="plan-output"></div>
+</div>
+
+<!-- PACE CALCULATOR -->
+<div class="page" id="page-pace">
+  <div class="page-header">
+    <div class="page-title"><h1>Pace Calculator</h1><p>Calculate distance, time, and pace</p></div>
+  </div>
+  <div class="grid-2" style="margin-bottom:24px">
+    <div class="card">
+      <h3 style="margin-bottom:16px">Calculate</h3>
+      <div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap">
+        <button class="btn btn-secondary btn-sm" onclick="setPacePreset(5)">5K</button>
+        <button class="btn btn-secondary btn-sm" onclick="setPacePreset(10)">10K</button>
+        <button class="btn btn-secondary btn-sm" onclick="setPacePreset(21.1)">Half</button>
+        <button class="btn btn-secondary btn-sm" onclick="setPacePreset(42.195)">Marathon</button>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Distance (km)</label>
+        <input type="number" class="form-input" id="pace-dist" placeholder="e.g. 42.195" step="0.01">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Time (hh:mm:ss)</label>
+        <input type="text" class="form-input" id="pace-time" placeholder="e.g. 4:30:00">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Pace (min:sec per km)</label>
+        <input type="text" class="form-input" id="pace-pace" placeholder="e.g. 6:24">
+      </div>
+      <button class="btn btn-primary" onclick="calcPace()">Calculate</button>
+      <button class="btn btn-ghost" onclick="clearPace()">Clear</button>
+      <div id="pace-result" style="margin-top:16px"></div>
+    </div>
+    <div class="card">
+      <h3 style="margin-bottom:16px">Pace Zones</h3>
+      <p style="font-size:13px;color:var(--text2);margin-bottom:12px">Based on your marathon pace</p>
+      <div id="pace-zones-table"></div>
+      <div class="divider"></div>
+      <h3 style="margin-bottom:12px">Race Predictor</h3>
+      <div id="race-predictor"></div>
+    </div>
+  </div>
+</div>
+
+<!-- NUTRITION GUIDE -->
+<div class="page" id="page-nutrition">
+  <div class="page-header">
+    <div class="page-title"><h1>Nutrition Guide</h1><p>Vegetarian runner nutrition</p></div>
+  </div>
+  <div class="tabs">
+    <button class="tab active" onclick="switchTab('nutrition','phases')">Training Phases</button>
+    <button class="tab" onclick="switchTab('nutrition','plantbased')">Plant-Based</button>
+    <button class="tab" onclick="switchTab('nutrition','supplements')">Supplements</button>
+    <button class="tab" onclick="switchTab('nutrition','iron')">Iron Timing</button>
+  </div>
+
+  <!-- Tab: Training Phases -->
+  <div class="tab-content active" id="nutrition-phases">
+    <div class="phase-card">
+      <div class="phase-header" onclick="togglePhase(this)">
+        <div><h3>🏃 Base Building (Weeks 1–4)</h3><p style="font-size:13px;color:var(--text2);margin-top:2px">Build aerobic foundation</p></div>
+        <span>▼</span>
+      </div>
+      <div class="phase-body">
+        <div class="grid-2">
+          <div><strong>Calories:</strong> +200–300 above maintenance<br><strong>Carbs:</strong> 5–6g/kg/day<br><strong>Protein:</strong> 1.4–1.6g/kg/day<br><strong>Fat:</strong> 25–30% total calories</div>
+          <div><strong>Key foods:</strong><ul class="food-list"><li>Oats, sweet potato, brown rice</li><li>Lentils, chickpeas, tofu</li><li>Leafy greens, berries</li><li>Nuts, seeds, avocado</li></ul></div>
+        </div>
+        <p style="margin-top:12px;font-size:13.5px;color:var(--text2)"><strong>Timing:</strong> Eat complex carbs 2–3hrs before runs. Post-run: protein + carbs within 30min.</p>
+      </div>
+    </div>
+    <div class="phase-card">
+      <div class="phase-header" onclick="togglePhase(this)">
+        <div><h3>⚡ Build Phase (Weeks 5–8)</h3><p style="font-size:13px;color:var(--text2);margin-top:2px">Increase intensity and volume</p></div>
+        <span>▼</span>
+      </div>
+      <div class="phase-body">
+        <div class="grid-2">
+          <div><strong>Calories:</strong> +400–500 above maintenance<br><strong>Carbs:</strong> 6–8g/kg/day<br><strong>Protein:</strong> 1.6–1.8g/kg/day<br><strong>Fat:</strong> 20–25% total calories</div>
+          <div><strong>Key foods:</strong><ul class="food-list"><li>Quinoa, pasta, rice cakes</li><li>Tempeh, edamame, Greek yoghurt</li><li>Beetroot, tart cherry juice</li><li>Electrolyte-rich foods</li></ul></div>
+        </div>
+        <p style="margin-top:12px;font-size:13.5px;color:var(--text2)"><strong>Timing:</strong> Pre-long run carb loading starts night before. Mid-run fuelling every 45min for runs &gt;90min.</p>
+      </div>
+    </div>
+    <div class="phase-card">
+      <div class="phase-header" onclick="togglePhase(this)">
+        <div><h3>🎯 Peak / Race Prep (Weeks 9–10)</h3><p style="font-size:13px;color:var(--text2);margin-top:2px">Maximum training load</p></div>
+        <span>▼</span>
+      </div>
+      <div class="phase-body">
+        <div class="grid-2">
+          <div><strong>Calories:</strong> +500–700 above maintenance<br><strong>Carbs:</strong> 8–10g/kg/day<br><strong>Protein:</strong> 1.8–2.0g/kg/day<br><strong>Fat:</strong> 20% total calories</div>
+          <div><strong>Key foods:</strong><ul class="food-list"><li>High-GI carbs on hard days</li><li>Iron-rich foods daily</li><li>Anti-inflammatory foods</li><li>Hydration focus: 35–40ml/kg/day</li></ul></div>
+        </div>
+        <p style="margin-top:12px;font-size:13.5px;color:var(--text2)"><strong>Timing:</strong> Practice race-day nutrition in long runs. Identify your gel/fuel strategy.</p>
+      </div>
+    </div>
+    <div class="phase-card">
+      <div class="phase-header" onclick="togglePhase(this)">
+        <div><h3>🏁 Taper &amp; Recovery (Weeks 11–12)</h3><p style="font-size:13px;color:var(--text2);margin-top:2px">Carb load, rest, race</p></div>
+        <span>▼</span>
+      </div>
+      <div class="phase-body">
+        <div class="grid-2">
+          <div><strong>Calories:</strong> Maintain (reduce slightly)<br><strong>Carbs:</strong> 8–10g/kg days 2–3 pre-race<br><strong>Protein:</strong> 1.6g/kg/day<br><strong>Fat:</strong> Low during carb load</div>
+          <div><strong>Key foods:</strong><ul class="food-list"><li>White rice, pasta, bread (carb load)</li><li>Familiar, low-fibre foods</li><li>Avoid new foods race week</li><li>Extra sodium day before</li></ul></div>
+        </div>
+        <p style="margin-top:12px;font-size:13.5px;color:var(--text2)"><strong>Race morning:</strong> 2–3hrs before: 1–2g/kg carbs (toast, banana, rice). Coffee 60min before if habitual.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tab: Plant-Based -->
+  <div class="tab-content" id="nutrition-plantbased">
+    <div class="grid-2" style="margin-bottom:24px">
+      <div class="nutrient-card" style="border-left-color:#e8602a">
+        <h3>🥜 Protein</h3>
+        <div class="nutrient-target">96g / day</div>
+        <p style="font-size:12px;color:var(--text2);margin:4px 0 8px">~1.6g/kg for 60kg runner</p>
+        <ul class="food-list">
+          <li>Tempeh 100g = 19g protein</li>
+          <li>Lentils 1 cup cooked = 18g</li>
+          <li>Tofu 100g = 17g protein</li>
+          <li>Greek yoghurt 200g = 17g</li>
+          <li>Edamame 1 cup = 17g protein</li>
+          <li>Chickpeas 1 cup = 15g protein</li>
+          <li>Quinoa 1 cup = 8g protein</li>
+        </ul>
+      </div>
+      <div class="nutrient-card" style="border-left-color:#ef4444">
+        <h3>🩸 Iron</h3>
+        <div class="nutrient-target">23mg / day</div>
+        <p style="font-size:12px;color:var(--text2);margin:4px 0 8px">Higher than meat-eaters (1.8× absorption factor)</p>
+        <ul class="food-list">
+          <li>Pumpkin seeds 30g = 4.2mg</li>
+          <li>Lentils 1 cup = 6.6mg</li>
+          <li>Chickpeas 1 cup = 4.7mg</li>
+          <li>Spinach 1 cup cooked = 3.5mg</li>
+          <li>Tofu 100g = 3.0mg</li>
+          <li>Quinoa 1 cup = 2.8mg</li>
+          <li>Always pair with Vitamin C</li>
+        </ul>
+      </div>
+      <div class="nutrient-card" style="border-left-color:#8b5cf6">
+        <h3>💊 Vitamin B12</h3>
+        <div class="nutrient-target">2.4mcg / day</div>
+        <p style="font-size:12px;color:var(--text2);margin:4px 0 8px">Critical for nerve function and red blood cells</p>
+        <ul class="food-list">
+          <li>Fortified nutritional yeast 2tbsp = 4mcg</li>
+          <li>Fortified plant milk 1 cup = 1.2mcg</li>
+          <li>Eggs 2 large = 1.0mcg</li>
+          <li>Dairy yoghurt 200g = 1.0mcg</li>
+          <li>Supplement 500–1000mcg recommended</li>
+        </ul>
+      </div>
+      <div class="nutrient-card" style="border-left-color:#3b82f6">
+        <h3>🦴 Calcium</h3>
+        <div class="nutrient-target">1000mg / day</div>
+        <p style="font-size:12px;color:var(--text2);margin:4px 0 8px">Bone health, muscle contraction</p>
+        <ul class="food-list">
+          <li>Fortified plant milk 1 cup = 300mg</li>
+          <li>Tofu (calcium-set) 100g = 350mg</li>
+          <li>Kale 1 cup cooked = 180mg</li>
+          <li>Bok choy 1 cup = 160mg</li>
+          <li>Almonds 30g = 75mg</li>
+          <li>Separate calcium and iron meals by 2hrs</li>
+        </ul>
+      </div>
+      <div class="nutrient-card" style="border-left-color:#4caf50">
+        <h3>🐟 Omega-3</h3>
+        <div class="nutrient-target">1.6g ALA / day</div>
+        <p style="font-size:12px;color:var(--text2);margin:4px 0 8px">Anti-inflammatory, joint health</p>
+        <ul class="food-list">
+          <li>Flaxseeds 1 tbsp = 2.3g ALA</li>
+          <li>Chia seeds 1 tbsp = 1.7g ALA</li>
+          <li>Walnuts 30g = 2.5g ALA</li>
+          <li>Hemp seeds 3 tbsp = 1.0g ALA</li>
+          <li>Algae-based DHA/EPA supplement recommended</li>
+        </ul>
+      </div>
+      <div class="nutrient-card" style="border-left-color:#f59e0b">
+        <h3>☀️ Vitamin D</h3>
+        <div class="nutrient-target">800 IU / day</div>
+        <p style="font-size:12px;color:var(--text2);margin:4px 0 8px">Bone health, immune function, mood</p>
+        <ul class="food-list">
+          <li>Sunlight 15–20min daily (best source)</li>
+          <li>Fortified plant milk 1 cup = 100 IU</li>
+          <li>Fortified cereal 1 serving = 40–80 IU</li>
+          <li>Mushrooms UV-exposed 100g = 400 IU</li>
+          <li>Supplement D3 (vegan) 1000–2000 IU recommended</li>
+        </ul>
+      </div>
+    </div>
+    <h3 style="margin-bottom:16px">Sample Meal Plans</h3>
+    <div class="grid-2">
+      <div class="card-sm">
+        <strong style="color:var(--primary)">Pre-Run (2hrs before)</strong>
+        <ul class="food-list" style="margin-top:8px">
+          <li>Oatmeal with banana + chia seeds</li>
+          <li>Toast with almond butter + honey</li>
+          <li>Rice congee with ginger</li>
+        </ul>
+      </div>
+      <div class="card-sm">
+        <strong style="color:var(--secondary)">Post-Run Recovery</strong>
+        <ul class="food-list" style="margin-top:8px">
+          <li>Smoothie: soy milk + banana + spinach + protein powder</li>
+          <li>Lentil soup with brown rice</li>
+          <li>Tofu stir-fry with quinoa</li>
+        </ul>
+      </div>
+      <div class="card-sm">
+        <strong style="color:var(--warning)">Race Day Morning</strong>
+        <ul class="food-list" style="margin-top:8px">
+          <li>White rice with light salt (familiar!)</li>
+          <li>Banana + energy gels (practiced in training)</li>
+          <li>Coffee if habitual (60min before start)</li>
+        </ul>
+      </div>
+      <div class="card-sm">
+        <strong style="color:#ef4444">High-Iron Day</strong>
+        <ul class="food-list" style="margin-top:8px">
+          <li>Breakfast: Fortified cereal + OJ (Vit C)</li>
+          <li>Lunch: Lentil salad + bell peppers</li>
+          <li>Dinner: Tofu + spinach + pumpkin seeds</li>
+          <li>Avoid tea/coffee within 1hr of meals</li>
+        </ul>
+      </div>
+      <div class="card-sm">
+        <strong style="color:#8b5cf6">Long Run Recovery</strong>
+        <ul class="food-list" style="margin-top:8px">
+          <li>Immediate: sports drink + banana</li>
+          <li>30min: protein shake (soy/pea protein)</li>
+          <li>2hrs: full meal — carbs + protein + veg</li>
+          <li>Evening: anti-inflammatory (turmeric milk)</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tab: Supplements -->
+  <div class="tab-content" id="nutrition-supplements">
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Supplement</th><th>Why Needed</th><th>Dose</th><th>Priority</th><th>Timing</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Iron</strong></td><td>Non-heme iron absorption lower in vegetarians; foot-strike haemolysis in runners</td><td>14–18mg elemental iron</td><td><span class="badge badge-high">High</span></td><td>With Vit C, away from coffee/tea</td></tr>
+          <tr><td><strong>Vitamin B12</strong></td><td>Only reliable source for vegetarians; essential for red blood cell formation</td><td>500–1000mcg daily</td><td><span class="badge badge-high">High</span></td><td>With meal, any time</td></tr>
+          <tr><td><strong>Vitamin D3</strong></td><td>Most runners deficient; bone health, immune, mood</td><td>1000–2000 IU daily</td><td><span class="badge badge-high">High</span></td><td>With fat-containing meal</td></tr>
+          <tr><td><strong>Algae Omega-3</strong></td><td>DHA/EPA from fish come from algae originally; joints &amp; inflammation</td><td>250–500mg DHA+EPA</td><td><span class="badge badge-medium">Medium</span></td><td>With meal</td></tr>
+          <tr><td><strong>Calcium</strong></td><td>Bone density; muscle contraction</td><td>500mg supplement if diet low</td><td><span class="badge badge-medium">Medium</span></td><td>Separate from iron by 2hrs</td></tr>
+          <tr><td><strong>Electrolytes</strong></td><td>Lost in sweat; critical for long runs in heat</td><td>Per product (Na, K, Mg)</td><td><span class="badge badge-high">High</span></td><td>During runs &gt;60min, hot days</td></tr>
+          <tr><td><strong>Magnesium</strong></td><td>Muscle function, sleep quality, energy metabolism</td><td>300–400mg</td><td><span class="badge badge-low">Low</span></td><td>Evening before sleep</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="alert-card info" style="margin-top:16px">
+      <div class="alert-title">💡 Testing Recommendation</div>
+      <div class="alert-body">Get blood tests every 3–6 months: Full Blood Count, Serum Ferritin (iron stores), B12, Vitamin D, and Zinc. Don't supplement without testing first — over-supplementation of iron is harmful.</div>
+    </div>
+  </div>
+
+  <!-- Tab: Iron Timing -->
+  <div class="tab-content" id="nutrition-iron">
+    <div class="grid-2" style="margin-bottom:24px">
+      <div class="card-sm">
+        <h3 style="margin-bottom:8px">Heme vs Non-Heme Iron</h3>
+        <p style="font-size:13.5px;color:var(--text2);margin-bottom:12px">As a vegetarian, you consume <strong style="color:var(--text)">non-heme iron only</strong>. This has 2–20% absorption vs 15–35% for heme iron from meat.</p>
+        <div style="background:rgba(232,96,42,.1);border-radius:8px;padding:12px;border:1px solid rgba(232,96,42,.2)">
+          <strong style="color:var(--primary)">The good news:</strong>
+          <p style="font-size:13px;margin-top:4px">Your body upregulates absorption when stores are low. With correct meal timing and Vitamin C pairing, you can significantly boost non-heme absorption to 8–12%.</p>
+        </div>
+      </div>
+      <div class="card-sm">
+        <h3 style="margin-bottom:8px">Why Runners Need More</h3>
+        <ul class="food-list">
+          <li>Foot-strike haemolysis destroys red blood cells</li>
+          <li>GI blood losses during long runs</li>
+          <li>Sweat iron losses (~0.3mg/L sweat)</li>
+          <li>Inflammation reduces iron absorption</li>
+          <li>Hepcidin spike post-exercise blocks absorption for 3–6hrs</li>
+        </ul>
+        <p style="font-size:13px;color:var(--primary);margin-top:8px;font-weight:600">Best time to take iron: Morning, fasted, before exercise</p>
+      </div>
+    </div>
+
+    <h3 style="margin-bottom:12px">Iron Content by Food</h3>
+    <div class="table-wrap" style="margin-bottom:24px">
+      <table>
+        <thead><tr><th>Food</th><th>Serving</th><th>Iron (mg)</th><th>Tip</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Lentils</strong></td><td>1 cup cooked</td><td><span style="font-family:var(--font-mono);color:var(--primary)">6.6</span></td><td>Best plant iron source</td></tr>
+          <tr><td><strong>Pumpkin Seeds</strong></td><td>30g</td><td><span style="font-family:var(--font-mono);color:var(--primary)">4.2</span></td><td>Add to salads/oats</td></tr>
+          <tr><td><strong>Chickpeas</strong></td><td>1 cup cooked</td><td><span style="font-family:var(--font-mono);color:var(--primary)">4.7</span></td><td>Hummus or roasted</td></tr>
+          <tr><td><strong>Spinach</strong></td><td>1 cup cooked</td><td><span style="font-family:var(--font-mono);color:var(--primary)">3.5</span></td><td>Cooking increases bioavailability</td></tr>
+          <tr><td><strong>Tofu</strong></td><td>100g</td><td><span style="font-family:var(--font-mono);color:var(--primary)">3.0</span></td><td>Firm tofu has more iron</td></tr>
+          <tr><td><strong>Dark Chocolate</strong></td><td>30g (70%+)</td><td><span style="font-family:var(--font-mono);color:var(--primary)">3.4</span></td><td>Enjoy guilt-free!</td></tr>
+          <tr><td><strong>Black Beans</strong></td><td>1 cup cooked</td><td><span style="font-family:var(--font-mono);color:var(--primary)">3.6</span></td><td>Soak overnight to reduce phytates</td></tr>
+          <tr><td><strong>Quinoa</strong></td><td>1 cup cooked</td><td><span style="font-family:var(--font-mono);color:var(--primary)">2.8</span></td><td>Complete protein too</td></tr>
+          <tr><td><strong>Tempeh</strong></td><td>100g</td><td><span style="font-family:var(--font-mono);color:var(--primary)">2.7</span></td><td>Fermentation reduces phytates</td></tr>
+          <tr><td><strong>Edamame</strong></td><td>1 cup</td><td><span style="font-family:var(--font-mono);color:var(--primary)">2.3</span></td><td>Great post-run snack</td></tr>
+          <tr><td><strong>Cashews</strong></td><td>30g</td><td><span style="font-family:var(--font-mono);color:var(--primary)">1.9</span></td><td>Also magnesium-rich</td></tr>
+          <tr><td><strong>Dried Apricots</strong></td><td>30g</td><td><span style="font-family:var(--font-mono);color:var(--primary)">1.6</span></td><td>Portable race-day snack</td></tr>
+          <tr><td><strong>Fortified Cereal</strong></td><td>1 serving</td><td><span style="font-family:var(--font-mono);color:var(--primary)">4–18</span></td><td>Check label — varies widely</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="grid-2" style="margin-bottom:24px">
+      <div>
+        <h3 style="margin-bottom:12px;color:var(--danger)">⛔ Inhibitors</h3>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Inhibitor</th><th>Avoid Within</th><th>Why</th></tr></thead>
+            <tbody>
+              <tr><td>Coffee / Espresso</td><td>1hr before/after iron meal</td><td>Tannins bind iron</td></tr>
+              <tr><td>Tea (black/green)</td><td>1hr before/after</td><td>Polyphenols reduce absorption by 60%</td></tr>
+              <tr><td>Calcium-rich foods</td><td>2hrs from iron meal</td><td>Competes for same transporter</td></tr>
+              <tr><td>Phytate-rich foods</td><td>Soak legumes overnight</td><td>Reduces phytate content</td></tr>
+              <tr><td>Antacids / PPI</td><td>Separate by 2hrs</td><td>Reduced stomach acid lowers absorption</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div>
+        <h3 style="margin-bottom:12px;color:var(--secondary)">✅ Enhancers</h3>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Enhancer</th><th>Amount</th><th>Effect</th></tr></thead>
+            <tbody>
+              <tr><td>Vitamin C (citrus, bell pepper)</td><td>25mg+ with meal</td><td>Up to 3× absorption boost</td></tr>
+              <tr><td>Beta carotene (carrots, mango)</td><td>Any amount</td><td>+50% absorption</td></tr>
+              <tr><td>Fermented foods (tempeh, miso)</td><td>Any amount</td><td>Reduces phytates</td></tr>
+              <tr><td>Cast iron cookware</td><td>Use for cooking</td><td>Leaches iron into food</td></tr>
+              <tr><td>Organic acids (vinegar, lemon)</td><td>Dress salads</td><td>Lowers pH, aids absorption</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <h3 style="margin-bottom:12px">Optimal Daily Iron Schedule</h3>
+    <div class="card-sm">
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <div style="display:flex;gap:12px;align-items:flex-start"><span style="font-family:var(--font-mono);color:var(--primary);min-width:60px;font-size:13px">06:30</span><span style="font-size:13.5px"><strong>Iron supplement</strong> (if taking) — fasted, with glass of orange juice</span></div>
+        <div style="display:flex;gap:12px;align-items:flex-start"><span style="font-family:var(--font-mono);color:var(--text2);min-width:60px;font-size:13px">07:00</span><span style="font-size:13.5px">Morning run (if scheduled)</span></div>
+        <div style="display:flex;gap:12px;align-items:flex-start"><span style="font-family:var(--font-mono);color:var(--primary);min-width:60px;font-size:13px">08:00</span><span style="font-size:13.5px"><strong>Breakfast:</strong> Fortified cereal + OJ, or oats + pumpkin seeds + kiwi</span></div>
+        <div style="display:flex;gap:12px;align-items:flex-start"><span style="font-family:var(--font-mono);color:var(--warning);min-width:60px;font-size:13px">09:30</span><span style="font-size:13.5px">Coffee/tea window opens (1.5hrs after iron meal) ☕</span></div>
+        <div style="display:flex;gap:12px;align-items:flex-start"><span style="font-family:var(--font-mono);color:var(--primary);min-width:60px;font-size:13px">12:30</span><span style="font-size:13.5px"><strong>Lunch:</strong> Lentil salad + bell peppers + lemon dressing (Vit C boost)</span></div>
+        <div style="display:flex;gap:12px;align-items:flex-start"><span style="font-family:var(--font-mono);color:var(--text2);min-width:60px;font-size:13px">15:00</span><span style="font-size:13.5px">Afternoon snack: edamame or pumpkin seeds</span></div>
+        <div style="display:flex;gap:12px;align-items:flex-start"><span style="font-family:var(--font-mono);color:var(--warning);min-width:60px;font-size:13px">16:00</span><span style="font-size:13.5px">Last coffee/tea (cut off 4hrs before iron-rich dinner) ☕</span></div>
+        <div style="display:flex;gap:12px;align-items:flex-start"><span style="font-family:var(--font-mono);color:var(--primary);min-width:60px;font-size:13px">19:00</span><span style="font-size:13.5px"><strong>Dinner:</strong> Tofu + spinach stir-fry + tomatoes (Vit C) — no tea after</span></div>
+        <div style="display:flex;gap:12px;align-items:flex-start"><span style="font-family:var(--font-mono);color:var(--text2);min-width:60px;font-size:13px">20:00</span><span style="font-size:13.5px">Calcium supplement (separated from iron by 6hrs)</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- NUTRITION CHECK -->
+<div class="page" id="page-nutrition-check">
+  <div class="page-header">
+    <div class="page-title"><h1>Weekly Nutrition Check</h1><p>Track your intake for the past 7 days</p></div>
+    <button class="btn btn-primary" onclick="analyseNutrition()">Analyse My Week</button>
+  </div>
+  <div class="card" style="margin-bottom:24px;overflow-x:auto">
+    <table class="nc-table" id="nc-table">
+      <thead>
+        <tr>
+          <th>Nutrient / Target</th>
+          <th>Mon</th><th>Tue</th><th>Wed</th><th>Thu</th><th>Fri</th><th>Sat</th><th>Sun</th>
+        </tr>
+      </thead>
+      <tbody id="nc-tbody"></tbody>
+    </table>
+  </div>
+  <div id="nc-results"></div>
+</div>
+
+<!-- INTEGRATIONS -->
+<div class="page" id="page-integrations">
+  <div class="page-header">
+    <div class="page-title"><h1>Integrations</h1><p>Connect with your favourite training apps</p></div>
+  </div>
+  <div style="display:flex;flex-direction:column;gap:12px;margin-bottom:32px">
+    <div class="int-card">
+      <div class="int-icon" style="background:rgba(252,76,2,.15);color:#fc4c02;font-size:28px">🟠</div>
+      <div class="int-info"><h3>Strava</h3><p>View your training log, segments, and athlete stats</p></div>
+      <a href="https://www.strava.com/athlete/training" target="_blank" class="btn btn-primary btn-sm">Open Strava ↗</a>
+    </div>
+    <div class="int-card">
+      <div class="int-icon" style="background:rgba(0,149,192,.15);color:#0095c0;font-size:28px">🔵</div>
+      <div class="int-info"><h3>Garmin Connect</h3><p>Sync your Garmin device data, heart rate, and routes</p></div>
+      <a href="https://connect.garmin.com" target="_blank" class="btn btn-primary btn-sm">Open Garmin ↗</a>
+    </div>
+    <div class="int-card">
+      <div class="int-icon" style="background:rgba(0,0,0,.2)" style="font-size:28px">⚫</div>
+      <div class="int-info"><h3>Nike Run Club</h3><p>Training plans, guided runs, and community</p></div>
+      <a href="https://www.nike.com/nrc-app" target="_blank" class="btn btn-secondary btn-sm">Open NRC ↗</a>
+    </div>
+    <div class="int-card">
+      <div class="int-icon" style="background:rgba(255,59,48,.15);color:#ff3b30;font-size:28px">❤️</div>
+      <div class="int-info"><h3>Apple Health</h3><p>View your health metrics and activity rings</p></div>
+      <a href="https://www.apple.com/ios/health/" target="_blank" class="btn btn-secondary btn-sm">Open Apple Health ↗</a>
+    </div>
+    <div class="int-card">
+      <div class="int-icon" style="background:rgba(76,175,80,.15);color:#4caf50;font-size:28px">🟢</div>
+      <div class="int-info"><h3>MapMyRun</h3><p>Route mapping, GPS tracking, and nutrition log</p></div>
+      <a href="https://www.mapmyrun.com" target="_blank" class="btn btn-secondary btn-sm">Open MapMyRun ↗</a>
+    </div>
+  </div>
+
+  <h2 style="margin-bottom:16px">Race Day Alerts</h2>
+  <div class="alert-card danger">
+    <div class="alert-title">⛰️ Elevation & Course Profile</div>
+    <div class="alert-body">Study the elevation profile before race day. Kanazawa Marathon has rolling hills — start conservatively on uphills (shorten stride, keep effort constant). Save energy for downhills by leaning slightly forward. Don't race the uphills.</div>
+  </div>
+  <div class="alert-card">
+    <div class="alert-title">🏃 Pacing Strategy</div>
+    <div class="alert-body">Start 10–15 sec/km slower than target pace for first 10km. Negative split is the goal — run second half slightly faster. Bank time mentally, not physically. Resist running with the crowd.</div>
+  </div>
+  <div class="alert-card info">
+    <div class="alert-title">🍌 Race Nutrition Timing</div>
+    <div class="alert-body">First gel at 45min, then every 30–45min. Never try new products on race day. Drink at every aid station even if not thirsty (small sips). Electrolytes are critical in humidity.</div>
+  </div>
+  <div class="alert-card success">
+    <div class="alert-title">🌡️ Weather Preparation</div>
+    <div class="alert-body">Kanazawa in October: avg 15–20°C, possible rain. Adjust pace for heat — add ~20 sec/km per 5°C above 15°C. Dress in moisture-wicking layers. Vaseline for chafe prevention.</div>
+  </div>
+  <div class="alert-card">
+    <div class="alert-title">👟 Gear Checklist</div>
+    <div class="alert-body">Race-day checklist: Race bib + safety pins, timing chip, shoes (run in them 3+ times before), socks (tested), GPS watch charged, nutrition gels x6, electrolyte tabs, anti-chafe balm, throwaway warm layer for start.</div>
+  </div>
+  <div class="alert-card info">
+    <div class="alert-title">🧠 Mental Checkpoints</div>
+    <div class="alert-body">Break marathon into thirds: 0–14km (hold back), 14–28km (race your pace), 28–42km (race your courage). When it gets hard at 30–35km, focus on 1km at a time. Your training got you here — trust it.</div>
+  </div>
+</div>
+
+</main>
+
+<script>
+// ============================================================
+// DATA LAYER — localStorage
+// ============================================================
+const DB = {
+  get(key){try{return JSON.parse(localStorage.getItem(key)||'[]')}catch{return[]}},
+  set(key,val){localStorage.setItem(key,JSON.stringify(val))},
+  races(){return this.get('pf_races')},
+  workouts(){return this.get('pf_workouts')},
+  saveRaces(r){this.set('pf_races',r)},
+  saveWorkouts(w){this.set('pf_workouts',w)}
+};
+
+// Seed data
+(function seed(){
+  if(DB.races().length===0){
+    DB.saveRaces([{
+      id:'kanazawa2026',name:'Kanazawa Marathon 2026',date:'2026-10-25',
+      location:'Kanazawa, Japan',distance:'Marathon',targetTime:'4:30:00',
+      url:'https://www.kanazawa-marathon.jp/en/',notes:'My A-race 2026'
+    }]);
+  }
+})();
+
+// ============================================================
+// NAVIGATION
+// ============================================================
+let currentPage = 'dashboard';
+const pages = ['dashboard','races','calendar','planner','pace','nutrition','nutrition-check','integrations'];
+
+function nav(page){
+  currentPage = page;
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  const el = document.getElementById('page-'+page);
+  if(el) el.classList.add('active');
+  document.querySelectorAll('.nav-item,.bn-item').forEach(b=>{
+    b.classList.toggle('active', b.getAttribute('onclick')===`nav('${page}')`);
+  });
+  window.location.hash = page;
+  loadPage(page);
+}
+
+function loadPage(page){
+  if(page==='dashboard') renderDashboard();
+  if(page==='races') renderRaces();
+  if(page==='calendar') renderCalendar();
+  if(page==='nutrition-check') renderNutritionCheck();
+  if(page==='planner'){
+    const today = new Date().toISOString().split('T')[0];
+    document.getElementById('plan-start').value = today;
+  }
+  if(page==='pace') renderPaceZones();
+}
+
+window.addEventListener('hashchange',()=>{
+  const h = window.location.hash.replace('#','');
+  if(pages.includes(h)) nav(h);
+});
+
+// ============================================================
+// MODAL
+// ============================================================
+function openModal(html){
+  document.getElementById('modal-content').innerHTML = html;
+  document.getElementById('modal-overlay').classList.add('open');
+}
+function closeModal(){
+  document.getElementById('modal-overlay').classList.remove('open');
+}
+
+// ============================================================
+// TOAST
+// ============================================================
+function toast(msg, type='success'){
+  const t = document.createElement('div');
+  t.className = 'toast-item '+(type==='error'?'error':'success');
+  t.textContent = msg;
+  document.getElementById('toast').appendChild(t);
+  setTimeout(()=>t.remove(), 3000);
+}
+
+// ============================================================
+// TABS
+// ============================================================
+function switchTab(group, tab){
+  document.querySelectorAll('#page-'+group+' .tab').forEach((t,i)=>{
+    const tabs = document.querySelectorAll('#page-'+group+' .tab-content');
+    t.classList.toggle('active', t.getAttribute('onclick').includes("'"+tab+"'"));
+    if(tabs[i]) tabs[i].classList.toggle('active', t.getAttribute('onclick').includes("'"+tab+"'"));
+  });
+}
+
+// ============================================================
+// PHASE CARDS (accordion)
+// ============================================================
+function togglePhase(header){
+  const body = header.nextElementSibling;
+  const isOpen = body.classList.contains('open');
+  document.querySelectorAll('.phase-body').forEach(b=>b.classList.remove('open'));
+  if(!isOpen) body.classList.add('open');
+}
+
+// ============================================================
+// DASHBOARD
+// ============================================================
+function renderDashboard(){
+  const now = new Date();
+  document.getElementById('dash-date').textContent = now.toLocaleDateString('en-HK',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+
+  const races = DB.races();
+  const workouts = DB.workouts();
+  const today = now.toISOString().split('T')[0];
+
+  // Stats
+  const upcoming = races.filter(r=>r.date>=today);
+  const daysToNext = upcoming.length ? Math.ceil((new Date(upcoming[0].date)-now)/(1000*60*60*24)) : null;
+  const weekStart = new Date(now); weekStart.setDate(now.getDate()-now.getDay()+1);
+  const weekKm = workouts.filter(w=>{
+    const d = new Date(w.date);
+    return d>=weekStart && d<=now && w.completed;
+  }).reduce((s,w)=>s+(parseFloat(w.distanceKm)||0),0);
+  const monthWorkouts = workouts.filter(w=>w.date.startsWith(now.toISOString().slice(0,7))).length;
+
+  document.getElementById('dash-stats').innerHTML = `
+    <div class="stat-card accent"><div class="stat-label">Total Races</div><div class="stat-value">${races.length}</div><div class="stat-sub">in calendar</div></div>
+    <div class="stat-card"><div class="stat-label">Workouts This Month</div><div class="stat-value">${monthWorkouts}</div><div class="stat-sub">${now.toLocaleString('en',{month:'long'})}</div></div>
+    <div class="stat-card accent"><div class="stat-label">This Week KM</div><div class="stat-value">${weekKm.toFixed(1)}</div><div class="stat-sub">km completed</div></div>
+    <div class="stat-card"><div class="stat-label">Days to Next Race</div><div class="stat-value">${daysToNext??'—'}</div><div class="stat-sub">${daysToNext?upcoming[0].name:'No upcoming races'}</div></div>
+  `;
+
+  // Next race
+  const nextRaceEl = document.getElementById('next-race-card');
+  if(upcoming.length){
+    const r = upcoming[0];
+    nextRaceEl.innerHTML = `<h3 style="margin-bottom:12px;color:var(--text2);font-size:12px;text-transform:uppercase;letter-spacing:.8px">Next Race</h3>
+      <div style="font-family:var(--font-head);font-size:20px;font-weight:800;margin-bottom:4px">${r.name}</div>
+      <div style="color:var(--text2);font-size:13.5px;margin-bottom:12px">📍 ${r.location} · ${new Date(r.date+'T00:00').toLocaleDateString('en-HK',{day:'numeric',month:'short',year:'numeric'})}</div>
+      <div style="display:flex;gap:12px;flex-wrap:wrap">
+        <span class="badge badge-upcoming">${r.distance}</span>
+        ${r.targetTime?`<span style="font-family:var(--font-mono);font-size:13px;color:var(--text2)">🎯 ${r.targetTime}</span>`:''}
+      </div>
+      ${daysToNext<=7?`<div style="margin-top:12px;padding:10px;background:rgba(232,96,42,.1);border-radius:8px;font-size:13px;color:var(--primary)">🏁 Race week! Check the Integrations page for race day tips.</div>`:''}`;
+  } else {
+    nextRaceEl.innerHTML = `<h3 style="margin-bottom:12px;color:var(--text2);font-size:12px;text-transform:uppercase;letter-spacing:.8px">Next Race</h3><p style="color:var(--text2)">No upcoming races. <button class="btn btn-ghost btn-sm" onclick="nav('races')">Add one →</button></p>`;
+  }
+
+  // Recent workouts
+  const recEl = document.getElementById('recent-workouts-card');
+  const recent = [...workouts].sort((a,b)=>b.date.localeCompare(a.date)).slice(0,5);
+  recEl.innerHTML = `<h3 style="margin-bottom:12px;color:var(--text2);font-size:12px;text-transform:uppercase;letter-spacing:.8px">Recent Workouts</h3>`;
+  if(!recent.length){
+    recEl.innerHTML += `<p style="color:var(--text2);font-size:14px">No workouts yet. <button class="btn btn-ghost btn-sm" onclick="openLogWorkout()">Log one →</button></p>`;
+  } else {
+    const dotClass = {
+      'Easy Run':'dot-easy','Long Run':'dot-long','Tempo Run':'dot-tempo',
+      'Interval/HIIT':'dot-interval','Rest':'dot-rest','Cross Training':'dot-cross','Race':'dot-race'
+    };
+    recEl.innerHTML += recent.map(w=>`
+      <div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border)">
+        <span class="cal-dot ${dotClass[w.type]||'dot-easy'}" style="width:8px;height:8px;flex-shrink:0"></span>
+        <div style="flex:1">
+          <div style="font-size:14px;font-weight:500">${w.type}</div>
+          <div style="font-size:12px;color:var(--text2)">${new Date(w.date+'T00:00').toLocaleDateString('en-HK',{weekday:'short',month:'short',day:'numeric'})}</div>
+        </div>
+        ${w.distanceKm?`<span style="font-family:var(--font-mono);font-size:13px;color:var(--primary)">${w.distanceKm}km</span>`:''}
+      </div>`).join('');
+  }
+}
+
+// ============================================================
+// RACES
+// ============================================================
+function renderRaces(){
+  const races = DB.races();
+  const today = new Date().toISOString().split('T')[0];
+  const el = document.getElementById('races-list');
+  if(!races.length){
+    el.innerHTML = `<div class="empty"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg><p>No races yet</p><button class="btn btn-primary" onclick="openAddRace()">Add Your First Race</button></div>`;
+    return;
+  }
+  const sorted = [...races].sort((a,b)=>a.date.localeCompare(b.date));
+  el.innerHTML = `<div style="display:flex;flex-direction:column;gap:12px">${sorted.map(r=>{
+    const upcoming = r.date >= today;
+    const dateStr = new Date(r.date+'T00:00').toLocaleDateString('en-HK',{weekday:'short',day:'numeric',month:'long',year:'numeric'});
+    const daysAway = Math.ceil((new Date(r.date)-new Date())/(1000*60*60*24));
+    return `<div class="card" style="display:flex;gap:16px;align-items:flex-start;flex-wrap:wrap">
+      <div style="flex:1;min-width:200px">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px;flex-wrap:wrap">
+          <h3>${r.name}</h3>
+          <span class="badge ${upcoming?'badge-upcoming':'badge-completed'}">${upcoming?'Upcoming':'Completed'}</span>
+          <span class="badge" style="background:var(--surface2);color:var(--text2)">${r.distance}</span>
+        </div>
+        <div style="font-size:13.5px;color:var(--text2);margin-bottom:4px">📅 ${dateStr}${upcoming?` · ${daysAway>0?daysAway+' days away':'Today!'}`:''}
+        </div>
+        <div style="font-size:13.5px;color:var(--text2);margin-bottom:8px">📍 ${r.location}</div>
+        <div style="display:flex;gap:16px;flex-wrap:wrap">
+          ${r.targetTime?`<span style="font-size:13px"><span style="color:var(--text2)">Target:</span> <span style="font-family:var(--font-mono);color:var(--primary)">${r.targetTime}</span></span>`:''}
+          ${r.url?`<a href="${r.url}" target="_blank" style="font-size:13px;color:var(--info)">Race Website ↗</a>`:''}
+        </div>
+        ${r.notes?`<div style="font-size:13px;color:var(--text2);margin-top:8px">${r.notes}</div>`:''}
+      </div>
+      <button class="btn btn-danger btn-sm" onclick="deleteRace('${r.id}')">Delete</button>
+    </div>`;
+  }).join('')}</div>`;
+}
+
+function openAddRace(){
+  openModal(`
+    <div class="modal-header"><h3>Add Race</h3><button class="btn btn-ghost btn-icon" onclick="closeModal()">✕</button></div>
+    <div class="form-group"><label class="form-label">Race Name *</label><input class="form-input" id="r-name" placeholder="e.g. Tokyo Marathon 2027"></div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Date *</label><input type="date" class="form-input" id="r-date"></div>
+      <div class="form-group"><label class="form-label">Distance</label><select class="form-select" id="r-dist"><option>5K</option><option>10K</option><option>Half Marathon</option><option value="Marathon" selected>Marathon</option><option>Ultra</option></select></div>
+    </div>
+    <div class="form-group"><label class="form-label">Location</label><input class="form-input" id="r-loc" placeholder="City, Country"></div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Target Time</label><input class="form-input" id="r-target" placeholder="e.g. 4:30:00"></div>
+      <div class="form-group"><label class="form-label">Race URL</label><input class="form-input" id="r-url" placeholder="https://..."></div>
+    </div>
+    <div class="form-group"><label class="form-label">Notes</label><textarea class="form-textarea" id="r-notes" placeholder="Any notes..."></textarea></div>
+    <div class="modal-footer"><button class="btn btn-secondary" onclick="closeModal()">Cancel</button><button class="btn btn-primary" onclick="saveRace()">Save Race</button></div>
+  `);
+}
+
+function saveRace(){
+  const name = document.getElementById('r-name').value.trim();
+  const date = document.getElementById('r-date').value;
+  if(!name||!date){toast('Name and date are required','error');return;}
+  const races = DB.races();
+  races.push({
+    id: 'r'+Date.now(),
+    name, date,
+    location: document.getElementById('r-loc').value.trim(),
+    distance: document.getElementById('r-dist').value,
+    targetTime: document.getElementById('r-target').value.trim(),
+    url: document.getElementById('r-url').value.trim(),
+    notes: document.getElementById('r-notes').value.trim()
+  });
+  DB.saveRaces(races);
+  closeModal();
+  renderRaces();
+  toast('Race added!');
+}
+
+function deleteRace(id){
+  if(!confirm('Delete this race?')) return;
+  DB.saveRaces(DB.races().filter(r=>r.id!==id));
+  renderRaces();
+  toast('Race deleted');
+}
+
+// ============================================================
+// CALENDAR
+// ============================================================
+let calYear = new Date().getFullYear();
+let calMonth = new Date().getMonth();
+let selectedDay = null;
+
+function renderCalendar(){
+  const days = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+  document.getElementById('cal-headers').innerHTML = days.map(d=>`<div class="cal-header-day">${d}</div>`).join('');
+  renderCalGrid();
+  const label = new Date(calYear,calMonth,1).toLocaleDateString('en-HK',{month:'long',year:'numeric'});
+  document.getElementById('cal-month-label').textContent = label;
+}
+
+function changeMonth(dir){
+  calMonth += dir;
+  if(calMonth>11){calMonth=0;calYear++}
+  if(calMonth<0){calMonth=11;calYear--}
+  selectedDay = null;
+  renderCalendar();
+}
+
+function renderCalGrid(){
+  const workouts = DB.workouts();
+  const today = new Date().toISOString().split('T')[0];
+  const firstDay = new Date(calYear,calMonth,1);
+  const lastDay = new Date(calYear,calMonth+1,0).getDate();
+  let startDow = firstDay.getDay(); // 0=Sun
+  // Convert to Mon-first (Mon=0, Sun=6)
+  startDow = (startDow+6)%7;
+
+  const dotClass = {
+    'Easy Run':'dot-easy','Long Run':'dot-long','Tempo Run':'dot-tempo',
+    'Interval/HIIT':'dot-interval','Rest':'dot-rest','Cross Training':'dot-cross','Race':'dot-race'
+  };
+
+  let cells = [];
+  // empty cells before month start
+  for(let i=0;i<startDow;i++) cells.push(`<div class="cal-day other-month"></div>`);
+
+  for(let d=1;d<=lastDay;d++){
+    const dateStr = `${calYear}-${String(calMonth+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    const dayWorkouts = workouts.filter(w=>w.date===dateStr);
+    const isToday = dateStr===today;
+    const isSel = dateStr===selectedDay;
+    const dots = dayWorkouts.map(w=>`<span class="cal-dot ${dotClass[w.type]||'dot-easy'}"></span>`).join('');
+    cells.push(`<div class="cal-day${isToday?' today':''}${isSel?' selected':''}" onclick="selectDay('${dateStr}')">
+      <div class="cal-day-num">${d}</div>
+      <div class="cal-dots">${dots}</div>
+    </div>`);
+  }
+
+  document.getElementById('cal-grid').innerHTML = cells.join('');
+  renderSelectedDay();
+}
+
+function selectDay(date){
+  selectedDay = date;
+  renderCalGrid();
+}
+
+function renderSelectedDay(){
+  const el = document.getElementById('cal-selected-day');
+  if(!selectedDay){el.innerHTML='';return;}
+  const workouts = DB.workouts().filter(w=>w.date===selectedDay);
+  const dateLabel = new Date(selectedDay+'T00:00').toLocaleDateString('en-HK',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+  let html = `<div class="card"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:8px">
+    <h3>${dateLabel}</h3>
+    <button class="btn btn-primary btn-sm" onclick="openLogWorkout('${selectedDay}')">+ Log Workout</button>
+  </div>`;
+  if(!workouts.length){
+    html += `<p style="color:var(--text2);font-size:14px">No workouts logged for this day.</p>`;
+  } else {
+    workouts.forEach(w=>{
+      html += `<div style="background:var(--surface2);border-radius:10px;padding:14px;margin-bottom:10px">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;flex-wrap:wrap">
+          <div>
+            <div style="font-weight:600;font-size:15px;margin-bottom:4px">${w.type}</div>
+            <div style="display:flex;gap:12px;flex-wrap:wrap;font-size:13px;color:var(--text2)">
+              ${w.distanceKm?`<span>📏 ${w.distanceKm} km</span>`:''}
+              ${w.durationMin?`<span>⏱ ${w.durationMin} min</span>`:''}
+              ${w.actualPace?`<span>⚡ ${w.actualPace} /km</span>`:''}
+              ${w.heartRate?`<span>❤️ ${w.heartRate} bpm</span>`:''}
+            </div>
+            ${w.notes?`<div style="font-size:13px;color:var(--text2);margin-top:6px">${w.notes}</div>`:''}
+          </div>
+          <div style="display:flex;gap:6px">
+            <button class="btn btn-ghost btn-sm btn-icon" onclick="editWorkout('${w.id}')">✏️</button>
+            <button class="btn btn-danger btn-sm btn-icon" onclick="deleteWorkout('${w.id}')">🗑</button>
+          </div>
+        </div>
+      </div>`;
+    });
+  }
+  html += '</div>';
+  el.innerHTML = html;
+}
+
+function openLogWorkout(dateStr){
+  const d = dateStr || selectedDay || new Date().toISOString().split('T')[0];
+  openModal(`
+    <div class="modal-header"><h3>Log Workout</h3><button class="btn btn-ghost btn-icon" onclick="closeModal()">✕</button></div>
+    <div class="form-group"><label class="form-label">Date</label><input type="date" class="form-input" id="w-date" value="${d}"></div>
+    <div class="form-group"><label class="form-label">Workout Type</label>
+      <select class="form-select" id="w-type">
+        <option>Easy Run</option><option>Long Run</option><option>Tempo Run</option>
+        <option>Interval/HIIT</option><option>Rest</option><option>Cross Training</option><option>Race</option>
+      </select>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Distance (km)</label><input type="number" class="form-input" id="w-dist" placeholder="e.g. 10" step="0.1" min="0"></div>
+      <div class="form-group"><label class="form-label">Duration (min)</label><input type="number" class="form-input" id="w-dur" placeholder="e.g. 60" min="0"></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Actual Pace (min:sec/km)</label><input class="form-input" id="w-pace" placeholder="e.g. 6:30"></div>
+      <div class="form-group"><label class="form-label">Avg Heart Rate (bpm)</label><input type="number" class="form-input" id="w-hr" placeholder="e.g. 145" min="0"></div>
+    </div>
+    <div class="form-group"><label class="form-label">Notes</label><textarea class="form-textarea" id="w-notes" placeholder="How did it feel?"></textarea></div>
+    <div class="form-group"><label class="form-check"><input type="checkbox" id="w-done" checked> Workout completed</label></div>
+    <div class="modal-footer"><button class="btn btn-secondary" onclick="closeModal()">Cancel</button><button class="btn btn-primary" onclick="saveWorkout()">Save Workout</button></div>
+  `);
+}
+
+function saveWorkout(editId){
+  const date = document.getElementById('w-date').value;
+  if(!date){toast('Date is required','error');return;}
+  const workout = {
+    id: editId || 'w'+Date.now(),
+    date,
+    type: document.getElementById('w-type').value,
+    distanceKm: document.getElementById('w-dist').value||'',
+    durationMin: document.getElementById('w-dur').value||'',
+    actualPace: document.getElementById('w-pace').value||'',
+    heartRate: document.getElementById('w-hr').value||'',
+    notes: document.getElementById('w-notes').value||'',
+    completed: document.getElementById('w-done').checked
+  };
+  let workouts = DB.workouts();
+  if(editId){ workouts = workouts.map(w=>w.id===editId?workout:w); }
+  else { workouts.push(workout); }
+  DB.saveWorkouts(workouts);
+  selectedDay = date;
+  // Update calendar month view to show the logged date
+  calYear = new Date(date+'T00:00').getFullYear();
+  calMonth = new Date(date+'T00:00').getMonth();
+  closeModal();
+  renderCalGrid();
+  renderSelectedDay();
+  const label = new Date(calYear,calMonth,1).toLocaleDateString('en-HK',{month:'long',year:'numeric'});
+  document.getElementById('cal-month-label').textContent = label;
+  toast('Workout saved!');
+}
+
+function editWorkout(id){
+  const w = DB.workouts().find(x=>x.id===id);
+  if(!w)return;
+  openModal(`
+    <div class="modal-header"><h3>Edit Workout</h3><button class="btn btn-ghost btn-icon" onclick="closeModal()">✕</button></div>
+    <div class="form-group"><label class="form-label">Date</label><input type="date" class="form-input" id="w-date" value="${w.date}"></div>
+    <div class="form-group"><label class="form-label">Workout Type</label>
+      <select class="form-select" id="w-type">
+        ${['Easy Run','Long Run','Tempo Run','Interval/HIIT','Rest','Cross Training','Race'].map(t=>`<option${t===w.type?' selected':''}>${t}</option>`).join('')}
+      </select>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Distance (km)</label><input type="number" class="form-input" id="w-dist" value="${w.distanceKm}" step="0.1" min="0"></div>
+      <div class="form-group"><label class="form-label">Duration (min)</label><input type="number" class="form-input" id="w-dur" value="${w.durationMin}" min="0"></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Actual Pace (min:sec/km)</label><input class="form-input" id="w-pace" value="${w.actualPace}"></div>
+      <div class="form-group"><label class="form-label">Avg Heart Rate (bpm)</label><input type="number" class="form-input" id="w-hr" value="${w.heartRate}" min="0"></div>
+    </div>
+    <div class="form-group"><label class="form-label">Notes</label><textarea class="form-textarea" id="w-notes">${w.notes}</textarea></div>
+    <div class="form-group"><label class="form-check"><input type="checkbox" id="w-done"${w.completed?' checked':''}> Workout completed</label></div>
+    <div class="modal-footer"><button class="btn btn-secondary" onclick="closeModal()">Cancel</button><button class="btn btn-primary" onclick="saveWorkout('${id}')">Update</button></div>
+  `);
+}
+
+function deleteWorkout(id){
+  if(!confirm('Delete this workout?')) return;
+  DB.saveWorkouts(DB.workouts().filter(w=>w.id!==id));
+  renderCalGrid();
+  renderSelectedDay();
+  toast('Workout deleted');
+}
+
+// ============================================================
+// PLANNER
+// ============================================================
+let planData = null;
+
+function generatePlan(){
+  const level = document.getElementById('plan-level').value;
+  const baseKm = parseInt(document.getElementById('plan-base').value)||40;
+  const peakOverride = parseInt(document.getElementById('plan-peak').value)||0;
+  const longRunMax = parseInt(document.getElementById('plan-longrun').value)||30;
+  const startDate = document.getElementById('plan-start').value;
+  if(!startDate){toast('Please set a start date','error');return;}
+
+  const peakKm = peakOverride||Math.round(baseKm*(level==='beginner'?1.5:level==='advanced'?2.0:1.75));
+  const weeks = [];
+
+  for(let w=1;w<=12;w++){
+    let totalKm;
+    if(w<=9){
+      // Progressive build ~10% per week
+      const progress = (w-1)/8;
+      totalKm = Math.round(baseKm + (peakKm-baseKm)*progress);
+    } else {
+      // Taper
+      const taperPcts = {10:0.85,11:0.65,12:0.45};
+      totalKm = Math.round(peakKm * taperPcts[w]);
+    }
+
+    const longRun = Math.min(longRunMax, Math.max(10, Math.round(
+      w<=5 ? 12+w*1.5 :
+      w<=9 ? 21+((w-5)*((longRunMax-21)/4)) :
+      w===10 ? longRunMax*0.8 :
+      w===11 ? 15 : 10
+    )));
+
+    const easyKm = Math.max(4, Math.round((totalKm - longRun)*0.25));
+    const trainingKm = Math.max(5, Math.round((totalKm - longRun - easyKm*2)*0.5));
+    const recoveryKm = Math.max(4, Math.round((totalKm - longRun - easyKm*2 - trainingKm*2)));
+
+    const start = new Date(startDate);
+    start.setDate(start.getDate()+(w-1)*7);
+    const end = new Date(start); end.setDate(end.getDate()+6);
+
+    weeks.push({
+      week:w,
+      startDate: start.toLocaleDateString('en-HK',{month:'short',day:'numeric'}),
+      endDate: end.toLocaleDateString('en-HK',{month:'short',day:'numeric'}),
+      mon:'Rest',
+      tue:`${trainingKm}km`,
+      wed:`Easy ${easyKm}km`,
+      thu:`${trainingKm}km`,
+      fri:'Rest',
+      sat:`Long ${longRun}km`,
+      sun:`Recovery ${recoveryKm}km`,
+      total: totalKm,
+      longRun
+    });
+  }
+
+  planData = weeks;
+  document.getElementById('copy-plan-btn').style.display='';
+
+  const phaseLabel = w => w<=4?'Base':w<=8?'Build':w<=10?'Peak':'Taper';
+  const phaseColor = w => w<=4?'var(--secondary)':w<=8?'var(--primary)':w<=10?'var(--danger)':'var(--info)';
+
+  document.getElementById('plan-output').innerHTML = `
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Week</th><th>Dates</th><th>Phase</th>
+            <th>Mon</th><th>Tue</th><th>Wed</th><th>Thu</th><th>Fri</th><th>Sat</th><th>Sun</th>
+            <th>Total</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${weeks.map(w=>`<tr>
+            <td class="plan-week-num">${w.week}</td>
+            <td style="font-size:12px;color:var(--text2);white-space:nowrap">${w.startDate}–${w.endDate}</td>
+            <td><span style="font-size:11px;font-weight:600;color:${phaseColor(w.week)}">${phaseLabel(w.week)}</span></td>
+            <td class="plan-cell plan-rest">${w.mon}</td>
+            <td class="plan-cell plan-training">${w.tue}</td>
+            <td class="plan-cell plan-easy">${w.wed}</td>
+            <td class="plan-cell plan-training">${w.thu}</td>
+            <td class="plan-cell plan-rest">${w.fri}</td>
+            <td class="plan-cell plan-long">${w.sat}</td>
+            <td class="plan-cell plan-recovery">${w.sun}</td>
+            <td class="plan-total">${w.total}km</td>
+          </tr>`).join('')}
+        </tbody>
+      </table>
+    </div>
+    <div style="display:flex;gap:16px;margin-top:12px;flex-wrap:wrap;font-size:12px">
+      <span class="plan-rest">■ Rest</span>
+      <span class="plan-easy">■ Easy/Cross</span>
+      <span class="plan-training">■ Training</span>
+      <span class="plan-long">■ Long Run</span>
+      <span class="plan-recovery">■ Recovery</span>
+    </div>`;
+}
+
+function copyPlan(){
+  if(!planData)return;
+  const lines = ['Week | Dates | Mon | Tue | Wed | Thu | Fri | Sat | Sun | Total'];
+  planData.forEach(w=>{
+    lines.push(`Wk${w.week} | ${w.startDate}–${w.endDate} | ${w.mon} | ${w.tue} | ${w.wed} | ${w.thu} | ${w.fri} | ${w.sat} | ${w.sun} | ${w.total}km`);
+  });
+  navigator.clipboard.writeText(lines.join('\n')).then(()=>toast('Plan copied to clipboard!')).catch(()=>toast('Copy failed — try manual selection','error'));
+}
+
+// ============================================================
+// PACE CALCULATOR
+// ============================================================
+function setPacePreset(km){
+  document.getElementById('pace-dist').value = km;
+  document.getElementById('pace-time').value = '';
+  document.getElementById('pace-pace').value = '';
+  document.getElementById('pace-result').innerHTML = '';
+}
+
+function timeToSec(str){
+  str = str.trim();
+  const parts = str.split(':').map(Number);
+  if(parts.length===3) return parts[0]*3600+parts[1]*60+parts[2];
+  if(parts.length===2) return parts[0]*60+parts[1];
+  return NaN;
+}
+function secToTime(s){
+  const h=Math.floor(s/3600),m=Math.floor((s%3600)/60),sc=Math.floor(s%60);
+  if(h>0) return `${h}:${String(m).padStart(2,'0')}:${String(sc).padStart(2,'0')}`;
+  return `${m}:${String(sc).padStart(2,'0')}`;
+}
+function secToMinKm(s){
+  const m=Math.floor(s/60),sc=Math.round(s%60);
+  return `${m}:${String(sc).padStart(2,'0')}`;
+}
+
+function calcPace(){
+  const dist = parseFloat(document.getElementById('pace-dist').value);
+  const timeStr = document.getElementById('pace-time').value;
+  const paceStr = document.getElementById('pace-pace').value;
+  const timeSec = timeToSec(timeStr);
+  const paceSec = timeToSec(paceStr);
+
+  let result = '';
+  let marathonPaceSec = NaN;
+
+  if(!isNaN(dist)&&!isNaN(timeSec)&&!timeStr===false&&!isNaN(timeSec)){
+    const ps = timeSec/dist;
+    marathonPaceSec = ps;
+    result = `Pace: <strong style="font-family:var(--font-mono);color:var(--primary);font-size:20px">${secToMinKm(ps)}/km</strong>`;
+    document.getElementById('pace-pace').value = secToMinKm(ps);
+  } else if(!isNaN(dist)&&!isNaN(paceSec)){
+    const ts = dist*paceSec;
+    marathonPaceSec = paceSec;
+    result = `Time: <strong style="font-family:var(--font-mono);color:var(--primary);font-size:20px">${secToTime(ts)}</strong>`;
+    document.getElementById('pace-time').value = secToTime(ts);
+  } else if(!isNaN(timeSec)&&!isNaN(paceSec)){
+    const d = timeSec/paceSec;
+    result = `Distance: <strong style="font-family:var(--font-mono);color:var(--primary);font-size:20px">${d.toFixed(2)} km</strong>`;
+    document.getElementById('pace-dist').value = d.toFixed(2);
+  } else {
+    toast('Fill in any 2 fields to calculate','error');
+    return;
+  }
+
+  document.getElementById('pace-result').innerHTML = `<div style="background:rgba(232,96,42,.1);border-radius:10px;padding:14px;border:1px solid rgba(232,96,42,.2)">${result}</div>`;
+
+  if(!isNaN(marathonPaceSec)) updatePaceZones(marathonPaceSec);
+}
+
+function clearPace(){
+  document.getElementById('pace-dist').value='';
+  document.getElementById('pace-time').value='';
+  document.getElementById('pace-pace').value='';
+  document.getElementById('pace-result').innerHTML='';
+  renderPaceZones();
+}
+
+function renderPaceZones(basePaceSec){
+  const el = document.getElementById('pace-zones-table');
+  const pred = document.getElementById('race-predictor');
+  if(!basePaceSec){
+    el.innerHTML='<p style="color:var(--text2);font-size:13.5px">Calculate a pace above to see your training zones</p>';
+    pred.innerHTML='<p style="color:var(--text2);font-size:13.5px">Calculate marathon pace above to predict other distances</p>';
+    return;
+  }
+  updatePaceZones(basePaceSec);
+}
+
+function updatePaceZones(ps){
+  const zones = [
+    {name:'Zone 1 — Recovery',mult:1.2,color:'var(--text2)'},
+    {name:'Zone 2 — Easy',mult:1.1,color:'var(--secondary)'},
+    {name:'Zone 3 — Aerobic',mult:1.0,color:'var(--info)'},
+    {name:'Zone 4 — Tempo',mult:0.95,color:'var(--warning)'},
+    {name:'Zone 5 — VO2 Max',mult:0.85,color:'var(--danger)'},
+  ];
+  document.getElementById('pace-zones-table').innerHTML = `
+    <div class="table-wrap"><table>
+      <thead><tr><th>Zone</th><th>Pace Range</th></tr></thead>
+      <tbody>${zones.map((z,i)=>{
+        const lo = secToMinKm(ps*(z.mult+(i===0?0.1:0)));
+        const hi = secToMinKm(ps*(z.mult+(i===zones.length-1?-0.05:0.09)));
+        return `<tr><td style="color:${z.color};font-weight:600">${z.name}</td><td style="font-family:var(--font-mono)">${lo} – ${hi}</td></tr>`;
+      }).join('')}
+      </tbody>
+    </table></div>`;
+
+  const dists = [{name:'5K',km:5,factor:0.78},{name:'10K',km:10,factor:0.84},{name:'Half Marathon',km:21.1,factor:0.92},{name:'Marathon',km:42.195,factor:1}];
+  document.getElementById('race-predictor').innerHTML = `
+    <div class="table-wrap"><table>
+      <thead><tr><th>Distance</th><th>Predicted Time</th><th>Predicted Pace</th></tr></thead>
+      <tbody>${dists.map(d=>{
+        const adjPace = ps*d.factor;
+        const t = adjPace*d.km;
+        return `<tr><td>${d.name}</td><td style="font-family:var(--font-mono);color:var(--primary)">${secToTime(t)}</td><td style="font-family:var(--font-mono);color:var(--text2)">${secToMinKm(adjPace)}/km</td></tr>`;
+      }).join('')}
+      </tbody>
+    </table></div>`;
+}
+
+// ============================================================
+// NUTRITION CHECK
+// ============================================================
+const NC_NUTRIENTS = [
+  {key:'protein',label:'Protein (g)',target:96,unit:'g'},
+  {key:'iron',label:'Iron (mg)',target:23,unit:'mg'},
+  {key:'b12',label:'B12 (mcg)',target:2.4,unit:'mcg'},
+  {key:'calcium',label:'Calcium (mg)',target:1000,unit:'mg'},
+  {key:'vitd',label:'Vit D (IU)',target:800,unit:'IU'},
+];
+const NC_DAYS = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+
+function renderNutritionCheck(){
+  const tbody = document.getElementById('nc-tbody');
+  tbody.innerHTML = NC_NUTRIENTS.map(n=>`
+    <tr>
+      <td style="text-align:left;font-weight:600;white-space:nowrap">${n.label}<br><span style="font-weight:400;color:var(--text2);font-size:11px">Target: ${n.target}${n.unit}</span></td>
+      ${NC_DAYS.map((d,i)=>`<td><input type="number" class="nc-input" id="nc-${n.key}-${i}" min="0" step="0.1" oninput="colourNC(this,${n.target})" placeholder="0"></td>`).join('')}
+    </tr>`).join('');
+}
+
+function colourNC(input,target){
+  const val = parseFloat(input.value);
+  if(isNaN(val)||val===0){input.className='nc-input';return;}
+  const pct = val/target;
+  input.className = 'nc-input '+(pct>=1?'green':pct>=0.7?'yellow':'red');
+}
+
+function analyseNutrition(){
+  const results = NC_NUTRIENTS.map(n=>{
+    const vals = NC_DAYS.map((_,i)=>parseFloat(document.getElementById(`nc-${n.key}-${i}`).value)||0);
+    const avg = vals.reduce((s,v)=>s+v,0)/7;
+    const pct = avg/n.target;
+    return {...n, avg, pct, vals};
+  });
+
+  const lowCount = results.filter(r=>r.pct<0.7).length;
+  const medCount = results.filter(r=>r.pct>=0.7&&r.pct<0.9).length;
+
+  let recommendation, recColor, recBg;
+  if(lowCount===0&&medCount<=1){
+    recommendation='✅ Proceed with full training volume. Your nutrition is on track.';
+    recColor='var(--secondary)';recBg='rgba(76,175,80,.1)';
+  } else if(lowCount===0&&medCount>=2){
+    recommendation='⚠️ Caution — some nutrients are borderline. Consider adjusting diet before increasing volume.';
+    recColor='var(--warning)';recBg='rgba(245,158,11,.1)';
+  } else {
+    recommendation='🛑 Reduce training volume this week. Address nutrient deficiencies before your next hard block.';
+    recColor='var(--danger)';recBg='rgba(239,68,68,.1)';
+  }
+
+  let html = `<div style="background:${recBg};border:1px solid ${recColor};border-radius:12px;padding:16px;margin-bottom:20px;color:${recColor};font-weight:600;font-size:15px">${recommendation}</div>`;
+
+  html += `<div class="grid-2" style="margin-bottom:20px">`;
+  results.forEach(r=>{
+    const pct = Math.min(100,Math.round(r.pct*100));
+    const color = pct>=100?'progress-green':pct>=70?'progress-yellow':'progress-red';
+    html += `<div class="card-sm">
+      <div style="display:flex;justify-content:space-between;margin-bottom:6px">
+        <strong>${r.label}</strong>
+        <span style="font-family:var(--font-mono);font-size:13px;color:var(--text2)">${r.avg.toFixed(1)} / ${r.target}${r.unit}</span>
+      </div>
+      <div class="progress-bar"><div class="progress-fill ${color}" style="width:${pct}%"></div></div>
+      <div style="font-size:12px;color:var(--text2);margin-top:4px">${pct}% of target${r.pct<0.7?` <span style="color:var(--danger);font-weight:600">⚠ Deficient</span>`:r.pct<0.9?` <span style="color:var(--warning)">Below target</span>`:''}</div>
+    </div>`;
+  });
+  html += '</div>';
+
+  // Day-by-day summary
+  html += `<div class="table-wrap"><table><thead><tr><th>Day</th>${NC_NUTRIENTS.map(n=>`<th>${n.label}</th>`).join('')}</tr></thead><tbody>`;
+  NC_DAYS.forEach((d,i)=>{
+    html += `<tr><td style="font-weight:600">${d}</td>${NC_NUTRIENTS.map(n=>{
+      const val = results.find(r=>r.key===n.key).vals[i];
+      const pct = val/n.target;
+      const c = pct>=1?'var(--secondary)':pct>=0.7?'var(--warning)':val===0?'var(--text3)':'var(--danger)';
+      return `<td style="font-family:var(--font-mono);color:${c}">${val||'—'}</td>`;
+    }).join('')}</tr>`;
+  });
+  html += '</tbody></table></div>';
+
+  document.getElementById('nc-results').innerHTML = html;
+}
+
+// ============================================================
+// INIT
+// ============================================================
+window.addEventListener('DOMContentLoaded',()=>{
+  const hash = window.location.hash.replace('#','');
+  nav(pages.includes(hash)?hash:'dashboard');
+  renderPaceZones();
+});
+</script>
+</body>
+</html>
