@@ -3,1476 +3,263 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>PaceForge — Marathon Training</title>
-<link rel="preconnect" href="https://api.fontshare.com">
-<link href="https://api.fontshare.com/v2/css?f[]=cabinet-grotesk@700,800&display=swap" rel="stylesheet">
-<link href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500&display=swap" rel="stylesheet">
-<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<title>PaceForge v3</title>
+<link href="https://api.fontshare.com/v2/css?f[]=cabinet-grotesk@800,700,500&f[]=satoshi@700,500,400&f[]=jet-brains-mono@400&display=swap" rel="stylesheet">
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
 <style>
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-:root{
-  --bg:#1a1a1a;--surface:#242424;--surface2:#2e2e2e;--surface3:#383838;
-  --primary:#e8602a;--primary-dark:#c44e1f;--secondary:#4caf50;
-  --text:#f0f0f0;--text2:#a0a0a0;--text3:#606060;
-  --danger:#ef4444;--warning:#f59e0b;--info:#3b82f6;
-  --border:#3a3a3a;--radius:10px;--radius-lg:16px;
-  --font-head:'Cabinet Grotesk',system-ui,sans-serif;
-  --font-body:'Satoshi',system-ui,sans-serif;
-  --font-mono:'JetBrains Mono',monospace;
-  --sidebar:240px;--bottom-nav:60px;
+/* ─── Reset & Base ─────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { font-size: 16px; scroll-behavior: smooth; }
+body {
+  font-family: 'Satoshi', sans-serif;
+  background: #1a1a1a;
+  color: #f0f0f0;
+  min-height: 100vh;
+  overflow-x: hidden;
 }
-html{scroll-behavior:smooth}
-body{font-family:var(--font-body);background:var(--bg);color:var(--text);min-height:100vh;display:flex;font-size:15px;line-height:1.5}
-#sidebar{width:var(--sidebar);min-height:100vh;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;position:fixed;top:0;left:0;z-index:100;padding:0 0 24px}
-.logo{padding:20px 20px 16px;display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--border);margin-bottom:8px}
-.logo-icon{width:36px;height:36px;flex-shrink:0}
-.logo-text{font-family:var(--font-head);font-size:18px;font-weight:800;color:var(--primary);letter-spacing:-0.5px}
-.logo-sub{font-size:10px;color:var(--text2);letter-spacing:1px;text-transform:uppercase;margin-top:-2px}
-nav{flex:1;padding:4px 12px;overflow-y:auto}
-.nav-item{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:8px;cursor:pointer;color:var(--text2);font-size:13.5px;font-weight:500;transition:all .15s;text-decoration:none;margin-bottom:2px;border:none;background:none;width:100%;text-align:left}
-.nav-item:hover{background:var(--surface2);color:var(--text)}
-.nav-item.active{background:rgba(232,96,42,.15);color:var(--primary)}
-.nav-item svg{flex-shrink:0;opacity:.8}
-.nav-item.active svg{opacity:1}
-.nav-section{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:1px;padding:12px 12px 4px;font-weight:600}
-#main{margin-left:var(--sidebar);flex:1;min-height:100vh;padding:28px 32px}
-#bottom-nav{display:none;position:fixed;bottom:0;left:0;right:0;height:var(--bottom-nav);background:var(--surface);border-top:1px solid var(--border);z-index:100;justify-content:space-around;align-items:center}
-.bn-item{display:flex;flex-direction:column;align-items:center;gap:2px;color:var(--text2);cursor:pointer;font-size:10px;padding:4px 8px;border-radius:8px;transition:color .15s;border:none;background:none;flex:1}
-.bn-item.active{color:var(--primary)}
-@media(max-width:767px){
-  #sidebar{display:none}
-  #main{margin-left:0;padding:16px 16px calc(var(--bottom-nav)+16px)}
-  #bottom-nav{display:flex}
-}
-.page{display:none}
-.page.active{display:block}
-h1{font-family:var(--font-head);font-size:24px;font-weight:800;letter-spacing:-0.5px;margin-bottom:4px}
-h2{font-family:var(--font-head);font-size:20px;font-weight:700;letter-spacing:-0.3px}
-h3{font-family:var(--font-head);font-size:16px;font-weight:700}
-.page-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:24px;gap:16px;flex-wrap:wrap}
-.page-title p{color:var(--text2);font-size:14px;margin-top:2px}
-.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:20px}
-.card-sm{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px}
-.grid-2{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
-.grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
-.grid-4{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
-@media(max-width:900px){.grid-4{grid-template-columns:repeat(2,1fr)}.grid-3{grid-template-columns:repeat(2,1fr)}}
-@media(max-width:600px){.grid-4,.grid-3,.grid-2{grid-template-columns:1fr}}
-.stat-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:20px}
-.stat-label{font-size:12px;color:var(--text2);text-transform:uppercase;letter-spacing:.8px;font-weight:600;margin-bottom:8px}
-.stat-value{font-family:var(--font-mono);font-size:28px;font-weight:600;color:var(--text);line-height:1}
-.stat-sub{font-size:12px;color:var(--text2);margin-top:6px}
-.stat-card.accent .stat-value{color:var(--primary)}
-.btn{display:inline-flex;align-items:center;gap:6px;padding:9px 18px;border-radius:8px;font-family:var(--font-body);font-size:14px;font-weight:500;cursor:pointer;border:none;transition:all .15s;white-space:nowrap}
-.btn-primary{background:var(--primary);color:#fff}
-.btn-primary:hover{background:var(--primary-dark)}
-.btn-secondary{background:var(--surface2);color:var(--text);border:1px solid var(--border)}
-.btn-secondary:hover{background:var(--surface3)}
-.btn-danger{background:rgba(239,68,68,.15);color:var(--danger);border:1px solid rgba(239,68,68,.3)}
-.btn-danger:hover{background:rgba(239,68,68,.25)}
-.btn-ghost{background:transparent;color:var(--text2);padding:6px 10px}
-.btn-ghost:hover{color:var(--text);background:var(--surface2)}
-.btn-sm{padding:6px 12px;font-size:13px}
-.btn-icon{padding:8px;border-radius:6px}
-.badge{display:inline-flex;align-items:center;padding:3px 10px;border-radius:20px;font-size:12px;font-weight:600}
-.badge-upcoming{background:rgba(232,96,42,.15);color:var(--primary)}
-.badge-completed{background:rgba(76,175,80,.15);color:var(--secondary)}
-.badge-high{background:rgba(239,68,68,.15);color:var(--danger)}
-.badge-medium{background:rgba(245,158,11,.15);color:var(--warning)}
-.badge-low{background:rgba(59,130,246,.15);color:var(--info)}
-.form-group{margin-bottom:16px}
-.form-label{display:block;font-size:13px;color:var(--text2);margin-bottom:6px;font-weight:500}
-.form-input,.form-select,.form-textarea{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:9px 12px;color:var(--text);font-family:var(--font-body);font-size:14px;outline:none;transition:border .15s}
-.form-input:focus,.form-select:focus,.form-textarea:focus{border-color:var(--primary)}
-.form-select option{background:var(--surface2)}
-.form-textarea{resize:vertical;min-height:80px}
-.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-@media(max-width:500px){.form-row{grid-template-columns:1fr}}
-.form-check{display:flex;align-items:center;gap:8px;cursor:pointer;font-size:14px}
-.form-check input{width:16px;height:16px;accent-color:var(--primary)}
-#modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:200;align-items:center;justify-content:center;padding:16px}
-#modal-overlay.open{display:flex}
-.modal{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:24px;width:100%;max-width:520px;max-height:90vh;overflow-y:auto}
-.modal-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px}
-.modal-header h3{font-family:var(--font-head);font-size:18px;font-weight:700}
-.modal-footer{display:flex;gap:10px;justify-content:flex-end;margin-top:20px;padding-top:16px;border-top:1px solid var(--border)}
-#toast{position:fixed;top:20px;right:20px;z-index:300;display:flex;flex-direction:column;gap:8px;pointer-events:none}
-.toast-item{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:12px 16px;font-size:14px;min-width:220px;animation:slideIn .2s ease;box-shadow:0 4px 20px rgba(0,0,0,.4)}
-.toast-item.success{border-color:rgba(76,175,80,.5);background:rgba(76,175,80,.1)}
-.toast-item.error{border-color:rgba(239,68,68,.5);background:rgba(239,68,68,.1)}
-@keyframes slideIn{from{transform:translateX(60px);opacity:0}to{transform:translateX(0);opacity:1}}
-.divider{height:1px;background:var(--border);margin:20px 0}
-.tabs{display:flex;gap:4px;background:var(--surface2);border-radius:10px;padding:4px;margin-bottom:24px;flex-wrap:wrap}
-.tab{padding:8px 16px;border-radius:8px;cursor:pointer;font-size:13.5px;font-weight:500;color:var(--text2);border:none;background:none;transition:all .15s;white-space:nowrap}
-.tab.active{background:var(--surface);color:var(--text);box-shadow:0 1px 4px rgba(0,0,0,.3)}
-.tab-content{display:none}
-.tab-content.active{display:block}
-.table-wrap{overflow-x:auto;border-radius:var(--radius);border:1px solid var(--border)}
-table{width:100%;border-collapse:collapse;font-size:13.5px}
-th{background:var(--surface2);padding:10px 12px;text-align:left;font-size:12px;color:var(--text2);text-transform:uppercase;letter-spacing:.6px;font-weight:600;white-space:nowrap}
-td{padding:10px 12px;border-top:1px solid var(--border);vertical-align:top}
-tr:hover td{background:rgba(255,255,255,.02)}
-.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:2px;margin-top:8px}
-.cal-header-day{text-align:center;font-size:11px;color:var(--text2);font-weight:600;padding:6px 0;text-transform:uppercase;letter-spacing:.5px}
-.cal-day{background:var(--surface2);border-radius:8px;padding:6px;min-height:64px;cursor:pointer;border:1px solid transparent;transition:all .15s;position:relative}
-.cal-day:hover{border-color:var(--border);background:var(--surface3)}
-.cal-day.today{border-color:var(--primary)}
-.cal-day.selected{background:rgba(232,96,42,.1);border-color:var(--primary)}
-.cal-day.other-month{opacity:.3}
-.cal-day-num{font-size:12px;font-weight:600;color:var(--text2);margin-bottom:4px}
-.cal-day.today .cal-day-num{color:var(--primary)}
-.cal-dots{display:flex;flex-wrap:wrap;gap:2px}
-.cal-dot{width:6px;height:6px;border-radius:50%}
-.dot-easy{background:#4caf50}.dot-long{background:#e8602a}.dot-tempo{background:#f59e0b}
-.dot-interval{background:#3b82f6}.dot-rest{background:#606060}.dot-cross{background:#8b5cf6}.dot-race{background:#ef4444}
-.plan-cell{text-align:center;font-size:11.5px;padding:4px 6px !important;min-width:60px}
-.plan-rest{color:var(--text3)}.plan-easy{color:var(--secondary)}.plan-training{color:var(--primary)}.plan-long{color:var(--warning)}.plan-recovery{color:#81c784}
-.plan-week-num{font-family:var(--font-mono);font-weight:600;color:var(--text2)}
-.plan-total{font-family:var(--font-mono);font-weight:600;color:var(--primary)}
-.nutrient-card{background:var(--surface2);border-radius:var(--radius);padding:16px;border-left:3px solid var(--primary)}
-.nutrient-card h3{margin-bottom:4px}
-.nutrient-target{font-family:var(--font-mono);font-size:20px;color:var(--primary);font-weight:600}
-.food-list{margin:8px 0;padding-left:0;list-style:none}
-.food-list li{padding:3px 0;font-size:13.5px;color:var(--text2)}
-.food-list li::before{content:"•";color:var(--primary);margin-right:8px}
-.phase-card{background:var(--surface2);border-radius:var(--radius);overflow:hidden;margin-bottom:12px}
-.phase-header{padding:14px 16px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;background:var(--surface3)}
-.phase-body{padding:0 16px;max-height:0;overflow:hidden;transition:max-height .3s ease,padding .3s ease}
-.phase-body.open{max-height:500px;padding:16px}
-.progress-bar{height:8px;background:var(--surface3);border-radius:4px;overflow:hidden;margin:6px 0}
-.progress-fill{height:100%;border-radius:4px;transition:width .4s ease}
-.progress-green{background:var(--secondary)}.progress-yellow{background:var(--warning)}.progress-red{background:var(--danger)}
-.nc-input{width:70px;background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:5px 8px;color:var(--text);font-family:var(--font-mono);font-size:13px;text-align:center;outline:none}
-.nc-input.green{border-color:var(--secondary);background:rgba(76,175,80,.1)}
-.nc-input.yellow{border-color:var(--warning);background:rgba(245,158,11,.1)}
-.nc-input.red{border-color:var(--danger);background:rgba(239,68,68,.1)}
-.nc-table{width:100%;border-collapse:collapse;font-size:13px}
-.nc-table th,.nc-table td{padding:8px 10px;border:1px solid var(--border);text-align:center}
-.nc-table th{background:var(--surface2);font-size:11px;text-transform:uppercase;letter-spacing:.5px}
-.int-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:20px;display:flex;align-items:center;gap:16px}
-.int-icon{width:48px;height:48px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:22px}
-.int-info{flex:1}
-.int-info h3{margin-bottom:2px}
-.int-info p{font-size:13px;color:var(--text2)}
-.empty{text-align:center;padding:48px 24px;color:var(--text2)}
-.empty svg{opacity:.3;margin-bottom:12px}
-.empty p{margin-bottom:16px;font-size:15px}
-.alert-card{background:var(--surface2);border-radius:var(--radius);padding:14px 16px;border-left:3px solid var(--warning);margin-bottom:10px}
-.alert-card.info{border-left-color:var(--info)}
-.alert-card.danger{border-left-color:var(--danger)}
-.alert-card.success{border-left-color:var(--secondary)}
-.alert-title{font-weight:600;font-size:14px;margin-bottom:3px}
-.alert-body{font-size:13px;color:var(--text2)}
+h1,h2,h3,h4,h5,h6 { font-family: 'Cabinet Grotesk', sans-serif; }
+.mono { font-family: 'JetBrains Mono', monospace; }
 
-/* ── STRETCH PAGE STYLES ── */
-.stretch-card{background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-lg);padding:0;overflow:hidden;transition:box-shadow .2s}
-.stretch-card:hover{box-shadow:0 4px 20px rgba(0,0,0,.3)}
-.stretch-header{padding:16px 20px;cursor:pointer;display:flex;gap:14px;align-items:flex-start}
-.stretch-icon{width:48px;height:48px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0}
-.stretch-meta{flex:1}
-.stretch-meta h3{margin-bottom:3px}
-.stretch-tags{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}
-.stretch-tag{font-size:11px;padding:2px 8px;border-radius:12px;font-weight:600;background:var(--surface3);color:var(--text2)}
-.stretch-tag.dynamic{background:rgba(232,96,42,.15);color:var(--primary)}
-.stretch-tag.static{background:rgba(59,130,246,.15);color:var(--info)}
-.stretch-tag.mobility{background:rgba(139,92,246,.15);color:#a78bfa}
-.stretch-body{padding:0 20px;max-height:0;overflow:hidden;transition:max-height .35s ease,padding .35s ease}
-.stretch-body.open{max-height:600px;padding:0 20px 20px}
-.step-list{counter-reset:steps;list-style:none;margin-top:12px}
-.step-list li{counter-increment:steps;display:flex;gap:12px;padding:8px 0;border-bottom:1px solid var(--border);font-size:13.5px}
-.step-list li:last-child{border-bottom:none}
-.step-list li::before{content:counter(steps);width:24px;height:24px;border-radius:50%;background:var(--primary);color:#fff;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0;margin-top:1px}
-.timer-badge{display:inline-flex;align-items:center;gap:4px;background:var(--surface3);border-radius:8px;padding:3px 10px;font-family:var(--font-mono);font-size:13px;color:var(--primary);font-weight:600}
-.routine-bar{display:flex;gap:3px;flex-wrap:wrap;margin-bottom:16px}
-.routine-slot{flex:1;min-width:60px;background:var(--surface2);border-radius:8px;padding:8px 6px;text-align:center;font-size:11px;font-weight:600;border:1px solid var(--border)}
-.routine-slot.pre{border-color:rgba(232,96,42,.4);color:var(--primary)}
-.routine-slot.post{border-color:rgba(59,130,246,.4);color:var(--info)}
-.routine-slot .slot-time{font-family:var(--font-mono);font-size:10px;color:var(--text2);margin-top:2px}
-.injury-card{background:var(--surface2);border-radius:var(--radius);padding:14px 16px;border-left:3px solid var(--danger);margin-bottom:10px}
-.injury-card.prevention{border-left-color:var(--secondary)}
-</style>
-</head>
-<body>
-
-<!-- SIDEBAR -->
-<aside id="sidebar">
-  <div class="logo">
-    <svg class="logo-icon" viewBox="0 0 36 36" fill="none">
-      <circle cx="18" cy="18" r="18" fill="rgba(232,96,42,.15)"/>
-      <circle cx="22" cy="10" r="3" fill="#e8602a"/>
-      <path d="M20 13 L16 22 L19 20 L17 28" stroke="#e8602a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
-      <path d="M16 22 L12 26" stroke="#e8602a" stroke-width="2" stroke-linecap="round" fill="none"/>
-      <path d="M19 20 L23 25" stroke="#e8602a" stroke-width="2" stroke-linecap="round" fill="none"/>
-    </svg>
-    <div>
-      <div class="logo-text">PaceForge</div>
-      <div class="logo-sub">Marathon Training</div>
-    </div>
-  </div>
-  <nav>
-    <button class="nav-item active" onclick="nav('dashboard')">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
-      Dashboard
-    </button>
-    <button class="nav-item" onclick="nav('races')">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg>
-      My Races
-    </button>
-    <button class="nav-item" onclick="nav('calendar')">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-      Calendar
-    </button>
-    <button class="nav-item" onclick="nav('planner')">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><circle cx="4" cy="6" r="1" fill="currentColor"/><circle cx="4" cy="12" r="1" fill="currentColor"/><circle cx="4" cy="18" r="1" fill="currentColor"/></svg>
-      Planner
-    </button>
-    <button class="nav-item" onclick="nav('pace')">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 15"/><line x1="12" y1="2" x2="12" y2="4"/></svg>
-      Pace Calc
-    </button>
-    <button class="nav-item" onclick="nav('stretching')">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg>
-      Stretching
-    </button>
-    <div class="nav-section">Nutrition</div>
-    <button class="nav-item" onclick="nav('nutrition')">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a10 10 0 0 1 10 10c0 4-2.5 7.5-6 9.5"/><path d="M12 2C8 4 6 8 6 12c0 3 1 5.5 3 7.5"/><path d="M12 2v20"/></svg>
-      Nutrition Guide
-    </button>
-    <button class="nav-item" onclick="nav('nutrition-check')">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/><line x1="9" y1="12" x2="15" y2="12"/><line x1="9" y1="16" x2="12" y2="16"/></svg>
-      Nutrition Check
-    </button>
-    <div class="nav-section">Connect</div>
-    <button class="nav-item" onclick="nav('integrations')">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
-      Integrations
-    </button>
-  </nav>
-</aside>
-
-<!-- BOTTOM NAV -->
-<nav id="bottom-nav">
-  <button class="bn-item active" onclick="nav('dashboard')">
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
-    Home
-  </button>
-  <button class="bn-item" onclick="nav('calendar')">
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-    Log
-  </button>
-  <button class="bn-item" onclick="nav('stretching')">
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg>
-    Stretch
-  </button>
-  <button class="bn-item" onclick="nav('planner')">
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><circle cx="4" cy="6" r="1" fill="currentColor"/><circle cx="4" cy="12" r="1" fill="currentColor"/><circle cx="4" cy="18" r="1" fill="currentColor"/></svg>
-    Plan
-  </button>
-  <button class="bn-item" onclick="nav('nutrition')">
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a10 10 0 0 1 10 10c0 4-2.5 7.5-6 9.5"/><path d="M12 2C8 4 6 8 6 12c0 3 1 5.5 3 7.5"/><path d="M12 2v20"/></svg>
-    Nutrition
-  </button>
-</nav>
-
-<!-- MODAL -->
-<div id="modal-overlay" onclick="if(event.target===this)closeModal()">
-  <div class="modal" id="modal-content"></div>
-</div>
-<div id="toast"></div>
-
-<main id="main">
-
-<!-- DASHBOARD -->
-<div class="page active" id="page-dashboard">
-  <div class="page-header">
-    <div class="page-title"><h1>Dashboard</h1><p id="dash-date"></p></div>
-    <button class="btn btn-primary" onclick="openLogWorkout()">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-      Log Workout
-    </button>
-  </div>
-  <div class="grid-4" style="margin-bottom:24px" id="dash-stats"></div>
-  <div class="grid-2">
-    <div class="card" id="next-race-card"></div>
-    <div class="card" id="recent-workouts-card"></div>
-  </div>
-</div>
-
-<!-- MY RACES -->
-<div class="page" id="page-races">
-  <div class="page-header">
-    <div class="page-title"><h1>My Races</h1><p>Track your race calendar</p></div>
-    <button class="btn btn-primary" onclick="openAddRace()">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-      Add Race
-    </button>
-  </div>
-  <div id="races-list"></div>
-</div>
-
-<!-- CALENDAR -->
-<div class="page" id="page-calendar">
-  <div class="page-header">
-    <div class="page-title"><h1>Workout Log</h1><p>Track every session</p></div>
-    <button class="btn btn-primary" onclick="openLogWorkout()">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-      Log Workout
-    </button>
-  </div>
-  <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px">
-    <button class="btn btn-secondary btn-sm" onclick="changeMonth(-1)">◀</button>
-    <h2 id="cal-month-label" style="flex:1;text-align:center"></h2>
-    <button class="btn btn-secondary btn-sm" onclick="changeMonth(1)">▶</button>
-  </div>
-  <div class="card" style="margin-bottom:20px">
-    <div class="cal-grid" id="cal-headers"></div>
-    <div class="cal-grid" id="cal-grid"></div>
-  </div>
-  <div id="cal-selected-day"></div>
-</div>
-
-<!-- PLANNER -->
-<div class="page" id="page-planner">
-  <div class="page-header">
-    <div class="page-title"><h1>12-Week Planner</h1><p>Progressive marathon training plan</p></div>
-  </div>
-  <div class="card" style="margin-bottom:24px">
-    <h3 style="margin-bottom:16px">Plan Settings</h3>
-    <div class="grid-3" style="gap:12px;margin-bottom:16px">
-      <div class="form-group" style="margin:0">
-        <label class="form-label">Fitness Level</label>
-        <select class="form-select" id="plan-level"><option value="beginner">Beginner</option><option value="intermediate" selected>Intermediate</option><option value="advanced">Advanced</option></select>
-      </div>
-      <div class="form-group" style="margin:0">
-        <label class="form-label">Base KM/Week</label>
-        <input type="number" class="form-input" id="plan-base" value="40" min="20" max="150">
-      </div>
-      <div class="form-group" style="margin:0">
-        <label class="form-label">Long Run Max (km)</label>
-        <input type="number" class="form-input" id="plan-longrun" value="30" min="10" max="42">
-      </div>
-      <div class="form-group" style="margin:0">
-        <label class="form-label">Peak KM Override (opt)</label>
-        <input type="number" class="form-input" id="plan-peak" placeholder="Auto" min="30" max="150">
-      </div>
-      <div class="form-group" style="margin:0">
-        <label class="form-label">Start Date</label>
-        <input type="date" class="form-input" id="plan-start">
-      </div>
-    </div>
-    <button class="btn btn-primary" onclick="generatePlan()">Generate Plan</button>
-    <button class="btn btn-secondary" id="copy-plan-btn" style="display:none;margin-left:8px" onclick="copyPlan()">Copy to Clipboard</button>
-  </div>
-  <div id="plan-output"></div>
-</div>
-
-<!-- PACE CALCULATOR -->
-<div class="page" id="page-pace">
-  <div class="page-header">
-    <div class="page-title"><h1>Pace Calculator</h1><p>Calculate distance, time, and pace</p></div>
-  </div>
-  <div class="grid-2">
-    <div class="card">
-      <h3 style="margin-bottom:16px">Calculate</h3>
-      <div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap">
-        <button class="btn btn-secondary btn-sm" onclick="setPacePreset(5)">5K</button>
-        <button class="btn btn-secondary btn-sm" onclick="setPacePreset(10)">10K</button>
-        <button class="btn btn-secondary btn-sm" onclick="setPacePreset(21.1)">Half</button>
-        <button class="btn btn-secondary btn-sm" onclick="setPacePreset(42.195)">Marathon</button>
-      </div>
-      <div class="form-group"><label class="form-label">Distance (km)</label><input type="number" class="form-input" id="pace-dist" placeholder="e.g. 42.195" step="0.01"></div>
-      <div class="form-group"><label class="form-label">Time (hh:mm:ss)</label><input type="text" class="form-input" id="pace-time" placeholder="e.g. 4:30:00"></div>
-      <div class="form-group"><label class="form-label">Pace (min:sec per km)</label><input type="text" class="form-input" id="pace-pace" placeholder="e.g. 6:24"></div>
-      <button class="btn btn-primary" onclick="calcPace()">Calculate</button>
-      <button class="btn btn-ghost" onclick="clearPace()">Clear</button>
-      <div id="pace-result" style="margin-top:16px"></div>
-    </div>
-    <div class="card">
-      <h3 style="margin-bottom:16px">Pace Zones</h3>
-      <p style="font-size:13px;color:var(--text2);margin-bottom:12px">Based on your marathon pace</p>
-      <div id="pace-zones-table"></div>
-      <div class="divider"></div>
-      <h3 style="margin-bottom:12px">Race Predictor</h3>
-      <div id="race-predictor"></div>
-    </div>
-  </div>
-</div>
-
-<!-- ══════════════════════════════════════
-     STRETCHING PAGE
-══════════════════════════════════════ -->
-<div class="page" id="page-stretching">
-  <div class="page-header">
-    <div class="page-title">
-      <h1>Stretching & Mobility</h1>
-      <p>Pre-training warm-up · Post-training cool-down · Injury prevention</p>
-    </div>
-  </div>
-
-  <!-- Quick Routine Summary Bar -->
-  <div class="card" style="margin-bottom:24px">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap;gap:8px">
-      <h3>Quick Routine Overview</h3>
-      <div style="display:flex;gap:8px">
-        <span style="font-size:12px;display:flex;align-items:center;gap:4px"><span style="width:10px;height:10px;border-radius:50%;background:var(--primary);display:inline-block"></span>Pre-Training</span>
-        <span style="font-size:12px;display:flex;align-items:center;gap:4px"><span style="width:10px;height:10px;border-radius:50%;background:var(--info);display:inline-block"></span>Post-Training</span>
-      </div>
-    </div>
-    <div class="routine-bar">
-      <div class="routine-slot pre"><div>Leg Swings</div><div class="slot-time">1 min</div></div>
-      <div class="routine-slot pre"><div>Hip Circles</div><div class="slot-time">1 min</div></div>
-      <div class="routine-slot pre"><div>High Knees</div><div class="slot-time">1 min</div></div>
-      <div class="routine-slot pre"><div>Butt Kicks</div><div class="slot-time">1 min</div></div>
-      <div class="routine-slot pre"><div>Walking Lunge</div><div class="slot-time">1 min</div></div>
-      <div class="routine-slot pre"><div>Ankle Circles</div><div class="slot-time">30 sec</div></div>
-      <div style="width:2px;background:var(--border);border-radius:2px;flex-shrink:0"></div>
-      <div class="routine-slot post"><div>Quad Stretch</div><div class="slot-time">60 sec</div></div>
-      <div class="routine-slot post"><div>Hamstring</div><div class="slot-time">60 sec</div></div>
-      <div class="routine-slot post"><div>Hip Flexor</div><div class="slot-time">60 sec</div></div>
-      <div class="routine-slot post"><div>Calf Stretch</div><div class="slot-time">60 sec</div></div>
-      <div class="routine-slot post"><div>Pigeon Pose</div><div class="slot-time">90 sec</div></div>
-      <div class="routine-slot post"><div>Child's Pose</div><div class="slot-time">60 sec</div></div>
-    </div>
-    <div style="display:flex;gap:20px;margin-top:12px;font-size:13px;color:var(--text2)">
-      <span>🟠 Pre-training total: <strong style="color:var(--text)">~6 min</strong></span>
-      <span>🔵 Post-training total: <strong style="color:var(--text)">~8 min</strong></span>
-    </div>
-  </div>
-
-  <div class="tabs" id="stretch-tabs">
-    <button class="tab active" onclick="switchStretchTab('pre')">🔥 Pre-Training</button>
-    <button class="tab" onclick="switchStretchTab('post')">❄️ Post-Training</button>
-    <button class="tab" onclick="switchStretchTab('injury')">🛡️ Injury Prevention</button>
-    <button class="tab" onclick="switchStretchTab('race')">🏁 Race Day</button>
-  </div>
-
-  <!-- PRE-TRAINING TAB -->
-  <div id="stretch-pre" class="tab-content active">
-    <div class="alert-card info" style="margin-bottom:20px">
-      <div class="alert-title">Why Dynamic Warm-Up?</div>
-      <div class="alert-body">Never static stretch cold muscles before a run — it reduces power output and increases injury risk. Dynamic movements raise core temperature, activate neuromuscular pathways, and prepare your joints for the range of motion required in running. Do this routine <strong>immediately before</strong> every session.</div>
-    </div>
-
-    <div style="display:flex;flex-direction:column;gap:10px">
-
-      <div class="stretch-card">
-        <div class="stretch-header" onclick="toggleStretch(this)">
-          <div class="stretch-icon" style="background:rgba(232,96,42,.15)">🦵</div>
-          <div class="stretch-meta">
-            <h3>Leg Swings (Front-to-Back)</h3>
-            <p style="font-size:13px;color:var(--text2)">Hip flexors · Hamstrings · Glutes</p>
-            <div class="stretch-tags">
-              <span class="stretch-tag dynamic">Dynamic</span>
-              <span class="stretch-tag">Both legs</span>
-              <span class="stretch-tag"><span class="timer-badge">⏱ 20 reps each</span></span>
-            </div>
-          </div>
-        </div>
-        <div class="stretch-body">
-          <ol class="step-list">
-            <li>Stand beside a wall, place one hand on it for balance</li>
-            <li>Swing your inside leg forward as high as comfortable, then backward behind you</li>
-            <li>Keep the movement controlled and progressively increase range</li>
-            <li>Complete 20 swings, then turn and repeat on the other leg</li>
-          </ol>
-          <div class="alert-card success" style="margin-top:12px">
-            <div class="alert-title">Runner's Tip</div>
-            <div class="alert-body">Add lateral (side-to-side) leg swings after front-to-back. This opens the hip abductors which are critical for IT band health in long-distance runners.</div>
-          </div>
-        </div>
-      </div>
-
-      <div class="stretch-card">
-        <div class="stretch-header" onclick="toggleStretch(this)">
-          <div class="stretch-icon" style="background:rgba(245,158,11,.15)">🔄</div>
-          <div class="stretch-meta">
-            <h3>Hip Circles</h3>
-            <p style="font-size:13px;color:var(--text2)">Hip joint · Glutes · Lower back</p>
-            <div class="stretch-tags">
-              <span class="stretch-tag dynamic">Dynamic</span>
-              <span class="stretch-tag mobility">Mobility</span>
-              <span class="stretch-tag"><span class="timer-badge">⏱ 10 circles each way</span></span>
-            </div>
-          </div>
-        </div>
-        <div class="stretch-body">
-          <ol class="step-list">
-            <li>Stand with feet hip-width apart, hands on hips</li>
-            <li>Draw large circles with your hips — clockwise for 10 rotations</li>
-            <li>Reverse direction for 10 more rotations</li>
-            <li>Gradually increase circle size with each rep</li>
-          </ol>
-        </div>
-      </div>
-
-      <div class="stretch-card">
-        <div class="stretch-header" onclick="toggleStretch(this)">
-          <div class="stretch-icon" style="background:rgba(76,175,80,.15)">🏃</div>
-          <div class="stretch-meta">
-            <h3>High Knees (Marching)</h3>
-            <p style="font-size:13px;color:var(--text2)">Hip flexors · Core · Cardiovascular activation</p>
-            <div class="stretch-tags">
-              <span class="stretch-tag dynamic">Dynamic</span>
-              <span class="stretch-tag"><span class="timer-badge">⏱ 30 seconds</span></span>
-            </div>
-          </div>
-        </div>
-        <div class="stretch-body">
-          <ol class="step-list">
-            <li>Stand tall, core engaged</li>
-            <li>March in place driving your knees up to hip height alternately</li>
-            <li>Pump opposite arm with each knee lift</li>
-            <li>Start slow (marching) and build to a jog pace over 30 seconds</li>
-          </ol>
-          <p style="font-size:13px;color:var(--text2);margin-top:10px">This also serves as your first cardiovascular activation — heart rate should begin rising here.</p>
-        </div>
-      </div>
-
-      <div class="stretch-card">
-        <div class="stretch-header" onclick="toggleStretch(this)">
-          <div class="stretch-icon" style="background:rgba(139,92,246,.15)">🦶</div>
-          <div class="stretch-meta">
-            <h3>Butt Kicks</h3>
-            <p style="font-size:13px;color:var(--text2)">Hamstrings · Quad activation · Running mechanics</p>
-            <div class="stretch-tags">
-              <span class="stretch-tag dynamic">Dynamic</span>
-              <span class="stretch-tag"><span class="timer-badge">⏱ 30 seconds</span></span>
-            </div>
-          </div>
-        </div>
-        <div class="stretch-body">
-          <ol class="step-list">
-            <li>Jog slowly in place</li>
-            <li>Flick each heel up toward your glutes with each step</li>
-            <li>Keep your knees pointing down — don't let them swing forward</li>
-            <li>Maintain upright posture, relax your shoulders</li>
-          </ol>
-        </div>
-      </div>
-
-      <div class="stretch-card">
-        <div class="stretch-header" onclick="toggleStretch(this)">
-          <div class="stretch-icon" style="background:rgba(232,96,42,.15)">🚶</div>
-          <div class="stretch-meta">
-            <h3>Walking Lunges with Rotation</h3>
-            <p style="font-size:13px;color:var(--text2)">Quads · Hip flexors · Thoracic spine · Balance</p>
-            <div class="stretch-tags">
-              <span class="stretch-tag dynamic">Dynamic</span>
-              <span class="stretch-tag mobility">Mobility</span>
-              <span class="stretch-tag"><span class="timer-badge">⏱ 10 each leg</span></span>
-            </div>
-          </div>
-        </div>
-        <div class="stretch-body">
-          <ol class="step-list">
-            <li>Step forward into a lunge, lowering back knee toward the ground</li>
-            <li>At the bottom of the lunge, rotate your torso toward your front leg</li>
-            <li>Reach the same-side arm overhead to add a side stretch</li>
-            <li>Push off and step forward into the next lunge on the other side</li>
-          </ol>
-          <div class="alert-card success" style="margin-top:12px">
-            <div class="alert-title">Runner's Tip</div>
-            <div class="alert-body">The rotation component opens the thoracic spine — critical for arm drive efficiency during long races. Many runners neglect upper body mobility.</div>
-          </div>
-        </div>
-      </div>
-
-      <div class="stretch-card">
-        <div class="stretch-header" onclick="toggleStretch(this)">
-          <div class="stretch-icon" style="background:rgba(59,130,246,.15)">⭕</div>
-          <div class="stretch-meta">
-            <h3>Ankle Circles & Calf Raises</h3>
-            <p style="font-size:13px;color:var(--text2)">Ankle mobility · Achilles · Calf activation</p>
-            <div class="stretch-tags">
-              <span class="stretch-tag dynamic">Dynamic</span>
-              <span class="stretch-tag"><span class="timer-badge">⏱ 30 sec + 15 reps</span></span>
-            </div>
-          </div>
-        </div>
-        <div class="stretch-body">
-          <ol class="step-list">
-            <li>Balance on one foot, draw 10 large circles with your ankle clockwise</li>
-            <li>Reverse for 10 anti-clockwise circles</li>
-            <li>Switch to the other foot and repeat</li>
-            <li>Then do 15 slow double-leg calf raises to activate the posterior chain</li>
-          </ol>
-          <p style="font-size:13px;color:var(--text2);margin-top:10px">⚠️ Critical for marathon runners — ankle stiffness is a leading predictor of Achilles tendinopathy.</p>
-        </div>
-      </div>
-
-      <div class="stretch-card">
-        <div class="stretch-header" onclick="toggleStretch(this)">
-          <div class="stretch-icon" style="background:rgba(76,175,80,.15)">🦀</div>
-          <div class="stretch-meta">
-            <h3>Side-Stepping & Crab Walks</h3>
-            <p style="font-size:13px;color:var(--text2)">Glute medius · IT band · Lateral stability</p>
-            <div class="stretch-tags">
-              <span class="stretch-tag dynamic">Dynamic</span>
-              <span class="stretch-tag"><span class="timer-badge">⏱ 10m each direction</span></span>
-            </div>
-          </div>
-        </div>
-        <div class="stretch-body">
-          <ol class="step-list">
-            <li>Place a resistance band just above your knees (optional but recommended)</li>
-            <li>Squat slightly — hips back, knees over toes</li>
-            <li>Take 10 steps sideways to the right, maintaining the squat</li>
-            <li>Return 10 steps to the left</li>
-          </ol>
-          <div class="alert-card success" style="margin-top:12px">
-            <div class="alert-title">Why This Matters</div>
-            <div class="alert-body">Weak glute medius is the #1 cause of IT band syndrome and knee pain in runners. Do this before every long run and tempo session.</div>
-          </div>
-        </div>
-      </div>
-
-    </div><!-- end pre stretches -->
-  </div><!-- end pre tab -->
-
-  <!-- POST-TRAINING TAB -->
-  <div id="stretch-post" class="tab-content">
-    <div class="alert-card info" style="margin-bottom:20px">
-      <div class="alert-title">Why Static Stretching Post-Run?</div>
-      <div class="alert-body">After a run, muscles are warm and pliable — this is the ideal time for static stretches that improve flexibility. Hold each stretch for at least <strong>45–60 seconds</strong>. Breathe deeply. Never bounce. This is also your recovery window — pair with hydration and your post-run nutrition.</div>
-    </div>
-
-    <div style="display:flex;flex-direction:column;gap:10px">
-
-      <div class="stretch-card">
-        <div class="stretch-header" onclick="toggleStretch(this)">
-          <div class="stretch-icon" style="background:rgba(59,130,246,.15)">🦵</div>
-          <div class="stretch-meta">
-            <h3>Standing Quad Stretch</h3>
-            <p style="font-size:13px;color:var(--text2)">Quadriceps · Hip flexors · Knee joint</p>
-            <div class="stretch-tags">
-              <span class="stretch-tag static">Static</span>
-              <span class="stretch-tag"><span class="timer-badge">⏱ 60 sec each side</span></span>
-            </div>
-          </div>
-        </div>
-        <div class="stretch-body">
-          <ol class="step-list">
-            <li>Stand on one leg, bend the other knee and hold your foot behind you</li>
-            <li>Keep knees together and stand tall — don't lean forward</li>
-            <li>Feel the stretch along the front of your thigh</li>
-            <li>Hold 60 seconds, then switch sides</li>
-          </ol>
-          <p style="font-size:13px;color:var(--text2);margin-top:10px">If balance is difficult, use a wall for support. Increase intensity by gently pulling the foot higher.</p>
-        </div>
-      </div>
-
-      <div class="stretch-card">
-        <div class="stretch-header" onclick="toggleStretch(this)">
-          <div class="stretch-icon" style="background:rgba(59,130,246,.15)">🧘</div>
-          <div class="stretch-meta">
-            <h3>Seated Hamstring Stretch</h3>
-            <p style="font-size:13px;color:var(--text2)">Hamstrings · Lower back · Sciatic nerve</p>
-            <div class="stretch-tags">
-              <span class="stretch-tag static">Static</span>
-              <span class="stretch-tag"><span class="timer-badge">⏱ 60 sec each side</span></span>
-            </div>
-          </div>
-        </div>
-        <div class="stretch-body">
-          <ol class="step-list">
-            <li>Sit on the ground with one leg extended, the other bent (foot to inner thigh)</li>
-            <li>Hinge forward from your hips — keep your back flat, not rounded</li>
-            <li>Reach toward your extended foot as far as comfortable</li>
-            <li>Hold 60 seconds, breathing into the stretch. Switch sides.</li>
-          </ol>
-          <div class="alert-card" style="margin-top:12px">
-            <div class="alert-title">Common Mistake</div>
-            <div class="alert-body">Rounding the lower back eliminates the hamstring stretch and strains the lumbar spine. Lead with your chest, not your forehead.</div>
-          </div>
-        </div>
-      </div>
-
-      <div class="stretch-card">
-        <div class="stretch-header" onclick="toggleStretch(this)">
-          <div class="stretch-icon" style="background:rgba(139,92,246,.15)">🦋</div>
-          <div class="stretch-meta">
-            <h3>Hip Flexor Lunge Stretch (Kneeling)</h3>
-            <p style="font-size:13px;color:var(--text2)">Iliopsoas · Hip flexors · Groin</p>
-            <div class="stretch-tags">
-              <span class="stretch-tag static">Static</span>
-              <span class="stretch-tag mobility">Mobility</span>
-              <span class="stretch-tag"><span class="timer-badge">⏱ 60 sec each side</span></span>
-            </div>
-          </div>
-        </div>
-        <div class="stretch-body">
-          <ol class="step-list">
-            <li>Kneel on one knee, the other foot forward in a lunge position</li>
-            <li>Tuck your pelvis under (posterior tilt) — this is key to stretching the hip flexor, not just the quad</li>
-            <li>Lean slightly forward until you feel a stretch at the front of the kneeling hip</li>
-            <li>Hold 60 seconds, then switch sides</li>
-          </ol>
-          <div class="alert-card success" style="margin-top:12px">
-            <div class="alert-title">Marathon Importance</div>
-            <div class="alert-body">Tight hip flexors are the #1 cause of lower back pain in marathon runners. The pelvic tuck is essential — without it, you won't stretch the iliacus/psoas effectively.</div>
-          </div>
-        </div>
-      </div>
-
-      <div class="stretch-card">
-        <div class="stretch-header" onclick="toggleStretch(this)">
-          <div class="stretch-icon" style="background:rgba(232,96,42,.15)">🦶</div>
-          <div class="stretch-meta">
-            <h3>Standing Calf Stretch (Wall)</h3>
-            <p style="font-size:13px;color:var(--text2)">Gastrocnemius · Soleus · Achilles tendon</p>
-            <div class="stretch-tags">
-              <span class="stretch-tag static">Static</span>
-              <span class="stretch-tag"><span class="timer-badge">⏱ 60 sec each position</span></span>
-            </div>
-          </div>
-        </div>
-        <div class="stretch-body">
-          <ol class="step-list">
-            <li><strong>Straight leg:</strong> Place hands on wall, step one foot back, keep heel flat on ground. Feel stretch in upper calf. Hold 60 sec.</li>
-            <li><strong>Bent knee:</strong> Same position but bend the back knee slightly — shifts stretch to the soleus and Achilles. Hold 60 sec.</li>
-            <li>Switch sides and repeat both positions</li>
-          </ol>
-          <p style="font-size:13px;color:var(--text2);margin-top:10px">Two-position approach is critical — single-position calf stretches only address one of two calf muscles.</p>
-        </div>
-      </div>
-
-      <div class="stretch-card">
-        <div class="stretch-header" onclick="toggleStretch(this)">
-          <div class="stretch-icon" style="background:rgba(76,175,80,.15)">🕊️</div>
-          <div class="stretch-meta">
-            <h3>Pigeon Pose (Glute & Piriformis)</h3>
-            <p style="font-size:13px;color:var(--text2)">Piriformis · Glutes · External hip rotators</p>
-            <div class="stretch-tags">
-              <span class="stretch-tag static">Static</span>
-              <span class="stretch-tag mobility">Mobility</span>
-              <span class="stretch-tag"><span class="timer-badge">⏱ 90 sec each side</span></span>
-            </div>
-          </div>
-        </div>
-        <div class="stretch-body">
-          <ol class="step-list">
-            <li>From a plank position, bring one knee forward and place it behind your wrist</li>
-            <li>Your shin should be at roughly 45° to your body (more parallel = deeper stretch)</li>
-            <li>Extend the other leg straight behind you, toes pointed</li>
-            <li>Lower your hips toward the floor and fold forward over your bent leg</li>
-            <li>Hold 90 seconds — this is normal to feel intense. Switch sides.</li>
-          </ol>
-          <div class="alert-card success" style="margin-top:12px">
-            <div class="alert-title">Most Important Post-Run Stretch</div>
-            <div class="alert-body">Piriformis tightness causes sciatic-like pain down the leg. For marathon runners doing high weekly mileage, pigeon pose is non-negotiable. Spend longer here on long run days.</div>
-          </div>
-        </div>
-      </div>
-
-      <div class="stretch-card">
-        <div class="stretch-header" onclick="toggleStretch(this)">
-          <div class="stretch-icon" style="background:rgba(59,130,246,.15)">🌊</div>
-          <div class="stretch-meta">
-            <h3>IT Band Stretch (Cross-Leg)</h3>
-            <p style="font-size:13px;color:var(--text2)">Iliotibial band · Lateral hip · TFL</p>
-            <div class="stretch-tags">
-              <span class="stretch-tag static">Static</span>
-              <span class="stretch-tag"><span class="timer-badge">⏱ 60 sec each side</span></span>
-            </div>
-          </div>
-        </div>
-        <div class="stretch-body">
-          <ol class="step-list">
-            <li>Stand with feet together, cross one foot in front of the other</li>
-            <li>Lean sideways toward the uncrossed side until you feel a stretch along the outer hip/thigh</li>
-            <li>Reach the opposite arm over your head for a deeper stretch</li>
-            <li>Hold 60 seconds, then cross opposite foot and repeat</li>
-          </ol>
-          <p style="font-size:13px;color:var(--text2);margin-top:10px">Alternative: Lie on your back, cross one ankle over the opposite knee and gently press the knee away (figure-4 stretch).</p>
-        </div>
-      </div>
-
-      <div class="stretch-card">
-        <div class="stretch-header" onclick="toggleStretch(this)">
-          <div class="stretch-icon" style="background:rgba(245,158,11,.15)">🌙</div>
-          <div class="stretch-meta">
-            <h3>Child's Pose (Full Spine Release)</h3>
-            <p style="font-size:13px;color:var(--text2)">Lower back · Thoracic spine · Shoulders · Hips</p>
-            <div class="stretch-tags">
-              <span class="stretch-tag static">Static</span>
-              <span class="stretch-tag mobility">Mobility</span>
-              <span class="stretch-tag"><span class="timer-badge">⏱ 60–90 seconds</span></span>
-            </div>
-          </div>
-        </div>
-        <div class="stretch-body">
-          <ol class="step-list">
-            <li>Kneel and sit back onto your heels</li>
-            <li>Fold forward, extending arms long in front of you on the ground</li>
-            <li>Let your forehead rest on the floor or mat</li>
-            <li>Focus on deep belly breathing — inhale to expand the lower back, exhale to relax deeper</li>
-            <li>Hold 60–90 seconds. This is your final recovery pose.</li>
-          </ol>
-        </div>
-      </div>
-
-      <div class="stretch-card">
-        <div class="stretch-header" onclick="toggleStretch(this)">
-          <div class="stretch-icon" style="background:rgba(232,96,42,.15)">🔃</div>
-          <div class="stretch-meta">
-            <h3>Supine Spinal Twist</h3>
-            <p style="font-size:13px;color:var(--text2)">Thoracic & lumbar spine · Glutes · Lower back</p>
-            <div class="stretch-tags">
-              <span class="stretch-tag static">Static</span>
-              <span class="stretch-tag mobility">Mobility</span>
-              <span class="stretch-tag"><span class="timer-badge">⏱ 60 sec each side</span></span>
-            </div>
-          </div>
-        </div>
-        <div class="stretch-body">
-          <ol class="step-list">
-            <li>Lie on your back, bring one knee to your chest</li>
-            <li>Gently guide that knee across your body to the opposite side with your hand</li>
-            <li>Keep both shoulders flat on the floor — let gravity do the work</li>
-            <li>Extend the same-side arm out to the side, palm up</li>
-            <li>Hold 60 seconds, then repeat on the other side</li>
-          </ol>
-        </div>
-      </div>
-
-    </div><!-- end post stretches -->
-  </div><!-- end post tab -->
-
-  <!-- INJURY PREVENTION TAB -->
-  <div id="stretch-injury" class="tab-content">
-    <div class="alert-card danger" style="margin-bottom:20px">
-      <div class="alert-title">⚠️ When to Stop Running</div>
-      <div class="alert-body">Sharp pain, pain that worsens during a run, swelling, or pain that persists more than 48 hours are signs to rest and seek medical review. Do not run through sharp or joint pain — it converts minor injuries into season-ending ones.</div>
-    </div>
-
-    <h2 style="margin-bottom:16px">Common Runner Injuries & Prevention</h2>
-
-    <div class="injury-card">
-      <div class="alert-title">🦵 IT Band Syndrome (Lateral Knee Pain)</div>
-      <div class="alert-body" style="margin-top:6px">
-        <strong>Cause:</strong> Weak glute medius, excessive hip drop, sudden mileage increase<br>
-        <strong>Prevention:</strong> Crab walks before runs, single-leg glute bridges 3×15, reduce weekly mileage increase to max 10%<br>
-        <strong>Stretches:</strong> IT Band cross-leg stretch, pigeon pose, foam roll lateral thigh<br>
-        <strong>Warning signs:</strong> Sharp pain on outside of knee at the 20–30min mark of a run
-      </div>
-    </div>
-
-    <div class="injury-card">
-      <div class="alert-title">🦶 Plantar Fasciitis (Heel Pain)</div>
-      <div class="alert-body" style="margin-top:6px">
-        <strong>Cause:</strong> Tight calves, sudden mileage increase, hard surfaces, worn shoes<br>
-        <strong>Prevention:</strong> Calf stretches (both straight and bent knee) daily, single-leg heel raises, replace shoes every 600–800km<br>
-        <strong>Stretches:</strong> Foot arch massage (golf ball), toe dorsiflexion stretch, towel scrunches<br>
-        <strong>Warning signs:</strong> First steps in the morning feel like stepping on glass
-      </div>
-    </div>
-
-    <div class="injury-card">
-      <div class="alert-title">🏃 Achilles Tendinopathy</div>
-      <div class="alert-body" style="margin-top:6px">
-        <strong>Cause:</strong> Tight calves, sudden speed/hill work increase, inadequate warm-up<br>
-        <strong>Prevention:</strong> Eccentric calf raises (heel drop off step) daily, soleus stretching, avoid heel drops in new shoes<br>
-        <strong>Stretches:</strong> Bent-knee calf stretch (soleus focus), ankle circles<br>
-        <strong>Warning signs:</strong> Morning stiffness, tenderness 2–6cm above heel bone
-      </div>
-    </div>
-
-    <div class="injury-card">
-      <div class="alert-title">🦴 Shin Splints (Medial Tibial Stress Syndrome)</div>
-      <div class="alert-body" style="margin-top:6px">
-        <strong>Cause:</strong> Too much too soon, hard surfaces, overpronation<br>
-        <strong>Prevention:</strong> Gradual mileage buildup, run on softer surfaces, strengthen tibialis anterior (toe raises)<br>
-        <strong>Stretches:</strong> Seated calf stretch, toe flexor stretch (kneel with toes tucked under)<br>
-        <strong>Warning signs:</strong> Diffuse ache along inner shinbone that improves with warmup but worsens after
-      </div>
-    </div>
-
-    <div class="injury-card">
-      <div class="alert-title">💪 Runner's Knee (Patellofemoral Pain)</div>
-      <div class="alert-body" style="margin-top:6px">
-        <strong>Cause:</strong> Weak quads/glutes, overpronation, downhill running<br>
-        <strong>Prevention:</strong> Step-downs, terminal knee extensions, hip strengthening<br>
-        <strong>Stretches:</strong> Quad stretch, hip flexor lunge, foam roll quads<br>
-        <strong>Warning signs:</strong> Dull ache under or around the kneecap, worsens going downstairs
-      </div>
-    </div>
-
-    <div class="divider"></div>
-    <h2 style="margin-bottom:16px">Strengthening Exercises for Runners</h2>
-    <div class="grid-2">
-      <div class="injury-card prevention">
-        <div class="alert-title">Single-Leg Glute Bridge</div>
-        <div class="alert-body">3 × 15 each side · 3× per week<br>Targets: Glute max, hamstrings, core stability<br>Prevents: IT band, runner's knee, lower back pain</div>
-      </div>
-      <div class="injury-card prevention">
-        <div class="alert-title">Eccentric Calf Raises (Heel Drops)</div>
-        <div class="alert-body">3 × 15 each leg (slow lower) · Daily<br>Targets: Gastrocnemius, soleus, Achilles<br>Prevents: Achilles tendinopathy, plantar fasciitis</div>
-      </div>
-      <div class="injury-card prevention">
-        <div class="alert-title">Side-Lying Clamshells</div>
-        <div class="alert-body">3 × 20 each side · 3× per week<br>Targets: Glute medius, hip external rotators<br>Prevents: IT band syndrome, hip drop, knee valgus</div>
-      </div>
-      <div class="injury-card prevention">
-        <div class="alert-title">Dead Bug</div>
-        <div class="alert-body">3 × 10 each side · 3× per week<br>Targets: Deep core (transverse abdominis), hip flexors<br>Prevents: Lower back pain, pelvic instability at late race miles</div>
-      </div>
-      <div class="injury-card prevention">
-        <div class="alert-title">Copenhagen Plank</div>
-        <div class="alert-body">3 × 20 sec each side · 2× per week<br>Targets: Hip adductors, groin, lateral core<br>Prevents: Groin strains, adductor pain common in high-mileage runners</div>
-      </div>
-      <div class="injury-card prevention">
-        <div class="alert-title">Single-Leg Calf Raise</div>
-        <div class="alert-body">3 × 20 each leg · Daily (on step for full range)<br>Targets: Soleus (bent knee) + gastrocnemius (straight knee)<br>Prevents: Achilles, plantar fasciitis, ankle weakness</div>
-      </div>
-    </div>
-  </div>
-
-  <!-- RACE DAY TAB -->
-  <div id="stretch-race" class="tab-content">
-    <div class="alert-card info" style="margin-bottom:20px">
-      <div class="alert-title">Race Day Rule</div>
-      <div class="alert-body">The 20-minute warm-up jog before race start covers your dynamic warm-up. Don't do long stretching in the starting corral — stay warm and loose. Save static stretching for <strong>after the race</strong>.</div>
-    </div>
-
-    <div class="grid-2" style="margin-bottom:24px">
-      <div class="card">
-        <h3 style="margin-bottom:14px;color:var(--primary)">⏰ Race Morning Timeline</h3>
-        <div style="display:flex;flex-direction:column;gap:10px;font-size:13.5px">
-          <div style="display:flex;gap:12px"><span style="font-family:var(--font-mono);color:var(--primary);min-width:55px">T-180</span><span><strong>Wake up</strong> · Eat breakfast (familiar food, 1–2g/kg carbs)</span></div>
-          <div style="display:flex;gap:12px"><span style="font-family:var(--font-mono);color:var(--text2);min-width:55px">T-120</span><span>Light walking, stay off your feet</span></div>
-          <div style="display:flex;gap:12px"><span style="font-family:var(--font-mono);color:var(--text2);min-width:55px">T-60</span><span>Coffee (if habitual). Final gear check.</span></div>
-          <div style="display:flex;gap:12px"><span style="font-family:var(--font-mono);color:var(--primary);min-width:55px">T-30</span><span><strong>Dynamic warm-up</strong> (5–8 min, see below)</span></div>
-          <div style="display:flex;gap:12px"><span style="font-family:var(--font-mono);color:var(--text2);min-width:55px">T-20</span><span>Easy jog 10–15 min</span></div>
-          <div style="display:flex;gap:12px"><span style="font-family:var(--font-mono);color:var(--text2);min-width:55px">T-10</span><span>2–3 strides at race pace. Stay warm.</span></div>
-          <div style="display:flex;gap:12px"><span style="font-family:var(--font-mono);color:var(--warning);min-width:55px">T-5</span><span>Enter corral. Light leg shaking, don't stand still.</span></div>
-          <div style="display:flex;gap:12px"><span style="font-family:var(--font-mono);color:var(--secondary);min-width:55px">🏁 GO</span><span>Start conservative! First 5km should feel easy.</span></div>
-        </div>
-      </div>
-      <div class="card">
-        <h3 style="margin-bottom:14px;color:var(--info)">🏁 Post-Race Recovery Stretching</h3>
-        <p style="font-size:13px;color:var(--text2);margin-bottom:12px">Wait 10–15 min after finishing before stretching — let heart rate come down. Prioritise:</p>
-        <ol style="font-size:13.5px;padding-left:20px;display:flex;flex-direction:column;gap:8px">
-          <li><strong>Hip flexor lunge</strong> — quads and hip flexors are extremely shortened after marathon effort</li>
-          <li><strong>Hamstring stretch</strong> — major fatigue site</li>
-          <li><strong>Pigeon pose</strong> — piriformis cramping is common post-race</li>
-          <li><strong>Calf stretch (both positions)</strong> — Achilles and calf take enormous stress</li>
-          <li><strong>Supine spinal twist</strong> — decompress lower back</li>
-          <li><strong>Child's pose</strong> — full-body release</li>
-        </ol>
-        <div class="alert-card success" style="margin-top:12px">
-          <div class="alert-title">Recovery Window</div>
-          <div class="alert-body">Don't run for at least 1 day per mile raced (26 days for marathon). Ice baths within 1hr help. Compression socks for travel home are recommended.</div>
-        </div>
-      </div>
-    </div>
-
-    <h3 style="margin-bottom:12px">Race Day Dynamic Warm-Up (5–8 min)</h3>
-    <div class="table-wrap">
-      <table>
-        <thead><tr><th>#</th><th>Exercise</th><th>Duration</th><th>Purpose</th></tr></thead>
-        <tbody>
-          <tr><td>1</td><td>Brisk walk + arm swings</td><td>1 min</td><td>Raise core temperature gently</td></tr>
-          <tr><td>2</td><td>Leg swings (front/back + lateral)</td><td>30 sec each leg × 2</td><td>Hip mobility, hamstring activation</td></tr>
-          <tr><td>3</td><td>High knees (marching)</td><td>30 sec</td><td>Hip flexor activation</td></tr>
-          <tr><td>4</td><td>Butt kicks</td><td>30 sec</td><td>Hamstring activation, running mechanics</td></tr>
-          <tr><td>5</td><td>Walking lunges with rotation</td><td>10 each leg</td><td>Full lower body + thoracic mobility</td></tr>
-          <tr><td>6</td><td>Ankle circles</td><td>10 each way × 2</td><td>Ankle mobility, injury prevention</td></tr>
-          <tr><td>7</td><td>2–3 short strides at race pace</td><td>20m each</td><td>Neuromuscular race-pace activation</td></tr>
-        </tbody>
-      </table>
-    </div>
-  </div>
-
-</div><!-- end stretching page -->
-
-<!-- NUTRITION GUIDE -->
-<div class="page" id="page-nutrition">
-  <div class="page-header">
-    <div class="page-title"><h1>Nutrition Guide</h1><p>Vegetarian runner nutrition</p></div>
-  </div>
-  <div class="tabs">
-    <button class="tab active" onclick="switchTab('nutrition','phases')">Training Phases</button>
-    <button class="tab" onclick="switchTab('nutrition','plantbased')">Plant-Based</button>
-    <button class="tab" onclick="switchTab('nutrition','supplements')">Supplements</button>
-    <button class="tab" onclick="switchTab('nutrition','iron')">Iron Timing</button>
-  </div>
-  <div class="tab-content active" id="nutrition-phases">
-    <div class="phase-card"><div class="phase-header" onclick="togglePhase(this)"><div><h3>🏃 Base Building (Weeks 1–4)</h3><p style="font-size:13px;color:var(--text2);margin-top:2px">Build aerobic foundation</p></div><span>▼</span></div><div class="phase-body"><div class="grid-2"><div><strong>Calories:</strong> +200–300 above maintenance<br><strong>Carbs:</strong> 5–6g/kg/day<br><strong>Protein:</strong> 1.4–1.6g/kg/day<br><strong>Fat:</strong> 25–30% total calories</div><div><strong>Key foods:</strong><ul class="food-list"><li>Oats, sweet potato, brown rice</li><li>Lentils, chickpeas, tofu</li><li>Leafy greens, berries</li><li>Nuts, seeds, avocado</li></ul></div></div><p style="margin-top:12px;font-size:13.5px;color:var(--text2)"><strong>Timing:</strong> Eat complex carbs 2–3hrs before runs. Post-run: protein + carbs within 30min.</p></div></div>
-    <div class="phase-card"><div class="phase-header" onclick="togglePhase(this)"><div><h3>⚡ Build Phase (Weeks 5–8)</h3><p style="font-size:13px;color:var(--text2);margin-top:2px">Increase intensity and volume</p></div><span>▼</span></div><div class="phase-body"><div class="grid-2"><div><strong>Calories:</strong> +400–500 above maintenance<br><strong>Carbs:</strong> 6–8g/kg/day<br><strong>Protein:</strong> 1.6–1.8g/kg/day<br><strong>Fat:</strong> 20–25% total calories</div><div><strong>Key foods:</strong><ul class="food-list"><li>Quinoa, pasta, rice cakes</li><li>Tempeh, edamame, Greek yoghurt</li><li>Beetroot, tart cherry juice</li><li>Electrolyte-rich foods</li></ul></div></div><p style="margin-top:12px;font-size:13.5px;color:var(--text2)"><strong>Timing:</strong> Pre-long run carb loading starts night before. Mid-run fuelling every 45min for runs &gt;90min.</p></div></div>
-    <div class="phase-card"><div class="phase-header" onclick="togglePhase(this)"><div><h3>🎯 Peak / Race Prep (Weeks 9–10)</h3><p style="font-size:13px;color:var(--text2);margin-top:2px">Maximum training load</p></div><span>▼</span></div><div class="phase-body"><div class="grid-2"><div><strong>Calories:</strong> +500–700 above maintenance<br><strong>Carbs:</strong> 8–10g/kg/day<br><strong>Protein:</strong> 1.8–2.0g/kg/day<br><strong>Fat:</strong> 20% total calories</div><div><strong>Key foods:</strong><ul class="food-list"><li>High-GI carbs on hard days</li><li>Iron-rich foods daily</li><li>Anti-inflammatory foods</li><li>Hydration focus: 35–40ml/kg/day</li></ul></div></div><p style="margin-top:12px;font-size:13.5px;color:var(--text2)"><strong>Timing:</strong> Practice race-day nutrition in long runs. Identify your gel/fuel strategy.</p></div></div>
-    <div class="phase-card"><div class="phase-header" onclick="togglePhase(this)"><div><h3>🏁 Taper &amp; Recovery (Weeks 11–12)</h3><p style="font-size:13px;color:var(--text2);margin-top:2px">Carb load, rest, race</p></div><span>▼</span></div><div class="phase-body"><div class="grid-2"><div><strong>Calories:</strong> Maintain (reduce slightly)<br><strong>Carbs:</strong> 8–10g/kg days 2–3 pre-race<br><strong>Protein:</strong> 1.6g/kg/day<br><strong>Fat:</strong> Low during carb load</div><div><strong>Key foods:</strong><ul class="food-list"><li>White rice, pasta, bread (carb load)</li><li>Familiar, low-fibre foods</li><li>Avoid new foods race week</li><li>Extra sodium day before</li></ul></div></div><p style="margin-top:12px;font-size:13.5px;color:var(--text2)"><strong>Race morning:</strong> 2–3hrs before: 1–2g/kg carbs (toast, banana, rice). Coffee 60min before if habitual.</p></div></div>
-  </div>
-  <div class="tab-content" id="nutrition-plantbased">
-    <div class="grid-2" style="margin-bottom:24px">
-      <div class="nutrient-card" style="border-left-color:#e8602a"><h3>🥜 Protein</h3><div class="nutrient-target">96g / day</div><p style="font-size:12px;color:var(--text2);margin:4px 0 8px">~1.6g/kg for 60kg runner</p><ul class="food-list"><li>Tempeh 100g = 19g protein</li><li>Lentils 1 cup cooked = 18g</li><li>Tofu 100g = 17g protein</li><li>Greek yoghurt 200g = 17g</li><li>Edamame 1 cup = 17g protein</li><li>Chickpeas 1 cup = 15g protein</li><li>Quinoa 1 cup = 8g protein</li></ul></div>
-      <div class="nutrient-card" style="border-left-color:#ef4444"><h3>🩸 Iron</h3><div class="nutrient-target">23mg / day</div><p style="font-size:12px;color:var(--text2);margin:4px 0 8px">Higher than meat-eaters (1.8× absorption factor)</p><ul class="food-list"><li>Pumpkin seeds 30g = 4.2mg</li><li>Lentils 1 cup = 6.6mg</li><li>Chickpeas 1 cup = 4.7mg</li><li>Spinach 1 cup cooked = 3.5mg</li><li>Tofu 100g = 3.0mg</li><li>Quinoa 1 cup = 2.8mg</li><li>Always pair with Vitamin C</li></ul></div>
-      <div class="nutrient-card" style="border-left-color:#8b5cf6"><h3>💊 Vitamin B12</h3><div class="nutrient-target">2.4mcg / day</div><p style="font-size:12px;color:var(--text2);margin:4px 0 8px">Critical for nerve function and red blood cells</p><ul class="food-list"><li>Fortified nutritional yeast 2tbsp = 4mcg</li><li>Fortified plant milk 1 cup = 1.2mcg</li><li>Eggs 2 large = 1.0mcg</li><li>Dairy yoghurt 200g = 1.0mcg</li><li>Supplement 500–1000mcg recommended</li></ul></div>
-      <div class="nutrient-card" style="border-left-color:#3b82f6"><h3>🦴 Calcium</h3><div class="nutrient-target">1000mg / day</div><p style="font-size:12px;color:var(--text2);margin:4px 0 8px">Bone health, muscle contraction</p><ul class="food-list"><li>Fortified plant milk 1 cup = 300mg</li><li>Tofu (calcium-set) 100g = 350mg</li><li>Kale 1 cup cooked = 180mg</li><li>Bok choy 1 cup = 160mg</li><li>Almonds 30g = 75mg</li><li>Separate calcium and iron meals by 2hrs</li></ul></div>
-      <div class="nutrient-card" style="border-left-color:#4caf50"><h3>🐟 Omega-3</h3><div class="nutrient-target">1.6g ALA / day</div><p style="font-size:12px;color:var(--text2);margin:4px 0 8px">Anti-inflammatory, joint health</p><ul class="food-list"><li>Flaxseeds 1 tbsp = 2.3g ALA</li><li>Chia seeds 1 tbsp = 1.7g ALA</li><li>Walnuts 30g = 2.5g ALA</li><li>Hemp seeds 3 tbsp = 1.0g ALA</li><li>Algae-based DHA/EPA supplement recommended</li></ul></div>
-      <div class="nutrient-card" style="border-left-color:#f59e0b"><h3>☀️ Vitamin D</h3><div class="nutrient-target">800 IU / day</div><p style="font-size:12px;color:var(--text2);margin:4px 0 8px">Bone health, immune function, mood</p><ul class="food-list"><li>Sunlight 15–20min daily (best source)</li><li>Fortified plant milk 1 cup = 100 IU</li><li>Fortified cereal 1 serving = 40–80 IU</li><li>Mushrooms UV-exposed 100g = 400 IU</li><li>Supplement D3 (vegan) 1000–2000 IU recommended</li></ul></div>
-    </div>
-    <h3 style="margin-bottom:16px">Sample Meal Plans</h3>
-    <div class="grid-2">
-      <div class="card-sm"><strong style="color:var(--primary)">Pre-Run (2hrs before)</strong><ul class="food-list" style="margin-top:8px"><li>Oatmeal with banana + chia seeds</li><li>Toast with almond butter + honey</li><li>Rice congee with ginger</li></ul></div>
-      <div class="card-sm"><strong style="color:var(--secondary)">Post-Run Recovery</strong><ul class="food-list" style="margin-top:8px"><li>Smoothie: soy milk + banana + spinach + protein powder</li><li>Lentil soup with brown rice</li><li>Tofu stir-fry with quinoa</li></ul></div>
-      <div class="card-sm"><strong style="color:var(--warning)">Race Day Morning</strong><ul class="food-list" style="margin-top:8px"><li>White rice with light salt (familiar!)</li><li>Banana + energy gels (practiced in training)</li><li>Coffee if habitual (60min before start)</li></ul></div>
-      <div class="card-sm"><strong style="color:#ef4444">High-Iron Day</strong><ul class="food-list" style="margin-top:8px"><li>Breakfast: Fortified cereal + OJ (Vit C)</li><li>Lunch: Lentil salad + bell peppers</li><li>Dinner: Tofu + spinach + pumpkin seeds</li><li>Avoid tea/coffee within 1hr of meals</li></ul></div>
-      <div class="card-sm"><strong style="color:#8b5cf6">Long Run Recovery</strong><ul class="food-list" style="margin-top:8px"><li>Immediate: sports drink + banana</li><li>30min: protein shake (soy/pea protein)</li><li>2hrs: full meal — carbs + protein + veg</li><li>Evening: anti-inflammatory (turmeric milk)</li></ul></div>
-    </div>
-  </div>
-  <div class="tab-content" id="nutrition-supplements">
-    <div class="table-wrap"><table><thead><tr><th>Supplement</th><th>Why Needed</th><th>Dose</th><th>Priority</th><th>Timing</th></tr></thead><tbody>
-      <tr><td><strong>Iron</strong></td><td>Non-heme iron absorption lower in vegetarians; foot-strike haemolysis in runners</td><td>14–18mg elemental iron</td><td><span class="badge badge-high">High</span></td><td>With Vit C, away from coffee/tea</td></tr>
-      <tr><td><strong>Vitamin B12</strong></td><td>Only reliable source for vegetarians; essential for red blood cell formation</td><td>500–1000mcg daily</td><td><span class="badge badge-high">High</span></td><td>With meal, any time</td></tr>
-      <tr><td><strong>Vitamin D3</strong></td><td>Most runners deficient; bone health, immune, mood</td><td>1000–2000 IU daily</td><td><span class="badge badge-high">High</span></td><td>With fat-containing meal</td></tr>
-      <tr><td><strong>Algae Omega-3</strong></td><td>DHA/EPA from fish come from algae originally; joints &amp; inflammation</td><td>250–500mg DHA+EPA</td><td><span class="badge badge-medium">Medium</span></td><td>With meal</td></tr>
-      <tr><td><strong>Calcium</strong></td><td>Bone density; muscle contraction</td><td>500mg supplement if diet low</td><td><span class="badge badge-medium">Medium</span></td><td>Separate from iron by 2hrs</td></tr>
-      <tr><td><strong>Electrolytes</strong></td><td>Lost in sweat; critical for long runs in heat</td><td>Per product (Na, K, Mg)</td><td><span class="badge badge-high">High</span></td><td>During runs &gt;60min, hot days</td></tr>
-      <tr><td><strong>Magnesium</strong></td><td>Muscle function, sleep quality, energy metabolism</td><td>300–400mg</td><td><span class="badge badge-low">Low</span></td><td>Evening before sleep</td></tr>
-    </tbody></table></div>
-    <div class="alert-card info" style="margin-top:16px"><div class="alert-title">💡 Testing Recommendation</div><div class="alert-body">Get blood tests every 3–6 months: Full Blood Count, Serum Ferritin (iron stores), B12, Vitamin D, and Zinc. Don't supplement without testing first — over-supplementation of iron is harmful.</div></div>
-  </div>
-  <div class="tab-content" id="nutrition-iron">
-    <div class="grid-2" style="margin-bottom:24px">
-      <div class="card-sm"><h3 style="margin-bottom:8px">Heme vs Non-Heme Iron</h3><p style="font-size:13.5px;color:var(--text2);margin-bottom:12px">As a vegetarian, you consume <strong style="color:var(--text)">non-heme iron only</strong>. This has 2–20% absorption vs 15–35% for heme iron from meat.</p><div style="background:rgba(232,96,42,.1);border-radius:8px;padding:12px;border:1px solid rgba(232,96,42,.2)"><strong style="color:var(--primary)">The good news:</strong><p style="font-size:13px;margin-top:4px">Your body upregulates absorption when stores are low. With correct meal timing and Vitamin C pairing, you can significantly boost non-heme absorption to 8–12%.</p></div></div>
-      <div class="card-sm"><h3 style="margin-bottom:8px">Why Runners Need More</h3><ul class="food-list"><li>Foot-strike haemolysis destroys red blood cells</li><li>GI blood losses during long runs</li><li>Sweat iron losses (~0.3mg/L sweat)</li><li>Inflammation reduces iron absorption</li><li>Hepcidin spike post-exercise blocks absorption for 3–6hrs</li></ul><p style="font-size:13px;color:var(--primary);margin-top:8px;font-weight:600">Best time to take iron: Morning, fasted, before exercise</p></div>
-    </div>
-    <h3 style="margin-bottom:12px">Iron Content by Food</h3>
-    <div class="table-wrap" style="margin-bottom:24px"><table><thead><tr><th>Food</th><th>Serving</th><th>Iron (mg)</th><th>Tip</th></tr></thead><tbody>
-      <tr><td><strong>Lentils</strong></td><td>1 cup cooked</td><td><span style="font-family:var(--font-mono);color:var(--primary)">6.6</span></td><td>Best plant iron source</td></tr>
-      <tr><td><strong>Pumpkin Seeds</strong></td><td>30g</td><td><span style="font-family:var(--font-mono);color:var(--primary)">4.2</span></td><td>Add to salads/oats</td></tr>
-      <tr><td><strong>Chickpeas</strong></td><td>1 cup cooked</td><td><span style="font-family:var(--font-mono);color:var(--primary)">4.7</span></td><td>Hummus or roasted</td></tr>
-      <tr><td><strong>Spinach</strong></td><td>1 cup cooked</td><td><span style="font-family:var(--font-mono);color:var(--primary)">3.5</span></td><td>Cooking increases bioavailability</td></tr>
-      <tr><td><strong>Tofu</strong></td><td>100g</td><td><span style="font-family:var(--font-mono);color:var(--primary)">3.0</span></td><td>Firm tofu has more iron</td></tr>
-      <tr><td><strong>Dark Chocolate</strong></td><td>30g (70%+)</td><td><span style="font-family:var(--font-mono);color:var(--primary)">3.4</span></td><td>Enjoy guilt-free!</td></tr>
-      <tr><td><strong>Black Beans</strong></td><td>1 cup cooked</td><td><span style="font-family:var(--font-mono);color:var(--primary)">3.6</span></td><td>Soak overnight to reduce phytates</td></tr>
-      <tr><td><strong>Quinoa</strong></td><td>1 cup cooked</td><td><span style="font-family:var(--font-mono);color:var(--primary)">2.8</span></td><td>Complete protein too</td></tr>
-      <tr><td><strong>Tempeh</strong></td><td>100g</td><td><span style="font-family:var(--font-mono);color:var(--primary)">2.7</span></td><td>Fermentation reduces phytates</td></tr>
-      <tr><td><strong>Edamame</strong></td><td>1 cup</td><td><span style="font-family:var(--font-mono);color:var(--primary)">2.3</span></td><td>Great post-run snack</td></tr>
-      <tr><td><strong>Cashews</strong></td><td>30g</td><td><span style="font-family:var(--font-mono);color:var(--primary)">1.9</span></td><td>Also magnesium-rich</td></tr>
-      <tr><td><strong>Dried Apricots</strong></td><td>30g</td><td><span style="font-family:var(--font-mono);color:var(--primary)">1.6</span></td><td>Portable race-day snack</td></tr>
-      <tr><td><strong>Fortified Cereal</strong></td><td>1 serving</td><td><span style="font-family:var(--font-mono);color:var(--primary)">4–18</span></td><td>Check label — varies widely</td></tr>
-    </tbody></table></div>
-    <div class="grid-2" style="margin-bottom:24px">
-      <div><h3 style="margin-bottom:12px;color:var(--danger)">⛔ Inhibitors</h3><div class="table-wrap"><table><thead><tr><th>Inhibitor</th><th>Avoid Within</th><th>Why</th></tr></thead><tbody>
-        <tr><td>Coffee / Espresso</td><td>1hr before/after iron meal</td><td>Tannins bind iron</td></tr>
-        <tr><td>Tea (black/green)</td><td>1hr before/after</td><td>Polyphenols reduce absorption by 60%</td></tr>
-        <tr><td>Calcium-rich foods</td><td>2hrs from iron meal</td><td>Competes for same transporter</td></tr>
-        <tr><td>Phytate-rich foods</td><td>Soak legumes overnight</td><td>Reduces phytate content</td></tr>
-        <tr><td>Antacids / PPI</td><td>Separate by 2hrs</td><td>Reduced stomach acid lowers absorption</td></tr>
-      </tbody></table></div></div>
-      <div><h3 style="margin-bottom:12px;color:var(--secondary)">✅ Enhancers</h3><div class="table-wrap"><table><thead><tr><th>Enhancer</th><th>Amount</th><th>Effect</th></tr></thead><tbody>
-        <tr><td>Vitamin C (citrus, bell pepper)</td><td>25mg+ with meal</td><td>Up to 3× absorption boost</td></tr>
-        <tr><td>Beta carotene (carrots, mango)</td><td>Any amount</td><td>+50% absorption</td></tr>
-        <tr><td>Fermented foods (tempeh, miso)</td><td>Any amount</td><td>Reduces phytates</td></tr>
-        <tr><td>Cast iron cookware</td><td>Use for cooking</td><td>Leaches iron into food</td></tr>
-        <tr><td>Organic acids (vinegar, lemon)</td><td>Dress salads</td><td>Lowers pH, aids absorption</td></tr>
-      </tbody></table></div></div>
-    </div>
-    <h3 style="margin-bottom:12px">Optimal Daily Iron Schedule</h3>
-    <div class="card-sm"><div style="display:flex;flex-direction:column;gap:8px">
-      <div style="display:flex;gap:12px;align-items:flex-start"><span style="font-family:var(--font-mono);color:var(--primary);min-width:60px;font-size:13px">06:30</span><span style="font-size:13.5px"><strong>Iron supplement</strong> (if taking) — fasted, with glass of orange juice</span></div>
-      <div style="display:flex;gap:12px;align-items:flex-start"><span style="font-family:var(--font-mono);color:var(--text2);min-width:60px;font-size:13px">07:00</span><span style="font-size:13.5px">Morning run (if scheduled)</span></div>
-      <div style="display:flex;gap:12px;align-items:flex-start"><span style="font-family:var(--font-mono);color:var(--primary);min-width:60px;font-size:13px">08:00</span><span style="font-size:13.5px"><strong>Breakfast:</strong> Fortified cereal + OJ, or oats + pumpkin seeds + kiwi</span></div>
-      <div style="display:flex;gap:12px;align-items:flex-start"><span style="font-family:var(--font-mono);color:var(--warning);min-width:60px;font-size:13px">09:30</span><span style="font-size:13.5px">Coffee/tea window opens (1.5hrs after iron meal) ☕</span></div>
-      <div style="display:flex;gap:12px;align-items:flex-start"><span style="font-family:var(--font-mono);color:var(--primary);min-width:60px;font-size:13px">12:30</span><span style="font-size:13.5px"><strong>Lunch:</strong> Lentil salad + bell peppers + lemon dressing (Vit C boost)</span></div>
-      <div style="display:flex;gap:12px;align-items:flex-start"><span style="font-family:var(--font-mono);color:var(--text2);min-width:60px;font-size:13px">15:00</span><span style="font-size:13.5px">Afternoon snack: edamame or pumpkin seeds</span></div>
-      <div style="display:flex;gap:12px;align-items:flex-start"><span style="font-family:var(--font-mono);color:var(--warning);min-width:60px;font-size:13px">16:00</span><span style="font-size:13.5px">Last coffee/tea (cut off 4hrs before iron-rich dinner) ☕</span></div>
-      <div style="display:flex;gap:12px;align-items:flex-start"><span style="font-family:var(--font-mono);color:var(--primary);min-width:60px;font-size:13px">19:00</span><span style="font-size:13.5px"><strong>Dinner:</strong> Tofu + spinach stir-fry + tomatoes (Vit C) — no tea after</span></div>
-      <div style="display:flex;gap:12px;align-items:flex-start"><span style="font-family:var(--font-mono);color:var(--text2);min-width:60px;font-size:13px">20:00</span><span style="font-size:13.5px">Calcium supplement (separated from iron by 6hrs)</span></div>
-    </div></div>
-  </div>
-</div>
-
-<!-- NUTRITION CHECK -->
-<div class="page" id="page-nutrition-check">
-  <div class="page-header">
-    <div class="page-title"><h1>Weekly Nutrition Check</h1><p>Track your intake for the past 7 days</p></div>
-    <button class="btn btn-primary" onclick="analyseNutrition()">Analyse My Week</button>
-  </div>
-  <div class="card" style="margin-bottom:24px;overflow-x:auto">
-    <table class="nc-table" id="nc-table">
-      <thead><tr><th>Nutrient / Target</th><th>Mon</th><th>Tue</th><th>Wed</th><th>Thu</th><th>Fri</th><th>Sat</th><th>Sun</th></tr></thead>
-      <tbody id="nc-tbody"></tbody>
-    </table>
-  </div>
-  <div id="nc-results"></div>
-</div>
-
-<!-- INTEGRATIONS -->
-<div class="page" id="page-integrations">
-  <div class="page-header">
-    <div class="page-title"><h1>Integrations</h1><p>Connect with your favourite training apps</p></div>
-  </div>
-  <div style="display:flex;flex-direction:column;gap:12px;margin-bottom:32px">
-    <div class="int-card"><div class="int-icon" style="background:rgba(252,76,2,.15);color:#fc4c02;font-size:28px">🟠</div><div class="int-info"><h3>Strava</h3><p>View your training log, segments, and athlete stats</p></div><a href="https://www.strava.com/athlete/training" target="_blank" class="btn btn-primary btn-sm">Open Strava ↗</a></div>
-    <div class="int-card"><div class="int-icon" style="background:rgba(0,149,192,.15);color:#0095c0;font-size:28px">🔵</div><div class="int-info"><h3>Garmin Connect</h3><p>Sync your Garmin device data, heart rate, and routes</p></div><a href="https://connect.garmin.com" target="_blank" class="btn btn-primary btn-sm">Open Garmin ↗</a></div>
-    <div class="int-card"><div class="int-icon" style="background:rgba(0,0,0,.2);font-size:28px">⚫</div><div class="int-info"><h3>Nike Run Club</h3><p>Training plans, guided runs, and community</p></div><a href="https://www.nike.com/nrc-app" target="_blank" class="btn btn-secondary btn-sm">Open NRC ↗</a></div>
-    <div class="int-card"><div class="int-icon" style="background:rgba(255,59,48,.15);color:#ff3b30;font-size:28px">❤️</div><div class="int-info"><h3>Apple Health</h3><p>View your health metrics and activity rings</p></div><a href="https://www.apple.com/ios/health/" target="_blank" class="btn btn-secondary btn-sm">Open Apple Health ↗</a></div>
-    <div class="int-card"><div class="int-icon" style="background:rgba(76,175,80,.15);color:#4caf50;font-size:28px">🟢</div><div class="int-info"><h3>MapMyRun</h3><p>Route mapping, GPS tracking, and nutrition log</p></div><a href="https://www.mapmyrun.com" target="_blank" class="btn btn-secondary btn-sm">Open MapMyRun ↗</a></div>
-  </div>
-  <h2 style="margin-bottom:16px">Race Day Alerts</h2>
-  <div class="alert-card danger"><div class="alert-title">⛰️ Elevation & Course Profile</div><div class="alert-body">Study the elevation profile before race day. Kanazawa Marathon has rolling hills — start conservatively on uphills. Save energy for downhills by leaning slightly forward. Don't race the uphills.</div></div>
-  <div class="alert-card"><div class="alert-title">🏃 Pacing Strategy</div><div class="alert-body">Start 10–15 sec/km slower than target pace for first 10km. Negative split is the goal — run second half slightly faster. Bank time mentally, not physically. Resist running with the crowd.</div></div>
-  <div class="alert-card info"><div class="alert-title">🍌 Race Nutrition Timing</div><div class="alert-body">First gel at 45min, then every 30–45min. Never try new products on race day. Drink at every aid station even if not thirsty (small sips). Electrolytes are critical in humidity.</div></div>
-  <div class="alert-card success"><div class="alert-title">🌡️ Weather Preparation</div><div class="alert-body">Kanazawa in October: avg 15–20°C, possible rain. Adjust pace for heat — add ~20 sec/km per 5°C above 15°C. Dress in moisture-wicking layers. Vaseline for chafe prevention.</div></div>
-  <div class="alert-card"><div class="alert-title">👟 Gear Checklist</div><div class="alert-body">Race bib + safety pins, timing chip, shoes (run in them 3+ times before), socks (tested), GPS watch charged, nutrition gels x6, electrolyte tabs, anti-chafe balm, throwaway warm layer for start.</div></div>
-</div>
-
-</main>
-
-<script>
-// ============================================================
-// DATA LAYER
-// ============================================================
-const DB={
-  get(k){try{return JSON.parse(localStorage.getItem(k)||'[]')}catch{return[]}},
-  set(k,v){localStorage.setItem(k,JSON.stringify(v))},
-  races(){return this.get('pf_races')},
-  workouts(){return this.get('pf_workouts')},
-  saveRaces(r){this.set('pf_races',r)},
-  saveWorkouts(w){this.set('pf_workouts',w)}
-};
-(function seed(){
-  if(DB.races().length===0){
-    DB.saveRaces([{id:'kanazawa2026',name:'Kanazawa Marathon 2026',date:'2026-10-25',location:'Kanazawa, Japan',distance:'Marathon',targetTime:'4:30:00',url:'https://www.kanazawa-marathon.jp/en/',notes:'My A-race 2026'}]);
-  }
-})();
-
-// ============================================================
-// NAVIGATION
-// ============================================================
-const pages=['dashboard','races','calendar','planner','pace','stretching','nutrition','nutrition-check','integrations'];
-let currentPage='dashboard';
-
-function nav(page){
-  currentPage=page;
-  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
-  const el=document.getElementById('page-'+page);
-  if(el)el.classList.add('active');
-  document.querySelectorAll('.nav-item,.bn-item').forEach(b=>{
-    b.classList.toggle('active',b.getAttribute('onclick')===`nav('${page}')`);
-  });
-  window.location.hash=page;
-  loadPage(page);
-}
-function loadPage(page){
-  if(page==='dashboard')renderDashboard();
-  if(page==='races')renderRaces();
-  if(page==='calendar')renderCalendar();
-  if(page==='nutrition-check')renderNutritionCheck();
-  if(page==='planner'){document.getElementById('plan-start').value=new Date().toISOString().split('T')[0];}
-  if(page==='pace')renderPaceZones();
-}
-window.addEventListener('hashchange',()=>{const h=window.location.hash.replace('#','');if(pages.includes(h))nav(h);});
-
-// ============================================================
-// MODAL & TOAST
-// ============================================================
-function openModal(html){document.getElementById('modal-content').innerHTML=html;document.getElementById('modal-overlay').classList.add('open');}
-function closeModal(){document.getElementById('modal-overlay').classList.remove('open');}
-function toast(msg,type='success'){
-  const t=document.createElement('div');
-  t.className='toast-item '+(type==='error'?'error':'success');
-  t.textContent=msg;
-  document.getElementById('toast').appendChild(t);
-  setTimeout(()=>t.remove(),3000);
+/* ─── CSS Variables ─────────────────────────────────────────────── */
+:root {
+  --bg: #1a1a1a;
+  --surface: #242424;
+  --surface2: #2e2e2e;
+  --border: #3a3a3a;
+  --accent: #e8602a;
+  --accent-dim: rgba(232,96,42,0.15);
+  --green: #4caf50;
+  --green-dim: rgba(76,175,80,0.15);
+  --text: #f0f0f0;
+  --text-2: #a0a0a0;
+  --blue: #4a9eff;
+  --red: #f44336;
+  --orange: #ff9800;
+  --purple: #9c27b0;
+  --nav-w: 250px;
+  --nav-h: 64px;
+  --radius: 12px;
+  --radius-sm: 8px;
 }
 
-// ============================================================
-// TABS
-// ============================================================
-function switchTab(group,tab){
-  const page=document.getElementById('page-'+group);
-  page.querySelectorAll('.tab').forEach(t=>t.classList.toggle('active',t.getAttribute('onclick').includes("'"+tab+"'")));
-  page.querySelectorAll('.tab-content').forEach((c,i)=>{
-    const tabs=page.querySelectorAll('.tab');
-    c.classList.toggle('active',tabs[i]&&tabs[i].classList.contains('active'));
-  });
+/* ─── Layout ─────────────────────────────────────────────────────── */
+.app-layout {
+  display: flex;
+  min-height: 100vh;
+}
+.sidebar {
+  width: var(--nav-w);
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  top: 0; left: 0; bottom: 0;
+  z-index: 100;
+  overflow-y: auto;
+}
+.main-content {
+  margin-left: var(--nav-w);
+  flex: 1;
+  min-height: 100vh;
+  padding: 0;
+}
+.page {
+  display: none;
+  padding: 32px;
+  max-width: 1200px;
+  margin: 0 auto;
+  animation: fadeIn 0.2s ease;
+}
+.page.active { display: block; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+
+/* ─── Sidebar ─────────────────────────────────────────────────────── */
+.sidebar-header {
+  padding: 24px 20px 20px;
+  border-bottom: 1px solid var(--border);
+}
+.app-logo {
+  display: flex; align-items: center; gap: 10px;
+  text-decoration: none; color: var(--text);
+}
+.app-logo svg { width: 32px; height: 32px; }
+.app-logo-text { font-family: 'Cabinet Grotesk', sans-serif; font-weight: 800; font-size: 1.4rem; color: var(--accent); }
+
+.sync-indicator {
+  margin-top: 10px;
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: 0.75rem; padding: 4px 10px;
+  border-radius: 20px; font-weight: 500;
+  transition: all 0.3s;
+}
+.sync-indicator.synced { background: var(--green-dim); color: var(--green); }
+.sync-indicator.syncing { background: rgba(255,152,0,0.15); color: var(--orange); }
+.sync-indicator.offline { background: rgba(244,67,54,0.15); color: var(--red); }
+
+.nav-links { padding: 12px 0; flex: 1; }
+.nav-link {
+  display: flex; align-items: center; gap: 12px;
+  padding: 10px 20px;
+  color: var(--text-2);
+  text-decoration: none;
+  font-size: 0.9rem;
+  font-weight: 500;
+  border-radius: 0;
+  transition: all 0.15s;
+  cursor: pointer;
+  border: none; background: none; width: 100%; text-align: left;
+}
+.nav-link:hover { color: var(--text); background: var(--surface2); }
+.nav-link.active { color: var(--accent); background: var(--accent-dim); border-right: 3px solid var(--accent); }
+.nav-link svg { width: 18px; height: 18px; flex-shrink: 0; }
+
+/* ─── Top header (mobile) ──────────────────────────────────────────── */
+.mobile-header {
+  display: none;
+  position: fixed; top: 0; left: 0; right: 0;
+  height: 56px; background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  align-items: center; justify-content: space-between;
+  padding: 0 16px; z-index: 100;
+}
+.mobile-header .app-logo-text { font-size: 1.2rem; }
+.mobile-sync { font-size: 0.72rem; padding: 3px 8px; border-radius: 20px; font-weight: 500; }
+.mobile-sync.synced { background: var(--green-dim); color: var(--green); }
+.mobile-sync.syncing { background: rgba(255,152,0,0.15); color: var(--orange); }
+.mobile-sync.offline { background: rgba(244,67,54,0.15); color: var(--red); }
+
+/* ─── Bottom Tab Bar (mobile) ─────────────────────────────────────── */
+.bottom-nav {
+  display: none;
+  position: fixed; bottom: 0; left: 0; right: 0;
+  background: var(--surface);
+  border-top: 1px solid var(--border);
+  z-index: 100;
+  height: 60px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.bottom-nav::-webkit-scrollbar { display: none; }
+.bottom-nav-inner {
+  display: flex; align-items: center;
+  height: 60px; padding: 0 8px;
+  min-width: max-content;
+}
+.bottom-nav-item {
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 3px; padding: 0 12px; height: 52px;
+  color: var(--text-2); font-size: 0.65rem; font-weight: 500;
+  cursor: pointer; border: none; background: none;
+  white-space: nowrap; transition: color 0.15s;
+}
+.bottom-nav-item svg { width: 20px; height: 20px; }
+.bottom-nav-item.active { color: var(--accent); }
+
+/* ─── Responsive ──────────────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .sidebar { display: none; }
+  .main-content { margin-left: 0; padding-top: 56px; padding-bottom: 70px; }
+  .mobile-header { display: flex; }
+  .bottom-nav { display: block; }
+  .page { padding: 20px 16px; }
 }
 
-// Stretching tabs (separate function to avoid conflict)
-function switchStretchTab(tab){
-  document.querySelectorAll('#stretch-tabs .tab').forEach(t=>t.classList.toggle('active',t.getAttribute('onclick').includes("'"+tab+"'")));
-  ['pre','post','injury','race'].forEach(id=>{
-    const el=document.getElementById('stretch-'+id);
-    if(el)el.classList.toggle('active',id===tab);
-  });
+/* ─── Cards ───────────────────────────────────────────────────────── */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px;
+}
+.card-sm {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 14px;
 }
 
-// ============================================================
-// ACCORDIONS
-// ============================================================
-function togglePhase(header){
-  const body=header.nextElementSibling;
-  const isOpen=body.classList.contains('open');
-  document.querySelectorAll('.phase-body').forEach(b=>b.classList.remove('open'));
-  if(!isOpen)body.classList.add('open');
+/* ─── Buttons ─────────────────────────────────────────────────────── */
+.btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 10px 18px; border-radius: var(--radius-sm);
+  font-family: 'Satoshi', sans-serif; font-size: 0.875rem; font-weight: 600;
+  cursor: pointer; border: none; transition: all 0.15s;
+  text-decoration: none;
 }
-function toggleStretch(header){
-  const body=header.nextElementSibling;
-  const isOpen=body.classList.contains('open');
-  body.classList.toggle('open',!isOpen);
-}
+.btn-primary { background: var(--accent); color: #fff; }
+.btn-primary:hover { background: #d4541f; }
+.btn-secondary { background: var(--surface2); color: var(--text); border: 1px solid var(--border); }
+.btn-secondary:hover { background: #383838; }
+.btn-danger { background: rgba(244,67,54,0.15); color: var(--red); border: 1px solid rgba(244,67,54,0.3); }
+.btn-danger:hover { background: rgba(244,67,54,0.25); }
+.btn-sm { padding: 6px 12px; font-size: 0.8rem; }
+.btn-ghost { background: none; color: var(--text-2); border: 1px solid var(--border); }
+.btn-ghost:hover { background: var(--surface2); color: var(--text); }
 
-// ============================================================
-// DASHBOARD
-// ============================================================
-function renderDashboard(){
-  const now=new Date();
-  document.getElementById('dash-date').textContent=now.toLocaleDateString('en-HK',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
-  const races=DB.races(),workouts=DB.workouts();
-  const today=now.toISOString().split('T')[0];
-  const upcoming=races.filter(r=>r.date>=today).sort((a,b)=>a.date.localeCompare(b.date));
-  const daysToNext=upcoming.length?Math.ceil((new Date(upcoming[0].date)-now)/(1000*60*60*24)):null;
-  const weekStart=new Date(now);weekStart.setDate(now.getDate()-((now.getDay()+6)%7));
-  const weekKm=workouts.filter(w=>{const d=new Date(w.date+'T00:00');return d>=weekStart&&d<=now&&w.completed;}).reduce((s,w)=>s+(parseFloat(w.distanceKm)||0),0);
-  const monthWorkouts=workouts.filter(w=>w.date.startsWith(now.toISOString().slice(0,7))).length;
-  document.getElementById('dash-stats').innerHTML=`
-    <div class="stat-card accent"><div class="stat-label">Total Races</div><div class="stat-value">${races.length}</div><div class="stat-sub">in calendar</div></div>
-    <div class="stat-card"><div class="stat-label">Workouts This Month</div><div class="stat-value">${monthWorkouts}</div><div class="stat-sub">${now.toLocaleString('en',{month:'long'})}</div></div>
-    <div class="stat-card accent"><div class="stat-label">This Week KM</div><div class="stat-value">${weekKm.toFixed(1)}</div><div class="stat-sub">km completed</div></div>
-    <div class="stat-card"><div class="stat-label">Days to Next Race</div><div class="stat-value">${daysToNext??'—'}</div><div class="stat-sub">${daysToNext?upcoming[0].name:'No upcoming races'}</div></div>`;
-  const nrc=document.getElementById('next-race-card');
-  if(upcoming.length){
-    const r=upcoming[0];const da=Math.ceil((new Date(r.date)-now)/(1000*60*60*24));
-    nrc.innerHTML=`<h3 style="margin-bottom:12px;color:var(--text2);font-size:12px;text-transform:uppercase;letter-spacing:.8px">Next Race</h3>
-      <div style="font-family:var(--font-head);font-size:20px;font-weight:800;margin-bottom:4px">${r.name}</div>
-      <div style="color:var(--text2);font-size:13.5px;margin-bottom:12px">📍 ${r.location} · ${new Date(r.date+'T00:00').toLocaleDateString('en-HK',{day:'numeric',month:'short',year:'numeric'})}</div>
-      <div style="display:flex;gap:12px;flex-wrap:wrap"><span class="badge badge-upcoming">${r.distance}</span>${r.targetTime?`<span style="font-family:var(--font-mono);font-size:13px;color:var(--text2)">🎯 ${r.targetTime}</span>`:''}</div>
-      ${da<=7?`<div style="margin-top:12px;padding:10px;background:rgba(232,96,42,.1);border-radius:8px;font-size:13px;color:var(--primary)">🏁 Race week! Check Integrations for race day tips.</div>`:''}`;
-  } else {
-    nrc.innerHTML=`<h3 style="margin-bottom:12px;color:var(--text2);font-size:12px;text-transform:uppercase;letter-spacing:.8px">Next Race</h3><p style="color:var(--text2)">No upcoming races. <button class="btn btn-ghost btn-sm" onclick="nav('races')">Add one →</button></p>`;
-  }
-  const recEl=document.getElementById('recent-workouts-card');
-  const recent=[...workouts].sort((a,b)=>b.date.localeCompare(a.date)).slice(0,5);
-  const dotClass={'Easy Run':'dot-easy','Long Run':'dot-long','Tempo Run':'dot-tempo','Interval/HIIT':'dot-interval','Rest':'dot-rest','Cross Training':'dot-cross','Race':'dot-race'};
-  recEl.innerHTML=`<h3 style="margin-bottom:12px;color:var(--text2);font-size:12px;text-transform:uppercase;letter-spacing:.8px">Recent Workouts</h3>`;
-  if(!recent.length){recEl.innerHTML+=`<p style="color:var(--text2);font-size:14px">No workouts yet. <button class="btn btn-ghost btn-sm" onclick="openLogWorkout()">Log one →</button></p>`;}
-  else{recEl.innerHTML+=recent.map(w=>`<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border)"><span class="cal-dot ${dotClass[w.type]||'dot-easy'}" style="width:8px;height:8px;flex-shrink:0"></span><div style="flex:1"><div style="font-size:14px;font-weight:500">${w.type}</div><div style="font-size:12px;color:var(--text2)">${new Date(w.date+'T00:00').toLocaleDateString('en-HK',{weekday:'short',month:'short',day:'numeric'})}</div></div>${w.distanceKm?`<span style="font-family:var(--font-mono);font-size:13px;color:var(--primary)">${w.distanceKm}km</span>`:''}</div>`).join('');}
+/* ─── Forms ───────────────────────────────────────────────────────── */
+.form-group { display: flex; flex-direction: column; gap: 6px; }
+.form-label { font-size: 0.82rem; font-weight: 600; color: var(--text-2); text-transform: uppercase; letter-spacing: 0.04em; }
+.form-input, .form-select, .form-textarea {
+  background: var(--surface2); border: 1px solid var(--border);
+  border-radius: var(--radius-sm); color: var(--text);
+  font-family: 'Satoshi', sans-serif; font-size: 0.9rem;
+  padding: 10px 12px; transition: border-color 0.15s;
+  width: 100%;
 }
+.form-input:focus, .form-select:focus, .form-textarea:focus {
+  outline: none; border-color: var(--accent);
+}
+.form-input::placeholder { color: var(--text-2); }
+.form-textarea { resize: vertical; min-height: 80px; }
+.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+@media (max-width: 600px) { .form-grid { grid-template-columns: 1fr; } }
 
-// ============================================================
-// RACES
-// ============================================================
-function renderRaces(){
-  const races=DB.races(),today=new Date().toISOString().split('T')[0];
-  const el=document.getElementById('races-list');
-  if(!races.length){el.innerHTML=`<div class="empty"><p>No races yet</p><button class="btn btn-primary" onclick="openAddRace()">Add Your First Race</button></div>`;return;}
-  const sorted=[...races].sort((a,b)=>a.date.localeCompare(b.date));
-  el.innerHTML=`<div style="display:flex;flex-direction:column;gap:12px">${sorted.map(r=>{
-    const up=r.date>=today;const ds=new Date(r.date+'T00:00').toLocaleDateString('en-HK',{weekday:'short',day:'numeric',month:'long',year:'numeric'});
-    const da=Math.ceil((new Date(r.date)-new Date())/(1000*60*60*24));
-    return `<div class="card" style="display:flex;gap:16px;align-items:flex-start;flex-wrap:wrap">
-      <div style="flex:1;min-width:200px">
-        <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px;flex-wrap:wrap"><h3>${r.name}</h3><span class="badge ${up?'badge-upcoming':'badge-completed'}">${up?'Upcoming':'Completed'}</span><span class="badge" style="background:var(--surface2);color:var(--text2)">${r.distance}</span></div>
-        <div style="font-size:13.5px;color:var(--text2);margin-bottom:4px">📅 ${ds}${up?` · ${da>0?da+' days away':'Today!'}`:''}</div>
-        <div style="font-size:13.5px;color:var(--text2);margin-bottom:8px">📍 ${r.location}</div>
-        <div style="display:flex;gap:16px;flex-wrap:wrap">${r.targetTime?`<span style="font-size:13px"><span style="color:var(--text2)">Target:</span> <span style="font-family:var(--font-mono);color:var(--primary)">${r.targetTime}</span></span>`:''} ${r.url?`<a href="${r.url}" target="_blank" style="font-size:13px;color:var(--info)">Race Website ↗</a>`:''}</div>
-        ${r.notes?`<div style="font-size:13px;color:var(--text2);margin-top:8px">${r.notes}</div>`:''}
-      </div>
-      <button class="btn btn-danger btn-sm" onclick="deleteRace('${r.id}')">Delete</button>
-    </div>`;
-  }).join('')}</div>`;
+/* ─── Modal ───────────────────────────────────────────────────────── */
+.modal-overlay {
+  display: none; position: fixed; inset: 0;
+  background: rgba(0,0,0,0.7); z-index: 1000;
+  align-items: center; justify-content: center;
+  padding: 20px;
 }
-function openAddRace(){
-  openModal(`<div class="modal-header"><h3>Add Race</h3><button class="btn btn-ghost btn-icon" onclick="closeModal()">✕</button></div>
-    <div class="form-group"><label class="form-label">Race Name *</label><input class="form-input" id="r-name" placeholder="e.g. Tokyo Marathon 2027"></div>
-    <div class="form-row"><div class="form-group"><label class="form-label">Date *</label><input type="date" class="form-input" id="r-date"></div><div class="form-group"><label class="form-label">Distance</label><select class="form-select" id="r-dist"><option>5K</option><option>10K</option><option>Half Marathon</option><option value="Marathon" selected>Marathon</option><option>Ultra</option></select></div></div>
-    <div class="form-group"><label class="form-label">Location</label><input class="form-input" id="r-loc" placeholder="City, Country"></div>
-    <div class="form-row"><div class="form-group"><label class="form-label">Target Time</label><input class="form-input" id="r-target" placeholder="e.g. 4:30:00"></div><div class="form-group"><label class="form-label">Race URL</label><input class="form-input" id="r-url" placeholder="https://..."></div></div>
-    <div class="form-group"><label class="form-label">Notes</label><textarea class="form-textarea" id="r-notes"></textarea></div>
-    <div class="modal-footer"><button class="btn btn-secondary" onclick="closeModal()">Cancel</button><button class="btn btn-primary" onclick="saveRace()">Save Race</button></div>`);
+.modal-overlay.open { display: flex; }
+.modal {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  width: 100%; max-width: 560px;
+  max-height: 90vh; overflow-y: auto;
+  padding: 28px;
+  position: relative;
+  animation: modalIn 0.2s ease;
 }
-function saveRace(){
-  const name=document.getElementById('r-name').value.trim(),date=document.getElementById('r-date').value;
-  if(!name||!date){toast('Name and date are required','error');return;}
-  const races=DB.races();
-  races.push({id:'r'+Date.now(),name,date,location:document.getElementById('r-loc').value.trim(),distance:document.getElementById('r-dist').value,targetTime:document.getElementById('r-target').value.trim(),url:document.getElementById('r-url').value.trim(),notes:document.getElementById('r-notes').value.trim()});
-  DB.saveRaces(races);closeModal();renderRaces();toast('Race added!');
+@keyframes modalIn { from { opacity:0; transform: scale(0.96) translateY(-10px); } to { opacity:1; transform: scale(1) translateY(0); } }
+.modal-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
+.modal-title { font-family: 'Cabinet Grotesk', sans-serif; font-size: 1.25rem; font-weight: 700; }
+.modal-close {
+  width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;
+  border-radius: 6px; border: none; background: var(--surface2); cursor: pointer; color: var(--text-2);
+  transition: all 0.15s;
 }
-function deleteRace(id){
-  if(!confirm('Delete this race?'))return;
-  DB.saveRaces(DB.races().filter(r=>r.id!==id));renderRaces();toast('Race deleted');
-}
+.modal-close:hover { background: var(--border); color: var(--text); }
+.modal-footer { display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--border); }
 
-// ============================================================
-// CALENDAR
-// ============================================================
-let calYear=new Date().getFullYear(),calMonth=new Date().getMonth(),selectedDay=null;
-function renderCalendar(){
-  const days=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
-  document.getElementById('cal-headers').innerHTML=days.map(d=>`<div class="cal-header-day">${d}</div>`).join('');
-  renderCalGrid();
-  document.getElementById('cal-month-label').textContent=new Date(calYear,calMonth,1).toLocaleDateString('en-HK',{month:'long',year:'numeric'});
-}
-function changeMonth(dir){calMonth+=dir;if(calMonth>11){calMonth=0;calYear++}if(calMonth<0){calMonth=11;calYear--}selectedDay=null;renderCalendar();}
-function renderCalGrid(){
-  const workouts=DB.workouts(),today=new Date().toISOString().split('T')[0];
-  const lastDay=new Date(calYear,calMonth+1,0).getDate();
-  let startDow=new Date(calYear,calMonth,1).getDay();startDow=(startDow+6)%7;
-  const dotClass={'Easy Run':'dot-easy','Long Run':'dot-long','Tempo Run':'dot-tempo','Interval/HIIT':'dot-interval','Rest':'dot-rest','Cross Training':'dot-cross','Race':'dot-race'};
-  let cells=[];
-  for(let i=0;i<startDow;i++)cells.push(`<div class="cal-day other-month"></div>`);
-  for(let d=1;d<=lastDay;d++){
-    const ds=`${calYear}-${String(calMonth+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
-    const dw=workouts.filter(w=>w.date===ds);
-    const isToday=ds===today,isSel=ds===selectedDay;
-    cells.push(`<div class="cal-day${isToday?' today':''}${isSel?' selected':''}" onclick="selectDay('${ds}')"><div class="cal-day-num">${d}</div><div class="cal-dots">${dw.map(w=>`<span class="cal-dot ${dotClass[w.type]||'dot-easy'}"></span>`).join('')}</div></div>`);
-  }
-  document.getElementById('cal-grid').innerHTML=cells.join('');
-  renderSelectedDay();
-}
-function selectDay(date){selectedDay=date;renderCalGrid();}
-function renderSelectedDay(){
-  const el=document.getElementById('cal-selected-day');
-  if(!selectedDay){el.innerHTML='';return;}
-  const workouts=DB.workouts().filter(w=>w.date===selectedDay);
-  const dateLabel=new Date(selectedDay+'T00:00').toLocaleDateString('en-HK',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
-  let html=`<div class="card"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:8px"><h3>${dateLabel}</h3><button class="btn btn-primary btn-sm" onclick="openLogWorkout('${selectedDay}')">+ Log Workout</button></div>`;
-  if(!workouts.length){html+=`<p style="color:var(--text2);font-size:14px">No workouts logged for this day.</p>`;}
-  else{workouts.forEach(w=>{html+=`<div style="background:var(--surface2);border-radius:10px;padding:14px;margin-bottom:10px"><div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;flex-wrap:wrap"><div><div style="font-weight:600;font-size:15px;margin-bottom:4px">${w.type}</div><div style="display:flex;gap:12px;flex-wrap:wrap;font-size:13px;color:var(--text2)">${w.distanceKm?`<span>📏 ${w.distanceKm} km</span>`:''}${w.durationMin?`<span>⏱ ${w.durationMin} min</span>`:''}${w.actualPace?`<span>⚡ ${w.actualPace} /km</span>`:''}${w.heartRate?`<span>❤️ ${w.heartRate} bpm</span>`:''}</div>${w.notes?`<div style="font-size:13px;color:var(--text2);margin-top:6px">${w.notes}</div>`:''}</div><div style="display:flex;gap:6px"><button class="btn btn-ghost btn-sm btn-icon" onclick="editWorkout('${w.id}')">✏️</button><button class="btn btn-danger btn-sm btn-icon" onclick="deleteWorkout('${w.id}')">🗑</button></div></div></div>`;});}
-  html+='</div>';el.innerHTML=html;
-}
-function openLogWorkout(dateStr){
-  const d=dateStr||selectedDay||new Date().toISOString().split('T')[0];
-  openModal(`<div class="modal-header"><h3>Log Workout</h3><button class="btn btn-ghost btn-icon" onclick="closeModal()">✕</button></div>
-    <div class="form-group"><label class="form-label">Date</label><input type="date" class="form-input" id="w-date" value="${d}"></div>
-    <div class="form-group"><label class="form-label">Workout Type</label><select class="form-select" id="w-type"><option>Easy Run</option><option>Long Run</option><option>Tempo Run</option><option>Interval/HIIT</option><option>Rest</option><option>Cross Training</option><option>Race</option></select></div>
-    <div class="form-row"><div class="form-group"><label class="form-label">Distance (km)</label><input type="number" class="form-input" id="w-dist" placeholder="e.g. 10" step="0.1" min="0"></div><div class="form-group"><label class="form-label">Duration (min)</label><input type="number" class="form-input" id="w-dur" placeholder="e.g. 60" min="0"></div></div>
-    <div class="form-row"><div class="form-group"><label class="form-label">Actual Pace (min:sec/km)</label><input class="form-input" id="w-pace" placeholder="e.g. 6:30"></div><div class="form-group"><label class="form-label">Avg Heart Rate (bpm)</label><input type="number" class="form-input" id="w-hr" placeholder="e.g. 145" min="0"></div></div>
-    <div class="form-group"><label class="form-label">Notes</label><textarea class="form-textarea" id="w-notes" placeholder="How did it feel?"></textarea></div>
-    <div class="form-group"><label class="form-check"><input type="checkbox" id="w-done" checked> Workout completed</label></div>
-    <div class="modal-footer"><button class="btn btn-secondary" onclick="closeModal()">Cancel</button><button class="btn btn-primary" onclick="saveWorkout()">Save Workout</button></div>`);
-}
-function saveWorkout(editId){
-  const date=document.getElementById('w-date').value;
-  if(!date){toast('Date is required','error');return;}
-  const w={id:editId||'w'+Date.now(),date,type:document.getElementById('w-type').value,distanceKm:document.getElementById('w-dist').value||'',durationMin:document.getElementById('w-dur').value||'',actualPace:document.getElementById('w-pace').value||'',heartRate:document.getElementById('w-hr').value||'',notes:document.getElementById('w-notes').value||'',completed:document.getElementById('w-done').checked};
-  let workouts=DB.workouts();
-  if(editId){workouts=workouts.map(x=>x.id===editId?w:x);}else{workouts.push(w);}
-  DB.saveWorkouts(workouts);
-  selectedDay=date;calYear=new Date(date+'T00:00').getFullYear();calMonth=new Date(date+'T00:00').getMonth();
-  closeModal();renderCalGrid();renderSelectedDay();
-  document.getElementById('cal-month-label').textContent=new Date(calYear,calMonth,1).toLocaleDateString('en-HK',{month:'long',year:'numeric'});
-  toast('Workout saved!');
-}
-function editWorkout(id){
-  const w=DB.workouts().find(x=>x.id===id);if(!w)return;
-  openModal(`<div class="modal-header"><h3>Edit Workout</h3><button class="btn btn-ghost btn-icon" onclick="closeModal()">✕</button></div>
-    <div class="form-group"><label class="form-label">Date</label><input type="date" class="form-input" id="w-date" value="${w.date}"></div>
-    <div class="form-group"><label class="form-label">Workout Type</label><select class="form-select" id="w-type">${['Easy Run','Long Run','Tempo Run','Interval/HIIT','Rest','Cross Training','Race'].map(t=>`<option${t===w.type?' selected':''}>${t}</option>`).join('')}</select></div>
-    <div class="form-row"><div class="form-group"><label class="form-label">Distance (km)</label><input type="number" class="form-input" id="w-dist" value="${w.distanceKm}" step="0.1" min="0"></div><div class="form-group"><label class="form-label">Duration (min)</label><input type="number" class="form-input" id="w-dur" value="${w.durationMin}" min="0"></div></div>
-    <div class="form-row"><div class="form-group"><label class="form-label">Actual Pace (min:sec/km)</label><input class="form-input" id="w-pace" value="${w.actualPace}"></div><div class="form-group"><label class="form-label">Avg Heart Rate (bpm)</label><input type="number" class="form-input" id="w-hr" value="${w.heartRate}" min="0"></div></div>
-    <div class="form-group"><label class="form-label">Notes</label><textarea class="form-textarea" id="w-notes">${w.notes}</textarea></div>
-    <div class="form-group"><label class="form-check"><input type="checkbox" id="w-done"${w.completed?' checked':''}> Workout completed</label></div>
-    <div class="modal-footer"><button class="btn btn-secondary" onclick="closeModal()">Cancel</button><button class="btn btn-primary" onclick="saveWorkout('${id}')">Update</button></div>`);
-}
-function deleteWorkout(id){
-  if(!confirm('Delete this workout?'))return;
-  DB.saveWorkouts(DB.workouts().filter(w=>w.id!==id));renderCalGrid();renderSelectedDay();toast('Workout deleted');
-}
+/* ─── Page Headers ─────────────────────────────────────────────────── */
+.page-header { margin-bottom: 28px; }
+.page-title { font-size: 2rem; font-weight: 800; }
+.page-subtitle { color: var(--text-2); margin-top: 4px; }
+.page-header-row { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
 
-// ============================================================
-// PLANNER
-// ============================================================
-let planData=null;
-function generatePlan(){
-  const level=document.getElementById('plan-level').value,baseKm=parseInt(document.getElementById('plan-base').value)||40;
-  const peakOverride=parseInt(document.getElementById('plan-peak').value)||0,longRunMax=parseInt(document.getElementById('plan-longrun').value)||30;
-  const startDate=document.getElementById('plan-start').value;
-  if(!startDate){toast('Please set a start date','error');return;}
-  const peakKm=peakOverride||Math.round(baseKm*(level==='beginner'?1.5:level==='advanced'?2.0:1.75));
-  const weeks=[];
-  for(let w=1;w<=12;w++){
-    let total;
-    if(w<=9){const p=(w-1)/8;total=Math.round(baseKm+(peakKm-baseKm)*p);}
-    else{total=Math.round(peakKm*{10:.85,11:.65,12:.45}[w]);}
-    const longRun=Math.min(longRunMax,Math.max(10,Math.round(w<=5?12+w*1.5:w<=9?21+((w-5)*((longRunMax-21)/4)):w===10?longRunMax*.8:w===11?15:10)));
-    const easyKm=Math.max(4,Math.round((total-longRun)*.25));
-    const trainingKm=Math.max(5,Math.round((total-longRun-easyKm*2)*.5));
-    const recoveryKm=Math.max(4,Math.round(total-longRun-easyKm*2-trainingKm*2));
-    const start=new Date(startDate);start.setDate(start.getDate()+(w-1)*7);
-    const end=new Date(start);end.setDate(end.getDate()+6);
-    weeks.push({week:w,startDate:start.toLocaleDateString('en-HK',{month:'short',day:'numeric'}),endDate:end.toLocaleDateString('en-HK',{month:'short',day:'numeric'}),mon:'Rest',tue:`${trainingKm}km`,wed:`Easy ${easyKm}km`,thu:`${trainingKm}km`,fri:'Rest',sat:`Long ${longRun}km`,sun:`Recovery ${recoveryKm}km`,total,longRun});
-  }
-  planData=weeks;document.getElementById('copy-plan-btn').style.display='';
-  const phaseLabel=w=>w<=4?'Base':w<=8?'Build':w<=10?'Peak':'Taper';
-  const phaseColor=w=>w<=4?'var(--secondary)':w<=8?'var(--primary)':w<=10?'var(--danger)':'var(--info)';
-  document.getElementById('plan-output').innerHTML=`<div class="table-wrap"><table><thead><tr><th>Week</th><th>Dates</th><th>Phase</th><th>Mon</th><th>Tue</th><th>Wed</th><th>Thu</th><th>Fri</th><th>Sat</th><th>Sun</th><th>Total</th></tr></thead><tbody>${weeks.map(w=>`<tr><td class="plan-week-num">${w.week}</td><td style="font-size:12px;color:var(--text2);white-space:nowrap">${w.startDate}–${w.endDate}</td><td><span style="font-size:11px;font-weight:600;color:${phaseColor(w.week)}">${phaseLabel(w.week)}</span></td><td class="plan-cell plan-rest">${w.mon}</td><td class="plan-cell plan-training">${w.tue}</td><td class="plan-cell plan-easy">${w.wed}</td><td class="plan-cell plan-training">${w.thu}</td><td class="plan-cell plan-rest">${w.fri}</td><td class="plan-cell plan-long">${w.sat}</td><td class="plan-cell plan-recovery">${w.sun}</td><td class="plan-total">${w.total}km</td></tr>`).join('')}</tbody></table></div>`;
+/* ─── Stats ───────────────────────────────────────────────────────── */
+.stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px; }
+@media (max-width: 900px) { .stats-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 500px) { .stats-grid { grid-template-columns: repeat(2, 1fr); } }
+.stat-card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 18px;
 }
-function copyPlan(){
-  if(!planData)return;
-  const lines=['Week | Dates | Mon | Tue | Wed | Thu | Fri | Sat | Sun | Total'];
-  planData.forEach(w=>lines.push(`Wk${w.week} | ${w.startDate}–${w.endDate} | ${w.mon} | ${w.tue} | ${w.wed} | ${w.thu} | ${w.fri} | ${w.sat} | ${w.sun} | ${w.total}km`));
-  navigator.clipboard.writeText(lines.join('\n')).then(()=>toast('Plan copied!')).catch(()=>toast('Copy failed','error'));
-}
+.stat-label { font-size: 0.78rem; font-weight: 600; color: var(--text-2); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 8px; }
+.stat-value { font-family: 'JetBrains Mono', monospace; font-size: 1.8rem; font-weight: 400; color: var(--accent); }
+.stat-sub { font-size: 0.78rem; color: var(--text-2); margin-top: 4px; }
 
-// ============================================================
-// PACE CALCULATOR
-// ============================================================
-function setPacePreset(km){document.getElementById('pace-dist').value=km;document.getElementById('pace-time').value='';document.getElementById('pace-pace').value='';document.getElementById('pace-result').innerHTML='';}
-function timeToSec(str){str=str.trim();const parts=str.split(':').map(Number);if(parts.length===3)return parts[0]*3600+parts[1]*60+parts[2];if(parts.length===2)return parts[0]*60+parts[1];return NaN;}
-function secToTime(s){const h=Math.floor(s/3600),m=Math.floor((s%3600)/60),sc=Math.floor(s%60);if(h>0)return`${h}:${String(m).padStart(2,'0')}:${String(sc).padStart(2,'0')}`;return`${m}:${String(sc).padStart(2,'0')}`;}
-function secToMinKm(s){return`${Math.floor(s/60)}:${String(Math.round(s%60)).padStart(2,'0')}`;}
-function calcPace(){
-  const dist=parseFloat(document.getElementById('pace-dist').value);
-  const timeStr=document.getElementById('pace-time').value,paceStr=document.getElementById('pace-pace').value;
-  const timeSec=timeToSec(timeStr),paceSec=timeToSec(paceStr);
-  let result='',marathonPaceSec=NaN;
-  if(!isNaN(dist)&&timeStr&&!isNaN(timeSec)){const ps=timeSec/dist;marathonPaceSec=ps;result=`Pace: <strong style="font-family:var(--font-mono);color:var(--primary);font-size:20px">${secToMinKm(ps)}/km</strong>`;document.getElementById('pace-pace').value=secToMinKm(ps);}
-  else if(!isNaN(dist)&&paceStr&&!isNaN(paceSec)){const ts=dist*paceSec;marathonPaceSec=paceSec;result=`Time: <strong style="font-family:var(--font-mono);color:var(--primary);font-size:20px">${secToTime(ts)}</strong>`;document.getElementById('pace-time').value=secToTime(ts);}
-  else if(timeStr&&paceStr&&!isNaN(timeSec)&&!isNaN(paceSec)){const d=timeSec/paceSec;result=`Distance: <strong style="font-family:var(--font-mono);color:var(--primary);font-size:20px">${d.toFixed(2)} km</strong>`;document.getElementById('pace-dist').value=d.toFixed(2);}
-  else{toast('Fill in any 2 fields to calculate','error');return;}
-  document.getElementById('pace-result').innerHTML=`<div style="background:rgba(232,96,42,.1);border-radius:10px;padding:14px;border:1px solid rgba(232,96,42,.2)">${result}</div>`;
-  if(!isNaN(marathonPaceSec))updatePaceZones(marathonPaceSec);
-}
-function clearPace(){['pace-dist','pace-time','pace-pace'].forEach(id=>document.getElementById(id).value='');document.getElementById('pace-result').innerHTML='';renderPaceZones();}
-function renderPaceZones(base){
-  const el=document.getElementById('pace-zones-table'),pred=document.getElementById('race-predictor');
-  if(!base){el.innerHTML='<p style="color:var(--text2);font-size:13.5px">Calculate a pace above to see your training zones</p>';pred.innerHTML='<p style="color:var(--text2);font-size:13.5px">Calculate marathon pace to predict other distances</p>';return;}
-  updatePaceZones(base);
-}
-function updatePaceZones(ps){
-  const zones=[{name:'Zone 1 — Recovery',mult:1.2,color:'var(--text2)'},{name:'Zone 2 — Easy',mult:1.1,color:'var(--secondary)'},{name:'Zone 3 — Aerobic',mult:1.0,color:'var(--info)'},{name:'Zone 4 — Tempo',mult:.95,color:'var(--warning)'},{name:'Zone 5 — VO2 Max',mult:.85,color:'var(--danger)'}];
-  document.getElementById('pace-zones-table').innerHTML=`<div class="table-wrap"><table><thead><tr><th>Zone</th><th>Pace Range</th></tr></thead><tbody>${zones.map((z,i)=>`<tr><td style="color:${z.color};font-weight:600">${z.name}</td><td style="font-family:var(--font-mono)">${secToMinKm(ps*(z.mult+(i===0?.1:0)))} – ${secToMinKm(ps*(z.mult+(i===zones.length-1?-.05:.09)))}</td></tr>`).join('')}</tbody></table></div>`;
-  const dists=[{name:'5K',km:5,factor:.78},{name:'10K',km:10,factor:.84},{name:'Half Marathon',km:21.1,factor:.92},{name:'Marathon',km:42.195,factor:1}];
-  document.getElementById('race-predictor').innerHTML=`<div class="table-wrap"><table><thead><tr><th>Distance</th><th>Predicted Time</th><th>Predicted Pace</th></tr></thead><tbody>${dists.map(d=>`<tr><td>${d.name}</td><td style="font-family:var(--font-mono);color:var(--primary)">${secToTime(ps*d.factor*d.km)}</td><td style="font-family:var(--font-mono);color:var(--text2)">${secToMinKm(ps*d.factor)}/km</td></tr>`).join('')}</tbody></table></div>`;
-}
-
-// ============================================================
-// NUTRITION CHECK
-// ============================================================
-const NC_NUTRIENTS=[{key:'protein',label:'Protein (g)',target:96,unit:'g'},{key:'iron',label:'Iron (mg)',target:23,unit:'mg'},{key:'b12',label:'B12 (mcg)',target:2.4,unit:'mcg'},{key:'calcium',label:'Calcium (mg)',target:1000,unit:'mg'},{key:'vitd',label:'Vit D (IU)',target:800,unit:'IU'}];
-const NC_DAYS=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
-function renderNutritionCheck(){
-  document.getElementById('nc-tbody').innerHTML=NC_NUTRIENTS.map(n=>`<tr><td style="text-align:left;font-weight:600;white-space:nowrap">${n.label}<br><span style="font-weight:400;color:var(--text2);font-size:11px">Target: ${n.target}${n.unit}</span></td>${NC_DAYS.map((_,i)=>`<td><input type="number" class="nc-input" id="nc-${n.key}-${i}" min="0" step="0.1" oninput="colourNC(this,${n.target})" placeholder="0"></td>`).join('')}</tr>`).join('');
-}
-function colourNC(input,target){const val=parseFloat(input.value);if(isNaN(val)||val===0){input.className='nc-input';return;}const p=val/target;input.className='nc-input '+(p>=1?'green':p>=.7?'yellow':'red');}
-function analyseNutrition(){
-  const results=NC_NUTRIENTS.map(n=>{const vals=NC_DAYS.map((_,i)=>parseFloat(document.getElementById(`nc-${n.key}-${i}`).value)||0);const avg=vals.reduce((s,v)=>s+v,0)/7;return{...n,avg,pct:avg/n.target,vals};});
-  const lowCount=results.filter(r=>r.pct<.7).length,medCount=results.filter(r=>r.pct>=.7&&r.pct<.9).length;
-  let rec,rc,rb;
-  if(lowCount===0&&medCount<=1){rec='✅ Proceed with full training volume. Your nutrition is on track.';rc='var(--secondary)';rb='rgba(76,175,80,.1)';}
-  else if(lowCount===0){rec='⚠️ Caution — some nutrients are borderline. Consider adjusting diet before increasing volume.';rc='var(--warning)';rb='rgba(245,158,11,.1)';}
-  else{rec='🛑 Reduce training volume this week. Address nutrient deficiencies before your next hard block.';rc='var(--danger)';rb='rgba(239,68,68,.1)';}
-  let html=`<div style="background:${rb};border:1px solid ${rc};border-radius:12px;padding:16px;margin-bottom:20px;color:${rc};font-weight:600;font-size:15px">${rec}</div><div class="grid-2" style="margin-bottom:20px">`;
-  results.forEach(r=>{const pct=Math.min(100,Math.round(r.pct*100));const c=pct>=100?'progress-green':pct>=70?'progress-yellow':'progress-red';html+=`<div class="card-sm"><div style="display:flex;justify-content:space-between;margin-bottom:6px"><strong>${r.label}</strong><span style="font-family:var(--font-mono);font-size:13px;color:var(--text2)">${r.avg.toFixed(1)} / ${r.target}${r.unit}</span></div><div class="progress-bar"><div class="progress-fill ${c}" style="width:${pct}%"></div></div><div style="font-size:12px;color:var(--text2);margin-top:4px">${pct}% of target${r.pct<.7?` <span style="color:var(--danger);font-weight:600">⚠ Deficient</span>`:r.pct<.9?` <span style="color:var(--warning)">Below target</span>`:''}</div></div>`;});
-  html+=`</div><div class="table-wrap"><table><thead><tr><th>Day</th>${NC_NUTRIENTS.map(n=>`<th>${n.label}</th>`).join('')}</tr></thead><tbody>`;
-  NC_DAYS.forEach((d,i)=>{html+=`<tr><td style="font-weight:600">${d}</td>${NC_NUTRIENTS.map(n=>{const val=results.find(r=>r.key===n.key).vals[i];const p=val/n.target;const c=p>=1?'var(--secondary)':p>=.7?'var(--warning)':val===0?'var(--text3)':'var(--danger)';return`<td style="font-family:var(--font-mono);color:${c}">${val||'—'}</td>`}).join('')}</tr>`;});
-  html+='</tbody></table></div>';
-  document.getElementById('nc-results').innerHTML=html;
-}
-
-// ============================================================
-// INIT
-// ============================================================
-window.addEventListener('DOMContentLoaded',()=>{
-  const hash=window.location.hash.replace('#','');
-  nav(pages.includes(hash)?hash:'dashboard');
-  renderPaceZones();
-});
-</script>
-</body>
-</html>
