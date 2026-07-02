@@ -263,3 +263,2241 @@ h1,h2,h3,h4,h5,h6 { font-family: 'Cabinet Grotesk', sans-serif; }
 .stat-value { font-family: 'JetBrains Mono', monospace; font-size: 1.8rem; font-weight: 400; color: var(--accent); }
 .stat-sub { font-size: 0.78rem; color: var(--text-2); margin-top: 4px; }
 
+/* ─── Badges ──────────────────────────────────────────────────────── */
+.badge {
+  display: inline-block; padding: 3px 10px;
+  border-radius: 20px; font-size: 0.75rem; font-weight: 600;
+}
+.badge-easy { background: rgba(76,175,80,0.2); color: var(--green); }
+.badge-long { background: rgba(74,158,255,0.2); color: var(--blue); }
+.badge-tempo { background: rgba(255,152,0,0.2); color: var(--orange); }
+.badge-interval { background: rgba(244,67,54,0.2); color: var(--red); }
+.badge-rest { background: rgba(160,160,160,0.2); color: var(--text-2); }
+.badge-race { background: var(--accent-dim); color: var(--accent); }
+.badge-cross { background: rgba(156,39,176,0.2); color: var(--purple); }
+.badge-hiit { background: rgba(244,67,54,0.2); color: var(--red); }
+
+/* ─── Tabs ────────────────────────────────────────────────────────── */
+.tabs { display: flex; gap: 4px; margin-bottom: 24px; background: var(--surface2); border-radius: var(--radius-sm); padding: 4px; flex-wrap: wrap; }
+.tab-btn {
+  padding: 8px 16px; border-radius: 6px;
+  border: none; background: none; color: var(--text-2);
+  cursor: pointer; font-size: 0.875rem; font-weight: 600;
+  transition: all 0.15s; font-family: 'Satoshi', sans-serif;
+}
+.tab-btn.active { background: var(--surface); color: var(--text); box-shadow: 0 1px 3px rgba(0,0,0,0.3); }
+.tab-panel { display: none; }
+.tab-panel.active { display: block; animation: fadeIn 0.2s ease; }
+
+/* ─── Loading ─────────────────────────────────────────────────────── */
+.skeleton {
+  background: linear-gradient(90deg, var(--surface2) 25%, #333 50%, var(--surface2) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.4s infinite;
+  border-radius: var(--radius-sm);
+}
+@keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+.skeleton-card { height: 80px; margin-bottom: 12px; }
+.loading-spinner {
+  display: flex; align-items: center; justify-content: center;
+  gap: 12px; padding: 40px; color: var(--text-2);
+}
+.spinner {
+  width: 24px; height: 24px;
+  border: 2px solid var(--border);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ─── Tables ──────────────────────────────────────────────────────── */
+.data-table { width: 100%; border-collapse: collapse; font-size: 0.875rem; }
+.data-table th {
+  text-align: left; padding: 10px 12px;
+  background: var(--surface2); color: var(--text-2);
+  font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.06em;
+  border-bottom: 1px solid var(--border);
+}
+.data-table td { padding: 12px; border-bottom: 1px solid var(--border); }
+.data-table tr:last-child td { border-bottom: none; }
+.data-table tr:hover td { background: var(--surface2); }
+
+/* ─── Race Cards ──────────────────────────────────────────────────── */
+.races-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px; }
+.race-card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 20px;
+  cursor: pointer; transition: all 0.15s;
+}
+.race-card:hover { border-color: var(--accent); transform: translateY(-2px); }
+.race-card-name { font-family: 'Cabinet Grotesk', sans-serif; font-size: 1.1rem; font-weight: 700; margin-bottom: 8px; }
+.race-card-meta { display: flex; flex-wrap: wrap; gap: 8px; font-size: 0.82rem; color: var(--text-2); }
+.race-card-meta span { display: flex; align-items: center; gap: 4px; }
+
+/* ─── Calendar ────────────────────────────────────────────────────── */
+.calendar-nav { display: flex; align-items: center; gap: 16px; margin-bottom: 16px; }
+.cal-month-title { font-family: 'Cabinet Grotesk', sans-serif; font-size: 1.2rem; font-weight: 700; }
+.calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; }
+.cal-day-header {
+  text-align: center; padding: 8px 4px;
+  font-size: 0.75rem; font-weight: 700;
+  color: var(--text-2); text-transform: uppercase;
+}
+.cal-day {
+  min-height: 70px; background: var(--surface2);
+  border-radius: 6px; padding: 6px;
+  cursor: pointer; transition: background 0.15s;
+  position: relative;
+}
+.cal-day:hover { background: #333; }
+.cal-day.empty { background: transparent; cursor: default; }
+.cal-day.today { border: 2px solid var(--accent); }
+.cal-day.selected { background: var(--accent-dim); border: 1px solid var(--accent); }
+.cal-day-num { font-size: 0.8rem; font-weight: 600; color: var(--text-2); margin-bottom: 4px; }
+.cal-day.today .cal-day-num { color: var(--accent); font-weight: 800; }
+.cal-dots { display: flex; flex-wrap: wrap; gap: 3px; }
+.cal-dot { width: 7px; height: 7px; border-radius: 50%; }
+.dot-easy { background: var(--green); }
+.dot-long { background: var(--blue); }
+.dot-tempo { background: var(--orange); }
+.dot-interval { background: var(--red); }
+.dot-rest { background: var(--text-2); }
+.dot-race { background: var(--accent); }
+.dot-cross { background: var(--purple); }
+.dot-hiit { background: var(--red); }
+
+.cal-panel {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 20px; margin-top: 16px;
+}
+
+/* ─── Planner ─────────────────────────────────────────────────────── */
+.planner-table { width: 100%; border-collapse: collapse; font-size: 0.8rem; overflow-x: auto; display: block; }
+.planner-table th {
+  background: var(--surface2); padding: 8px 10px;
+  text-align: center; font-size: 0.72rem; color: var(--text-2);
+  text-transform: uppercase; white-space: nowrap; border: 1px solid var(--border);
+}
+.planner-table td { padding: 8px 10px; border: 1px solid var(--border); text-align: center; vertical-align: top; }
+.planner-table tr:nth-child(even) td { background: var(--surface2); }
+.plan-day-cell { font-size: 0.75rem; }
+.plan-day-type { font-weight: 700; font-size: 0.7rem; }
+.plan-day-km { font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; color: var(--accent); }
+
+/* ─── Pace Calculator ─────────────────────────────────────────────── */
+.pace-input-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+@media (max-width: 600px) { .pace-input-grid { grid-template-columns: 1fr; } }
+.pace-result { 
+  background: var(--accent-dim); border: 1px solid rgba(232,96,42,0.3);
+  border-radius: var(--radius); padding: 20px; margin-top: 16px;
+  text-align: center;
+}
+.pace-result-label { font-size: 0.8rem; color: var(--text-2); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 8px; }
+.pace-result-value { font-family: 'JetBrains Mono', monospace; font-size: 2.2rem; color: var(--accent); }
+.zones-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 12px; margin-top: 16px; }
+.zone-card {
+  background: var(--surface2); border-radius: var(--radius-sm);
+  padding: 14px; text-align: center;
+}
+.zone-name { font-size: 0.78rem; font-weight: 700; color: var(--text-2); text-transform: uppercase; margin-bottom: 6px; }
+.zone-pace { font-family: 'JetBrains Mono', monospace; font-size: 1.1rem; font-weight: 400; }
+.zone-range { font-size: 0.72rem; color: var(--text-2); margin-top: 4px; }
+
+/* ─── Stretching ──────────────────────────────────────────────────── */
+.stretch-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; }
+.stretch-card {
+  background: var(--surface2); border: 1px solid var(--border);
+  border-radius: var(--radius-sm); padding: 16px;
+}
+.stretch-name { font-weight: 700; margin-bottom: 6px; }
+.stretch-meta { font-size: 0.8rem; color: var(--accent); font-weight: 600; margin-bottom: 8px; }
+.stretch-desc { font-size: 0.85rem; color: var(--text-2); line-height: 1.6; }
+.injury-card {
+  background: var(--surface2); border: 1px solid var(--border);
+  border-radius: var(--radius-sm); padding: 16px; margin-bottom: 12px;
+}
+.injury-name { font-weight: 700; color: var(--orange); margin-bottom: 8px; }
+.injury-exercises { font-size: 0.85rem; color: var(--text-2); line-height: 1.8; }
+
+/* ─── Nutrition ───────────────────────────────────────────────────── */
+.nutrient-table { width: 100%; border-collapse: collapse; }
+.nutrient-table th { background: var(--surface2); padding: 10px 12px; text-align: left; font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-2); }
+.nutrient-table td { padding: 12px; border-bottom: 1px solid var(--border); font-size: 0.875rem; }
+.iron-timing-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+.iron-timing-table th { background: var(--surface2); padding: 10px; text-align: left; color: var(--text-2); font-size: 0.75rem; text-transform: uppercase; }
+.iron-timing-table td { padding: 12px 10px; border-bottom: 1px solid var(--border); }
+
+/* ─── Nutrition Check ─────────────────────────────────────────────── */
+.nutrition-check-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 14px; }
+.day-log-card {
+  background: var(--surface2); border: 1px solid var(--border);
+  border-radius: var(--radius-sm); padding: 14px;
+}
+.day-log-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+.day-log-title { font-weight: 700; font-size: 0.9rem; }
+.status-bar { display: flex; gap: 4px; margin-top: 8px; }
+.status-pip {
+  height: 4px; flex: 1; border-radius: 2px; background: var(--border);
+}
+.status-pip.met { background: var(--green); }
+.status-pip.close { background: var(--orange); }
+.status-pip.low { background: var(--red); }
+
+/* ─── Integrations ────────────────────────────────────────────────── */
+.integrations-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; }
+.integration-card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 20px;
+}
+.integration-icon { font-size: 2rem; margin-bottom: 10px; }
+.integration-name { font-family: 'Cabinet Grotesk', sans-serif; font-size: 1.1rem; font-weight: 700; margin-bottom: 6px; }
+.integration-desc { font-size: 0.85rem; color: var(--text-2); margin-bottom: 12px; line-height: 1.5; }
+.integration-status { font-size: 0.78rem; color: var(--orange); font-weight: 600; margin-bottom: 10px; }
+.integration-tip { font-size: 0.78rem; background: var(--surface2); border-radius: 6px; padding: 8px 10px; color: var(--text-2); line-height: 1.5; }
+
+/* ─── Race Detail ─────────────────────────────────────────────────── */
+.race-detail-header { display: flex; align-items: flex-start; justify-content: space-between; flex-wrap: wrap; gap: 12px; margin-bottom: 24px; }
+.race-detail-stats { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px; margin-bottom: 24px; }
+.rds-card { background: var(--surface2); border-radius: var(--radius-sm); padding: 14px; }
+.rds-label { font-size: 0.72rem; font-weight: 700; color: var(--text-2); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 6px; }
+.rds-value { font-family: 'JetBrains Mono', monospace; font-size: 1.1rem; }
+
+/* ─── Alert Box ───────────────────────────────────────────────────── */
+.alert {
+  border-radius: var(--radius-sm); padding: 12px 16px;
+  font-size: 0.875rem; margin-bottom: 10px;
+}
+.alert-info { background: rgba(74,158,255,0.12); border: 1px solid rgba(74,158,255,0.3); color: #7ec8ff; }
+.alert-warning { background: rgba(255,152,0,0.12); border: 1px solid rgba(255,152,0,0.3); color: var(--orange); }
+.alert-danger { background: rgba(244,67,54,0.12); border: 1px solid rgba(244,67,54,0.3); color: var(--red); }
+.alert-success { background: var(--green-dim); border: 1px solid rgba(76,175,80,0.3); color: var(--green); }
+
+/* ─── SVG Elevation ───────────────────────────────────────────────── */
+#elevation-svg { width: 100%; height: 120px; border-radius: var(--radius-sm); overflow: visible; }
+
+/* ─── Misc ────────────────────────────────────────────────────────── */
+.divider { border: none; border-top: 1px solid var(--border); margin: 20px 0; }
+.section-title { font-family: 'Cabinet Grotesk', sans-serif; font-size: 1.1rem; font-weight: 700; margin-bottom: 14px; }
+.empty-state { text-align: center; padding: 48px 20px; color: var(--text-2); }
+.empty-state-icon { font-size: 3rem; margin-bottom: 12px; opacity: 0.4; }
+.empty-state-text { font-size: 0.9rem; }
+.tag { display: inline-flex; align-items: center; gap: 4px; background: var(--surface2); border: 1px solid var(--border); border-radius: 6px; padding: 4px 10px; font-size: 0.8rem; color: var(--text-2); }
+.workout-item {
+  display: flex; align-items: center; gap: 12px;
+  padding: 12px; background: var(--surface2);
+  border-radius: var(--radius-sm); margin-bottom: 8px;
+}
+.workout-item-info { flex: 1; }
+.workout-item-title { font-weight: 700; font-size: 0.9rem; }
+.workout-item-meta { font-size: 0.78rem; color: var(--text-2); margin-top: 2px; }
+.workout-item-actions { display: flex; gap: 6px; }
+.icon-btn {
+  width: 30px; height: 30px; display: flex; align-items: center; justify-content: center;
+  border-radius: 6px; border: none; background: var(--surface); cursor: pointer;
+  color: var(--text-2); transition: all 0.15s;
+}
+.icon-btn:hover { background: var(--border); color: var(--text); }
+.icon-btn.danger:hover { background: rgba(244,67,54,0.15); color: var(--red); }
+
+/* ─── Quick Links ─────────────────────────────────────────────────── */
+.quick-links { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 12px; }
+.quick-link-card {
+  background: var(--surface2); border: 1px solid var(--border);
+  border-radius: var(--radius-sm); padding: 16px;
+  cursor: pointer; transition: all 0.15s; text-align: center;
+}
+.quick-link-card:hover { border-color: var(--accent); background: var(--accent-dim); }
+.quick-link-icon { font-size: 1.5rem; margin-bottom: 8px; }
+.quick-link-label { font-size: 0.82rem; font-weight: 600; }
+
+/* ─── Scrollbar ───────────────────────────────────────────────────── */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: var(--surface); }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #555; }
+
+/* ─── Nutrition Check Inputs ──────────────────────────────────────── */
+.nc-input {
+  width: 100%; background: var(--surface); border: 1px solid var(--border);
+  border-radius: 6px; color: var(--text); font-size: 0.82rem;
+  padding: 6px 8px; font-family: 'JetBrains Mono', monospace;
+}
+.nc-input:focus { outline: none; border-color: var(--accent); }
+
+/* ─── Summary row colors ──────────────────────────────────────────── */
+.met-text { color: var(--green); font-weight: 600; }
+.close-text { color: var(--orange); font-weight: 600; }
+.low-text { color: var(--red); font-weight: 600; }
+
+/* Race day timeline ──────────────────────────────────────────────── */
+.timeline { position: relative; padding-left: 28px; }
+.timeline::before { content:''; position:absolute; left:10px; top:0; bottom:0; width:2px; background:var(--border); }
+.timeline-item { position:relative; margin-bottom:20px; }
+.timeline-dot { position:absolute; left:-24px; top:3px; width:12px; height:12px; border-radius:50%; background:var(--accent); }
+.timeline-time { font-family:'JetBrains Mono',monospace; font-size:0.78rem; color:var(--accent); font-weight:400; margin-bottom:4px; }
+.timeline-text { font-size:0.875rem; color:var(--text); }
+.timeline-sub { font-size:0.78rem; color:var(--text-2); margin-top:3px; }
+</style>
+</head>
+<body>
+
+<!-- ─── App Shell ──────────────────────────────────────────────────── -->
+<div class="app-layout">
+
+  <!-- Sidebar (desktop) -->
+  <nav class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <a class="app-logo" href="#dashboard">
+        <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="PaceForge logo">
+          <circle cx="16" cy="16" r="15" fill="#e8602a" opacity="0.15"/>
+          <path d="M6 20 L10 12 L14 17 L18 10 L22 15 L26 9" stroke="#e8602a" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+          <circle cx="26" cy="9" r="2.5" fill="#e8602a"/>
+        </svg>
+        <span class="app-logo-text">PaceForge</span>
+      </a>
+      <div class="sync-indicator syncing" id="syncIndicator">🔄 Syncing...</div>
+    </div>
+    <div class="nav-links" id="sidebarNav">
+      <!-- injected by JS -->
+    </div>
+  </nav>
+
+  <!-- Mobile Header -->
+  <header class="mobile-header">
+    <div style="display:flex;align-items:center;gap:8px;">
+      <svg width="24" height="24" viewBox="0 0 32 32" fill="none"><circle cx="16" cy="16" r="15" fill="#e8602a" opacity="0.2"/><path d="M6 20 L10 12 L14 17 L18 10 L22 15 L26 9" stroke="#e8602a" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <span class="app-logo-text">PaceForge</span>
+    </div>
+    <div class="mobile-sync syncing" id="mobileSyncIndicator">🔄 Syncing</div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="main-content">
+
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <!-- PAGE: Dashboard -->
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <div class="page active" id="page-dashboard">
+      <div class="page-header">
+        <div id="dashGreeting" class="page-title">Good morning 👋</div>
+        <div class="page-subtitle" id="dashDate"></div>
+      </div>
+      <div class="stats-grid" id="dashStats">
+        <div class="stat-card"><div class="stat-label">Total Races</div><div class="stat-value mono" id="statRaces">—</div></div>
+        <div class="stat-card"><div class="stat-label">Total Workouts</div><div class="stat-value mono" id="statWorkouts">—</div></div>
+        <div class="stat-card"><div class="stat-label">Total km</div><div class="stat-value mono" id="statKm">—</div></div>
+        <div class="stat-card"><div class="stat-label">Longest Run</div><div class="stat-value mono" id="statLongest">—</div></div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:24px;" class="dash-two-col">
+        <!-- Next Race -->
+        <div class="card" id="nextRaceCard">
+          <div class="section-title">Next Race</div>
+          <div id="nextRaceContent">
+            <div class="loading-spinner"><div class="spinner"></div> Loading...</div>
+          </div>
+        </div>
+        <!-- Recent Workouts -->
+        <div class="card">
+          <div class="section-title">Recent Workouts</div>
+          <div id="recentWorkoutsContent">
+            <div class="loading-spinner"><div class="spinner"></div> Loading...</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="section-title">Quick Links</div>
+        <div class="quick-links">
+          <div class="quick-link-card" onclick="navigate('races')"><div class="quick-link-icon">🏁</div><div class="quick-link-label">My Races</div></div>
+          <div class="quick-link-card" onclick="navigate('calendar')"><div class="quick-link-icon">📅</div><div class="quick-link-label">Workout Log</div></div>
+          <div class="quick-link-card" onclick="navigate('planner')"><div class="quick-link-icon">📋</div><div class="quick-link-label">12-Week Plan</div></div>
+          <div class="quick-link-card" onclick="navigate('pace')"><div class="quick-link-icon">⏱️</div><div class="quick-link-label">Pace Calculator</div></div>
+          <div class="quick-link-card" onclick="navigate('stretching')"><div class="quick-link-icon">🧘</div><div class="quick-link-label">Stretching</div></div>
+          <div class="quick-link-card" onclick="navigate('nutrition')"><div class="quick-link-icon">🥗</div><div class="quick-link-label">Nutrition</div></div>
+          <div class="quick-link-card" onclick="navigate('nutrition-check')"><div class="quick-link-icon">✅</div><div class="quick-link-label">Nutrition Check</div></div>
+          <div class="quick-link-card" onclick="navigate('integrations')"><div class="quick-link-icon">🔗</div><div class="quick-link-label">Integrations</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <!-- PAGE: My Races -->
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <div class="page" id="page-races">
+      <div id="racesListView">
+        <div class="page-header-row page-header">
+          <div>
+            <div class="page-title">My Races</div>
+            <div class="page-subtitle">Track your upcoming and past races</div>
+          </div>
+          <button class="btn btn-primary" onclick="openAddRaceModal()">+ Add Race</button>
+        </div>
+        <div class="races-grid" id="racesList">
+          <div class="skeleton skeleton-card"></div>
+          <div class="skeleton skeleton-card"></div>
+        </div>
+      </div>
+
+      <!-- Race Detail View -->
+      <div id="raceDetailView" style="display:none;">
+        <button class="btn btn-ghost btn-sm" onclick="showRaceList()" style="margin-bottom:20px;">← Back to Races</button>
+        <div id="raceDetailContent"></div>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <!-- PAGE: Calendar / Workout Log -->
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <div class="page" id="page-calendar">
+      <div class="page-header-row page-header">
+        <div>
+          <div class="page-title">Workout Log</div>
+          <div class="page-subtitle">Track your training calendar</div>
+        </div>
+        <button class="btn btn-primary" onclick="openAddWorkoutModal(null)">+ Log Workout</button>
+      </div>
+
+      <!-- Calendar -->
+      <div class="card" style="margin-bottom:20px;">
+        <div class="calendar-nav">
+          <button class="btn btn-ghost btn-sm" onclick="changeMonth(-1)">← Prev</button>
+          <span class="cal-month-title" id="calMonthTitle"></span>
+          <button class="btn btn-ghost btn-sm" onclick="changeMonth(1)">Next →</button>
+        </div>
+        <div class="calendar-grid" id="calendarGrid"></div>
+      </div>
+
+      <!-- Day Panel -->
+      <div class="cal-panel" id="calDayPanel" style="display:none;">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+          <div class="section-title" id="calDayTitle">Selected Day</div>
+          <button class="btn btn-primary btn-sm" id="calAddBtn">+ Add Workout</button>
+        </div>
+        <div id="calDayWorkouts"></div>
+      </div>
+
+      <!-- Workouts List -->
+      <div class="card">
+        <div class="section-title">Recent Workouts</div>
+        <div id="workoutsList">
+          <div class="loading-spinner"><div class="spinner"></div> Loading...</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <!-- PAGE: 12-Week Planner -->
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <div class="page" id="page-planner">
+      <div class="page-header">
+        <div class="page-title">12-Week Planner</div>
+        <div class="page-subtitle">Generate your personalized training plan</div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:300px 1fr;gap:24px;align-items:start;" class="planner-layout">
+        <div class="card" style="grid-column:1;">
+          <div class="section-title">Settings</div>
+          <div style="display:flex;flex-direction:column;gap:16px;">
+            <div class="form-group">
+              <label class="form-label">Fitness Level</label>
+              <select class="form-select" id="planFitness">
+                <option value="beginner">Beginner</option>
+                <option value="intermediate" selected>Intermediate</option>
+                <option value="advanced">Advanced</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Base Weekly km: <span id="baseKmVal">40</span></label>
+              <input type="range" id="planBaseKm" min="20" max="150" value="40" class="form-input" style="padding:4px;" oninput="document.getElementById('baseKmVal').textContent=this.value">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Long Run Max km: <span id="longRunVal">30</span></label>
+              <input type="range" id="planLongRun" min="10" max="42" value="30" class="form-input" style="padding:4px;" oninput="document.getElementById('longRunVal').textContent=this.value">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Peak Weekly km Override</label>
+              <input type="number" class="form-input" id="planPeakKm" placeholder="Auto" min="20" max="200">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Training Start Date</label>
+              <input type="date" class="form-input" id="planStartDate">
+            </div>
+            <button class="btn btn-primary" onclick="generatePlan()" style="width:100%;">Generate Plan</button>
+            <button class="btn btn-secondary" onclick="savePlanConfig()" style="width:100%;">💾 Save to Firebase</button>
+          </div>
+        </div>
+        <div style="grid-column:2;overflow-x:auto;">
+          <div id="planOutput" class="card">
+            <div class="empty-state"><div class="empty-state-icon">📋</div><div class="empty-state-text">Configure settings and click Generate Plan</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <!-- PAGE: Pace Calculator -->
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <div class="page" id="page-pace">
+      <div class="page-header">
+        <div class="page-title">Pace Calculator</div>
+        <div class="page-subtitle">Calculate pace, predict races, plan splits</div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:24px;" class="pace-two-col">
+        <!-- Calculator -->
+        <div class="card">
+          <div class="section-title">Pace Calculator</div>
+          <div style="display:flex;flex-direction:column;gap:14px;">
+            <div class="form-group">
+              <label class="form-label">Distance</label>
+              <select class="form-select" id="paceDistance">
+                <option value="5">5K (5 km)</option>
+                <option value="10">10K (10 km)</option>
+                <option value="21.0975">Half Marathon (21.0975 km)</option>
+                <option value="42.195" selected>Marathon (42.195 km)</option>
+                <option value="custom">Custom (km)</option>
+              </select>
+            </div>
+            <div class="form-group" id="customDistGroup" style="display:none;">
+              <label class="form-label">Custom Distance (km)</label>
+              <input type="number" class="form-input" id="paceCustomDist" placeholder="e.g. 15" step="0.1">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Finish Time (HH:MM:SS)</label>
+              <input type="text" class="form-input" id="paceTime" placeholder="e.g. 04:30:00">
+            </div>
+            <button class="btn btn-primary" onclick="calcPace()">Calculate Pace</button>
+            <div id="paceResult" style="display:none;" class="pace-result">
+              <div class="pace-result-label">Average Pace</div>
+              <div class="pace-result-value mono" id="paceResultVal">--:--</div>
+              <div style="font-size:0.8rem;color:var(--text-2);margin-top:6px;" id="paceResultSub"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Race Predictor -->
+        <div class="card">
+          <div class="section-title">Race Predictor</div>
+          <div style="display:flex;flex-direction:column;gap:14px;">
+            <div class="form-group">
+              <label class="form-label">Recent Race Distance</label>
+              <select class="form-select" id="predDistance">
+                <option value="5">5K</option>
+                <option value="10">10K</option>
+                <option value="21.0975">Half Marathon</option>
+                <option value="42.195">Marathon</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Finish Time (HH:MM:SS)</label>
+              <input type="text" class="form-input" id="predTime" placeholder="e.g. 02:05:00">
+            </div>
+            <button class="btn btn-primary" onclick="predictRaces()">Predict Other Distances</button>
+            <div id="predResult" style="display:none;"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Pace Zones -->
+      <div class="card" style="margin-bottom:24px;">
+        <div class="section-title">Pace Zones</div>
+        <div style="font-size:0.85rem;color:var(--text-2);margin-bottom:12px;">Based on your target marathon pace. Enter a finish time above and calculate to update zones.</div>
+        <div class="zones-grid" id="zonesGrid">
+          <div class="zone-card"><div class="zone-name">Zone 1 — Easy</div><div class="zone-pace mono" id="z1">--:--</div><div class="zone-range">75–80% effort</div></div>
+          <div class="zone-card"><div class="zone-name">Zone 2 — Aerobic</div><div class="zone-pace mono" id="z2">--:--</div><div class="zone-range">80–87% effort</div></div>
+          <div class="zone-card"><div class="zone-name">Zone 3 — Threshold</div><div class="zone-pace mono" id="z3">--:--</div><div class="zone-range">87–92% effort</div></div>
+          <div class="zone-card"><div class="zone-name">Zone 4 — VO2 Max</div><div class="zone-pace mono" id="z4">--:--</div><div class="zone-range">92–97% effort</div></div>
+          <div class="zone-card"><div class="zone-name">Zone 5 — Sprint</div><div class="zone-pace mono" id="z5">--:--</div><div class="zone-range">97–100% effort</div></div>
+        </div>
+      </div>
+
+      <!-- Split Calculator -->
+      <div class="card">
+        <div class="section-title">Split Calculator</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;align-items:end;" class="splits-input-grid">
+          <div class="form-group">
+            <label class="form-label">Total Distance (km)</label>
+            <input type="number" class="form-input" id="splitDist" placeholder="e.g. 42.195" step="0.001">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Pace (MM:SS per km)</label>
+            <input type="text" class="form-input" id="splitPace" placeholder="e.g. 06:23">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Split Every (km)</label>
+            <input type="number" class="form-input" id="splitEvery" placeholder="e.g. 5" value="5">
+          </div>
+        </div>
+        <button class="btn btn-primary" style="margin-top:14px;" onclick="calcSplits()">Calculate Splits</button>
+        <div id="splitsResult" style="margin-top:16px;"></div>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <!-- PAGE: Stretching -->
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <div class="page" id="page-stretching">
+      <div class="page-header">
+        <div class="page-title">Stretching & Mobility</div>
+        <div class="page-subtitle">Pre-run, post-run, injury prevention, race day</div>
+      </div>
+      <div class="tabs" id="stretchTabs">
+        <button class="tab-btn active" onclick="switchTab('stretch','pre')">Pre-Training</button>
+        <button class="tab-btn" onclick="switchTab('stretch','post')">Post-Training</button>
+        <button class="tab-btn" onclick="switchTab('stretch','injury')">Injury Prevention</button>
+        <button class="tab-btn" onclick="switchTab('stretch','raceday')">Race Day</button>
+      </div>
+
+      <!-- Pre-Training -->
+      <div class="tab-panel active" id="stretch-tab-pre">
+        <div class="alert alert-info" style="margin-bottom:16px;">Dynamic stretches — perform before every run to activate muscles and increase range of motion.</div>
+        <div class="stretch-grid" id="preStretchGrid"></div>
+      </div>
+
+      <!-- Post-Training -->
+      <div class="tab-panel" id="stretch-tab-post">
+        <div class="alert alert-success" style="margin-bottom:16px;">Static stretches — hold each for 30–45 seconds. Perform after every run while muscles are warm.</div>
+        <div class="stretch-grid" id="postStretchGrid"></div>
+      </div>
+
+      <!-- Injury Prevention -->
+      <div class="tab-panel" id="stretch-tab-injury">
+        <div class="section-title">Common Running Injuries</div>
+        <div id="injuryList" style="margin-bottom:24px;"></div>
+        <div class="section-title">Strength Exercises</div>
+        <div class="stretch-grid" id="strengthGrid"></div>
+      </div>
+
+      <!-- Race Day -->
+      <div class="tab-panel" id="stretch-tab-raceday">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;" class="raceday-grid">
+          <div>
+            <div class="section-title" style="margin-bottom:16px;">Morning Timeline</div>
+            <div class="timeline" id="raceDayTimeline"></div>
+          </div>
+          <div>
+            <div class="section-title" style="margin-bottom:16px;">Warm-Up Protocol</div>
+            <table class="data-table">
+              <thead><tr><th>Activity</th><th>Duration</th><th>Notes</th></tr></thead>
+              <tbody>
+                <tr><td>Light jog</td><td>5 min</td><td>Easy 6:30–7:00/km pace</td></tr>
+                <tr><td>Leg swings</td><td>1 min</td><td>10 each direction</td></tr>
+                <tr><td>Hip circles</td><td>1 min</td><td>10 each side</td></tr>
+                <tr><td>High knees</td><td>30 sec</td><td>Gradual acceleration</td></tr>
+                <tr><td>Butt kicks</td><td>30 sec</td><td>Heel to glutes</td></tr>
+                <tr><td>Strides (4×80m)</td><td>5 min</td><td>80–90% effort, walk back</td></tr>
+                <tr><td>Dynamic lunges</td><td>1 min</td><td>10 alternating</td></tr>
+              </tbody>
+            </table>
+            <div class="section-title" style="margin:20px 0 12px;">Post-Race Recovery</div>
+            <div class="alert alert-info">
+              <strong>First 30 min:</strong> Walk 10 min, hydrate (500ml), eat carbs + protein.<br>
+              <strong>1–2h:</strong> Light static stretching, cold shower or ice bath 10–15 min.<br>
+              <strong>Day 1–3:</strong> Active recovery (easy walk/swim), elevation, compression.<br>
+              <strong>Week 1–2:</strong> No hard running — easy jogs only, focus on sleep &amp; nutrition.
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <!-- PAGE: Nutrition Guide -->
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <div class="page" id="page-nutrition">
+      <div class="page-header">
+        <div class="page-title">Nutrition Guide</div>
+        <div class="page-subtitle">Fueling for plant-based runners</div>
+      </div>
+      <div class="tabs">
+        <button class="tab-btn active" onclick="switchTab('nutrition','phases')">Training Phases</button>
+        <button class="tab-btn" onclick="switchTab('nutrition','plantbased')">Plant-Based</button>
+        <button class="tab-btn" onclick="switchTab('nutrition','supplements')">Supplements</button>
+        <button class="tab-btn" onclick="switchTab('nutrition','iron')">Iron Timing</button>
+      </div>
+
+      <!-- Training Phases -->
+      <div class="tab-panel active" id="nutrition-tab-phases">
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px;margin-bottom:24px;">
+          <div class="card">
+            <div style="color:var(--blue);font-weight:700;margin-bottom:10px;font-size:0.9rem;text-transform:uppercase;">🏃 Base Phase</div>
+            <div style="display:flex;flex-direction:column;gap:8px;font-size:0.85rem;">
+              <div><span style="color:var(--text-2);">Carbs:</span> <strong>5–7g / kg</strong></div>
+              <div><span style="color:var(--text-2);">Protein:</span> <strong>1.6g / kg</strong></div>
+              <div><span style="color:var(--text-2);">Fat:</span> <strong>1g / kg</strong></div>
+              <div style="color:var(--text-2);font-size:0.8rem;margin-top:6px;">Focus on aerobic base; adequate recovery nutrition.</div>
+            </div>
+          </div>
+          <div class="card">
+            <div style="color:var(--orange);font-weight:700;margin-bottom:10px;font-size:0.9rem;text-transform:uppercase;">⬆️ Build Phase</div>
+            <div style="display:flex;flex-direction:column;gap:8px;font-size:0.85rem;">
+              <div><span style="color:var(--text-2);">Carbs:</span> <strong>7–9g / kg</strong></div>
+              <div><span style="color:var(--text-2);">Protein:</span> <strong>1.8g / kg</strong></div>
+              <div><span style="color:var(--text-2);">Fat:</span> <strong>1g / kg</strong></div>
+              <div style="color:var(--text-2);font-size:0.8rem;margin-top:6px;">Increased training load; prioritize carb availability.</div>
+            </div>
+          </div>
+          <div class="card">
+            <div style="color:var(--accent);font-weight:700;margin-bottom:10px;font-size:0.9rem;text-transform:uppercase;">🔥 Peak Phase</div>
+            <div style="display:flex;flex-direction:column;gap:8px;font-size:0.85rem;">
+              <div><span style="color:var(--text-2);">Carbs:</span> <strong>8–10g / kg</strong></div>
+              <div><span style="color:var(--text-2);">Protein:</span> <strong>2g / kg</strong></div>
+              <div><span style="color:var(--text-2);">Fat:</span> <strong>0.8g / kg</strong></div>
+              <div style="color:var(--text-2);font-size:0.8rem;margin-top:6px;">Maximum volume; carbohydrate dominant. Sleep 8–9h.</div>
+            </div>
+          </div>
+          <div class="card">
+            <div style="color:var(--green);font-weight:700;margin-bottom:10px;font-size:0.9rem;text-transform:uppercase;">📉 Taper Phase</div>
+            <div style="display:flex;flex-direction:column;gap:8px;font-size:0.85rem;">
+              <div><span style="color:var(--text-2);">Carbs:</span> <strong>Reduce 10–15%</strong></div>
+              <div><span style="color:var(--text-2);">Protein:</span> <strong>Maintain 2g / kg</strong></div>
+              <div><span style="color:var(--text-2);">Fat:</span> <strong>1g / kg</strong></div>
+              <div style="color:var(--text-2);font-size:0.8rem;margin-top:6px;">Reduce volume with training; maintain protein to preserve muscle.</div>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="section-title">🏆 Race Day Nutrition</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;" class="race-day-two-col">
+            <div>
+              <div style="font-weight:700;margin-bottom:10px;color:var(--text-2);font-size:0.85rem;text-transform:uppercase;">Pre-Race Breakfast (3h before)</div>
+              <ul style="font-size:0.875rem;line-height:2;color:var(--text-2);list-style:none;">
+                <li>🌾 3g/kg bodyweight carbohydrates</li>
+                <li>🍌 Banana + oatmeal + toast</li>
+                <li>☕ Light coffee (optional, tested in training)</li>
+                <li>💧 500ml water with meal + 200ml 30min before</li>
+              </ul>
+            </div>
+            <div>
+              <div style="font-weight:700;margin-bottom:10px;color:var(--text-2);font-size:0.85rem;text-transform:uppercase;">During Race Fueling</div>
+              <ul style="font-size:0.875rem;line-height:2;color:var(--text-2);list-style:none;">
+                <li>🧃 Gel or 2 dates every 45 minutes</li>
+                <li>💧 150–200ml water at every aid station</li>
+                <li>🍌 Banana at 30km mark (real food option)</li>
+                <li>🧂 Electrolyte drink if sweating heavily</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Plant-Based -->
+      <div class="tab-panel" id="nutrition-tab-plantbased">
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-bottom:20px;" class="pb-three-col">
+          <div class="card">
+            <div style="font-weight:700;margin-bottom:12px;color:var(--green);">🌅 Pre-Run Fuels</div>
+            <ul style="font-size:0.85rem;line-height:2;color:var(--text-2);list-style:none;">
+              <li>🌾 Oats with banana + almond butter</li>
+              <li>🍞 Toast with peanut butter + banana</li>
+              <li>🌴 Dates (3–4) + handful of nuts</li>
+              <li>🍚 Rice balls with sesame + pickled plum</li>
+              <li>🥣 Granola with soy milk</li>
+            </ul>
+          </div>
+          <div class="card">
+            <div style="font-weight:700;margin-bottom:12px;color:var(--orange);">🏃 During Run</div>
+            <ul style="font-size:0.85rem;line-height:2;color:var(--text-2);list-style:none;">
+              <li>🧃 Energy gels (plant-based)</li>
+              <li>🌴 Medjool dates (2–3 per 45 min)</li>
+              <li>🍌 Banana halves at aid stations</li>
+              <li>🍚 Rice balls for ultras</li>
+              <li>💧 Coconut water (natural electrolytes)</li>
+            </ul>
+          </div>
+          <div class="card">
+            <div style="font-weight:700;margin-bottom:12px;color:var(--blue);">🌙 Post-Run Recovery</div>
+            <ul style="font-size:0.85rem;line-height:2;color:var(--text-2);list-style:none;">
+              <li>🥚 Tofu scramble + veggies</li>
+              <li>🍲 Lentil soup + crusty bread</li>
+              <li>🍛 Chickpea curry + basmati rice</li>
+              <li>🥛 Greek yogurt + protein + berries</li>
+              <li>🌿 Quinoa bowls + roasted veggies</li>
+            </ul>
+          </div>
+        </div>
+        <div class="card">
+          <div class="section-title">High-Protein Plant Sources</div>
+          <table class="data-table">
+            <thead><tr><th>Food</th><th>Protein per 100g</th><th>Best For</th></tr></thead>
+            <tbody>
+              <tr><td>Tofu (firm)</td><td class="mono" style="color:var(--green);">20g</td><td>Post-run meals, stir-fries</td></tr>
+              <tr><td>Tempeh</td><td class="mono" style="color:var(--green);">19g</td><td>Sandwiches, grain bowls</td></tr>
+              <tr><td>Edamame</td><td class="mono" style="color:var(--green);">11g</td><td>Snacks, salads</td></tr>
+              <tr><td>Lentils (cooked)</td><td class="mono" style="color:var(--orange);">9g</td><td>Soups, curries, salads</td></tr>
+              <tr><td>Chickpeas (cooked)</td><td class="mono" style="color:var(--orange);">8.9g</td><td>Curries, hummus, roasted snack</td></tr>
+              <tr><td>Black beans (cooked)</td><td class="mono" style="color:var(--orange);">8.9g</td><td>Mexican dishes, bowls</td></tr>
+              <tr><td>Quinoa (cooked)</td><td class="mono">4.4g</td><td>Base for recovery bowls</td></tr>
+              <tr><td>Hemp seeds</td><td class="mono" style="color:var(--green);">32g</td><td>Smoothies, sprinkled on meals</td></tr>
+            </tbody>
+          </table>
+          <div class="section-title" style="margin-top:20px;">Meal Timing</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-top:12px;" class="pb-timing-grid">
+            <div class="card-sm"><div style="color:var(--accent);font-weight:700;font-size:0.8rem;margin-bottom:6px;">PRE-RUN</div><div style="font-size:0.82rem;color:var(--text-2);">2–3h before: Full meal. 30–60min: Light snack only (banana, dates).</div></div>
+            <div class="card-sm"><div style="color:var(--green);font-weight:700;font-size:0.8rem;margin-bottom:6px;">POST-RUN</div><div style="font-size:0.82rem;color:var(--text-2);">Within 30 min: 3:1 carb:protein ratio. E.g. tofu + rice bowl.</div></div>
+            <div class="card-sm"><div style="color:var(--blue);font-weight:700;font-size:0.8rem;margin-bottom:6px;">NIGHT BEFORE RACE</div><div style="font-size:0.82rem;color:var(--text-2);">Carb-load with pasta, rice, or grain bowl. Avoid new foods.</div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Supplements -->
+      <div class="tab-panel" id="nutrition-tab-supplements">
+        <div class="alert alert-warning" style="margin-bottom:16px;">Always consult a healthcare professional before starting supplements. These are general guidelines for plant-based runners.</div>
+        <table class="nutrient-table" style="background:var(--surface);border-radius:var(--radius);overflow:hidden;">
+          <thead><tr><th>Supplement</th><th>Daily Dose</th><th>Timing</th><th>Notes for Runners</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Iron</strong></td><td class="mono">8–18mg</td><td>Morning, empty stomach</td><td>Take with Vitamin C. Avoid calcium/tea/coffee within 1h.</td></tr>
+            <tr><td><strong>Vitamin B12 ⚠️</strong></td><td class="mono">2.4mcg</td><td>Any time</td><td>Essential for vegetarians — plant sources are insufficient for B12.</td></tr>
+            <tr><td><strong>Vitamin D</strong></td><td class="mono">600–800 IU</td><td>With a fatty meal</td><td>Most people are deficient. Test levels annually.</td></tr>
+            <tr><td><strong>Omega-3 (ALA)</strong></td><td class="mono">1.6g ALA</td><td>With meals</td><td>Flaxseed, chia, walnuts. Consider algae-based DHA/EPA.</td></tr>
+            <tr><td><strong>Calcium</strong></td><td class="mono">1000mg</td><td>Split doses</td><td>Fortified plant milks, tofu (with calcium sulfate), greens.</td></tr>
+            <tr><td><strong>Zinc</strong></td><td class="mono">8–11mg</td><td>With meals</td><td>Pumpkin seeds, hemp seeds. Soak legumes to improve absorption.</td></tr>
+            <tr><td><strong>Magnesium</strong></td><td class="mono">400mg</td><td>Evening (improves sleep)</td><td>Dark leafy greens, nuts, seeds. Helps with muscle cramps.</td></tr>
+            <tr><td><strong>Creatine</strong></td><td class="mono">3–5g</td><td>Post-workout</td><td>Particularly beneficial for vegetarians — very low in plant diet.</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Iron Timing -->
+      <div class="tab-panel" id="nutrition-tab-iron">
+        <div class="alert alert-danger" style="margin-bottom:16px;"><strong>Critical for vegetarian runners.</strong> Iron deficiency is the #1 nutritional risk. Low iron causes fatigue, poor performance, and increased injury risk.</div>
+        <table class="iron-timing-table" style="background:var(--surface);border-radius:var(--radius);overflow:hidden;width:100%;">
+          <thead><tr><th>Time of Day</th><th>Food / Supplement</th><th>Iron Content</th><th>Notes</th></tr></thead>
+          <tbody>
+            <tr><td style="color:var(--accent);font-weight:600;">Morning (fasted)</td><td>Iron supplement + orange juice</td><td class="mono">Supp dose</td><td>Take on empty stomach for max absorption. OJ Vitamin C doubles uptake.</td></tr>
+            <tr><td style="color:var(--orange);font-weight:600;">Breakfast</td><td>Fortified oatmeal + strawberries</td><td class="mono">~3–5mg</td><td>Vitamin C from berries doubles iron absorption from oats.</td></tr>
+            <tr><td style="color:var(--blue);font-weight:600;">Lunch</td><td>Lentil soup + lemon dressing</td><td class="mono">~6mg</td><td>Avoid tea/coffee 1h before and after this meal.</td></tr>
+            <tr><td style="color:var(--text-2);font-weight:600;">Pre-Run</td><td>Banana + date</td><td class="mono">~0.5mg</td><td>Low iron but excellent quick carbs. Pair with small amount of Vit C.</td></tr>
+            <tr><td style="color:var(--green);font-weight:600;">Post-Run</td><td>Tofu stir-fry + broccoli</td><td class="mono">~4mg</td><td>Recovery + iron combo. Broccoli provides Vit C to enhance absorption.</td></tr>
+            <tr><td style="color:var(--purple);font-weight:600;">Dinner</td><td>Spinach salad + pumpkin seeds</td><td class="mono">~5mg</td><td>Non-heme iron + enhancers. Add lemon dressing for Vit C.</td></tr>
+          </tbody>
+        </table>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-top:20px;" class="iron-tips-grid">
+          <div class="card-sm">
+            <div style="color:var(--red);font-weight:700;margin-bottom:8px;font-size:0.85rem;">❌ AVOID (within 1h of iron meals)</div>
+            <ul style="font-size:0.82rem;color:var(--text-2);line-height:1.9;list-style:none;">
+              <li>☕ Tea &amp; coffee (polyphenols)</li>
+              <li>🥛 Calcium supplements or dairy</li>
+              <li>🫘 Unsoaked legumes (phytates)</li>
+              <li>🍷 Red wine (tanins)</li>
+            </ul>
+          </div>
+          <div class="card-sm">
+            <div style="color:var(--green);font-weight:700;margin-bottom:8px;font-size:0.85rem;">✅ ENHANCERS</div>
+            <ul style="font-size:0.82rem;color:var(--text-2);line-height:1.9;list-style:none;">
+              <li>🍊 Vitamin C (citrus, strawberries)</li>
+              <li>🥒 Fermented foods (kimchi, sauerkraut)</li>
+              <li>🍳 Cast-iron cookware</li>
+              <li>🧄 Allium vegetables (onion, garlic)</li>
+            </ul>
+          </div>
+          <div class="card-sm">
+            <div style="color:var(--orange);font-weight:700;margin-bottom:8px;font-size:0.85rem;">⚠️ INHIBITORS</div>
+            <ul style="font-size:0.82rem;color:var(--text-2);line-height:1.9;list-style:none;">
+              <li>🫘 Phytates — soak legumes overnight</li>
+              <li>🍵 Polyphenols — tea, coffee, cocoa</li>
+              <li>🥛 Calcium — competes for absorption</li>
+              <li>🥚 Egg whites (conalbumin)</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <!-- PAGE: Nutrition Check -->
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <div class="page" id="page-nutrition-check">
+      <div class="page-header">
+        <div class="page-title">Nutrition Check</div>
+        <div class="page-subtitle">Weekly nutrition assessment &amp; tracking</div>
+      </div>
+
+      <div class="card" style="margin-bottom:20px;">
+        <div class="section-title">Personal Settings</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;" class="nc-settings-grid">
+          <div class="form-group">
+            <label class="form-label">Body Weight (kg)</label>
+            <input type="number" class="form-input" id="ncWeight" placeholder="e.g. 65" value="65" oninput="updateNcTargets()">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Week Start Date</label>
+            <input type="date" class="form-input" id="ncWeekStart" oninput="loadNutritionWeek()">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Training Phase</label>
+            <select class="form-select" id="ncPhase" oninput="updateNcTargets()">
+              <option value="base">Base</option>
+              <option value="build" selected>Build</option>
+              <option value="peak">Peak</option>
+              <option value="taper">Taper</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- Targets Reference -->
+      <div class="card" style="margin-bottom:20px;" id="ncTargetsCard">
+        <div class="section-title">Daily Targets</div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;" id="ncTargetsGrid"></div>
+      </div>
+
+      <!-- 7-Day Log -->
+      <div class="section-title" style="margin-bottom:14px;">7-Day Log</div>
+      <div class="nutrition-check-grid" id="ncDayGrid"></div>
+
+      <!-- Weekly Summary -->
+      <div class="card" style="margin-top:20px;" id="ncSummaryCard">
+        <div class="section-title">Weekly Summary</div>
+        <div id="ncSummaryContent">Complete the week to see your summary.</div>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <!-- PAGE: Integrations -->
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <div class="page" id="page-integrations">
+      <div class="page-header">
+        <div class="page-title">Integrations</div>
+        <div class="page-subtitle">Connect your favorite running platforms</div>
+      </div>
+      <div class="alert alert-info" style="margin-bottom:20px;">All integrations currently require manual sync. Use the export/import tips below for each platform.</div>
+      <div class="integrations-grid">
+        <div class="integration-card">
+          <div class="integration-icon">🟠</div>
+          <div class="integration-name">Strava</div>
+          <div class="integration-desc">The world's most popular running social platform. Track, analyze, and share your activities.</div>
+          <div class="integration-status">⚠️ Manual sync only</div>
+          <div class="integration-tip">💡 Export GPX from Strava Activity → import to PaceForge calendar manually. Visit <a href="https://www.strava.com" target="_blank" style="color:var(--accent);">strava.com</a></div>
+        </div>
+        <div class="integration-card">
+          <div class="integration-icon">🔵</div>
+          <div class="integration-name">Garmin Connect</div>
+          <div class="integration-desc">Professional-grade GPS watch data with advanced metrics like training load, recovery advisor, and VO2 max.</div>
+          <div class="integration-status">⚠️ Manual sync only</div>
+          <div class="integration-tip">💡 Export .fit or .tcx from Garmin Connect → use Garmin's activity export to log workouts manually. Visit <a href="https://connect.garmin.com" target="_blank" style="color:var(--accent);">connect.garmin.com</a></div>
+        </div>
+        <div class="integration-card">
+          <div class="integration-icon">⚫</div>
+          <div class="integration-name">Nike Run Club</div>
+          <div class="integration-desc">Guided runs, coaching plans, and global community challenges powered by Nike's training ecosystem.</div>
+          <div class="integration-status">⚠️ Manual sync only</div>
+          <div class="integration-tip">💡 View run history in NRC app → manually log distance and pace into PaceForge. Visit <a href="https://www.nike.com/nrc-app" target="_blank" style="color:var(--accent);">nike.com/nrc-app</a></div>
+        </div>
+        <div class="integration-card">
+          <div class="integration-icon">❤️</div>
+          <div class="integration-name">Apple Health</div>
+          <div class="integration-desc">Comprehensive health and fitness tracking on iPhone and Apple Watch. Integrates with hundreds of apps.</div>
+          <div class="integration-status">⚠️ Manual sync only</div>
+          <div class="integration-tip">💡 Export Health data (XML) from iPhone Settings → parse workouts using third-party tools. Visit <a href="https://www.apple.com/health/" target="_blank" style="color:var(--accent);">apple.com/health</a></div>
+        </div>
+        <div class="integration-card">
+          <div class="integration-icon">🗺️</div>
+          <div class="integration-name">MapMyRun</div>
+          <div class="integration-desc">Route mapping and tracking by Under Armour. Great for discovering and creating running routes.</div>
+          <div class="integration-status">⚠️ Manual sync only</div>
+          <div class="integration-tip">💡 Export workout CSV from MapMyRun training log → reference it to manually add workouts here. Visit <a href="https://www.mapmyrun.com" target="_blank" style="color:var(--accent);">mapmyrun.com</a></div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<!-- Bottom Nav (mobile) -->
+<nav class="bottom-nav" id="bottomNav">
+  <div class="bottom-nav-inner" id="bottomNavInner">
+    <!-- injected by JS -->
+  </div>
+</nav>
+
+<!-- ─── Modals ────────────────────────────────────────────────────── -->
+
+<!-- Add/Edit Race Modal -->
+<div class="modal-overlay" id="raceModal" role="dialog" aria-modal="true" aria-labelledby="raceModalTitle">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title" id="raceModalTitle">Add Race</div>
+      <button class="modal-close" onclick="closeModal('raceModal')" aria-label="Close">✕</button>
+    </div>
+    <form id="raceForm" onsubmit="saveRace(event)">
+      <div style="display:flex;flex-direction:column;gap:14px;">
+        <div class="form-grid">
+          <div class="form-group">
+            <label class="form-label">Race Name</label>
+            <input type="text" class="form-input" id="raceFormName" required placeholder="e.g. Tokyo Marathon 2027">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Date</label>
+            <input type="date" class="form-input" id="raceFormDate" required>
+          </div>
+        </div>
+        <div class="form-grid">
+          <div class="form-group">
+            <label class="form-label">Location</label>
+            <input type="text" class="form-input" id="raceFormLocation" placeholder="City, Country">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Distance</label>
+            <select class="form-select" id="raceFormDistance">
+              <option value="5K">5K</option>
+              <option value="10K">10K</option>
+              <option value="Half Marathon">Half Marathon</option>
+              <option value="Marathon" selected>Marathon</option>
+              <option value="Ultra">Ultra</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-grid">
+          <div class="form-group">
+            <label class="form-label">Target Time (HH:MM:SS)</label>
+            <input type="text" class="form-input" id="raceFormTarget" placeholder="e.g. 04:30:00">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Race URL</label>
+            <input type="url" class="form-input" id="raceFormUrl" placeholder="https://...">
+          </div>
+        </div>
+        <div class="form-grid">
+          <div class="form-group">
+            <label class="form-label">Elevation Gain (m)</label>
+            <input type="number" class="form-input" id="raceFormElevGain" placeholder="e.g. 285" min="0">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Elevation Loss (m)</label>
+            <input type="number" class="form-input" id="raceFormElevLoss" placeholder="e.g. 285" min="0">
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Notes</label>
+          <textarea class="form-textarea" id="raceFormNotes" placeholder="Race notes, goals, strategy..."></textarea>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-ghost" onclick="closeModal('raceModal')">Cancel</button>
+        <button type="submit" class="btn btn-primary">Save Race</button>
+      </div>
+    </form>
+    <input type="hidden" id="raceFormId">
+  </div>
+</div>
+
+<!-- Add/Edit Workout Modal -->
+<div class="modal-overlay" id="workoutModal" role="dialog" aria-modal="true" aria-labelledby="workoutModalTitle">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title" id="workoutModalTitle">Log Workout</div>
+      <button class="modal-close" onclick="closeModal('workoutModal')" aria-label="Close">✕</button>
+    </div>
+    <form id="workoutForm" onsubmit="saveWorkout(event)">
+      <div style="display:flex;flex-direction:column;gap:14px;">
+        <div class="form-grid">
+          <div class="form-group">
+            <label class="form-label">Date</label>
+            <input type="date" class="form-input" id="wkDate" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Type</label>
+            <select class="form-select" id="wkType">
+              <option value="Easy Run">Easy Run</option>
+              <option value="Long Run">Long Run</option>
+              <option value="Tempo">Tempo</option>
+              <option value="Interval">Interval</option>
+              <option value="HIIT">HIIT</option>
+              <option value="Rest">Rest</option>
+              <option value="Cross Training">Cross Training</option>
+              <option value="Race">Race</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-grid">
+          <div class="form-group">
+            <label class="form-label">Distance (km)</label>
+            <input type="number" class="form-input" id="wkDist" placeholder="e.g. 12.5" step="0.01" min="0">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Duration (min)</label>
+            <input type="number" class="form-input" id="wkDuration" placeholder="e.g. 65" min="0">
+          </div>
+        </div>
+        <div class="form-grid">
+          <div class="form-group">
+            <label class="form-label">Actual Pace (MM:SS)</label>
+            <input type="text" class="form-input" id="wkPace" placeholder="e.g. 06:15">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Heart Rate (bpm avg)</label>
+            <input type="number" class="form-input" id="wkHr" placeholder="e.g. 145" min="0" max="250">
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Notes</label>
+          <textarea class="form-textarea" id="wkNotes" placeholder="How did it feel? Any observations..."></textarea>
+        </div>
+        <div class="form-group">
+          <label style="display:flex;align-items:center;gap:10px;cursor:pointer;">
+            <input type="checkbox" id="wkCompleted" checked style="width:16px;height:16px;accent-color:var(--accent);">
+            <span style="font-size:0.875rem;font-weight:600;">Completed</span>
+          </label>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-ghost" onclick="closeModal('workoutModal')">Cancel</button>
+        <button type="submit" class="btn btn-primary">Save Workout</button>
+      </div>
+    </form>
+    <input type="hidden" id="wkId">
+  </div>
+</div>
+
+<!-- Confirm Delete Modal -->
+<div class="modal-overlay" id="confirmModal" role="dialog" aria-modal="true">
+  <div class="modal" style="max-width:380px;">
+    <div class="modal-header">
+      <div class="modal-title">Confirm Delete</div>
+      <button class="modal-close" onclick="closeModal('confirmModal')">✕</button>
+    </div>
+    <p style="color:var(--text-2);font-size:0.9rem;" id="confirmMessage">Are you sure you want to delete this item?</p>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('confirmModal')">Cancel</button>
+      <button class="btn btn-danger" id="confirmOkBtn">Delete</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════════════════════
+// FIREBASE INIT
+// ═══════════════════════════════════════════════════════════════════════
+const firebaseConfig = {
+  apiKey: "AIzaSyAfZngxQCnpTEejZaORmLYbjsaLLOQTFGc",
+  authDomain: "pace-forge-6f0e7.firebaseapp.com",
+  databaseURL: "https://pace-forge-6f0e7-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "pace-forge-6f0e7",
+  storageBucket: "pace-forge-6f0e7.firebasestorage.app",
+  messagingSenderId: "1086533570263",
+  appId: "1:1086533570263:web:4d2d4768ef6134f42aaa92",
+  measurementId: "G-3MD4JX0BYT"
+};
+
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
+
+// ═══════════════════════════════════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════════════════════════════════
+let races = {};
+let workouts = {};
+let plannerConfig = {};
+let nutritionLog = {};
+let currentPage = 'dashboard';
+let calYear = new Date().getFullYear();
+let calMonth = new Date().getMonth();
+let calSelectedDate = null;
+let syncOpsInFlight = 0;
+
+// ═══════════════════════════════════════════════════════════════════════
+// SYNC INDICATOR
+// ═══════════════════════════════════════════════════════════════════════
+function setSyncing() {
+  syncOpsInFlight++;
+  const el = document.getElementById('syncIndicator');
+  const mel = document.getElementById('mobileSyncIndicator');
+  el.className = 'sync-indicator syncing'; el.textContent = '🔄 Syncing...';
+  mel.className = 'mobile-sync syncing'; mel.textContent = '🔄 Syncing';
+}
+function setSynced() {
+  syncOpsInFlight = Math.max(0, syncOpsInFlight - 1);
+  if (syncOpsInFlight > 0) return;
+  const el = document.getElementById('syncIndicator');
+  const mel = document.getElementById('mobileSyncIndicator');
+  el.className = 'sync-indicator synced'; el.textContent = '⚡ Synced';
+  mel.className = 'mobile-sync synced'; mel.textContent = '⚡ Synced';
+}
+function setOffline() {
+  const el = document.getElementById('syncIndicator');
+  const mel = document.getElementById('mobileSyncIndicator');
+  el.className = 'sync-indicator offline'; el.textContent = '❌ Offline';
+  mel.className = 'mobile-sync offline'; mel.textContent = '❌ Offline';
+}
+
+// Connection listener
+db.ref('.info/connected').on('value', snap => {
+  if (snap.val() === true) { setSynced(); }
+  else { setOffline(); }
+});
+
+// ═══════════════════════════════════════════════════════════════════════
+// NAVIGATION
+// ═══════════════════════════════════════════════════════════════════════
+const NAV_ITEMS = [
+  { id: 'dashboard', label: 'Dashboard', icon: '🏠' },
+  { id: 'races', label: 'My Races', icon: '🏁' },
+  { id: 'calendar', label: 'Workout Log', icon: '📅' },
+  { id: 'planner', label: '12-Week Planner', icon: '📋' },
+  { id: 'pace', label: 'Pace Calculator', icon: '⏱️' },
+  { id: 'stretching', label: 'Stretching', icon: '🧘' },
+  { id: 'nutrition', label: 'Nutrition', icon: '🥗' },
+  { id: 'nutrition-check', label: 'Nutrition Check', icon: '✅' },
+  { id: 'integrations', label: 'Integrations', icon: '🔗' },
+];
+
+function buildNav() {
+  const sidebar = document.getElementById('sidebarNav');
+  const bottomNavInner = document.getElementById('bottomNavInner');
+  sidebar.innerHTML = '';
+  bottomNavInner.innerHTML = '';
+  NAV_ITEMS.forEach(item => {
+    const btn = document.createElement('button');
+    btn.className = 'nav-link' + (item.id === currentPage ? ' active' : '');
+    btn.innerHTML = `<span>${item.icon}</span><span>${item.label}</span>`;
+    btn.onclick = () => navigate(item.id);
+    sidebar.appendChild(btn);
+
+    const mBtn = document.createElement('button');
+    mBtn.className = 'bottom-nav-item' + (item.id === currentPage ? ' active' : '');
+    mBtn.innerHTML = `<span style="font-size:1.2rem;">${item.icon}</span><span>${item.label}</span>`;
+    mBtn.onclick = () => navigate(item.id);
+    bottomNavInner.appendChild(mBtn);
+  });
+}
+
+function navigate(pageId) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById('page-' + pageId).classList.add('active');
+  currentPage = pageId;
+  window.location.hash = pageId;
+  buildNav();
+  if (pageId === 'dashboard') renderDashboard();
+  if (pageId === 'calendar') renderCalendar();
+  if (pageId === 'planner') loadPlannerConfig();
+  if (pageId === 'nutrition-check') initNutritionCheck();
+}
+
+window.addEventListener('hashchange', () => {
+  const hash = window.location.hash.replace('#', '') || 'dashboard';
+  navigate(hash);
+});
+
+// ═══════════════════════════════════════════════════════════════════════
+// FIREBASE DATA LISTENERS
+// ═══════════════════════════════════════════════════════════════════════
+function initFirebase() {
+  setSyncing();
+  // Races
+  db.ref('/races').on('value', snap => {
+    races = snap.val() || {};
+    renderRacesList();
+    renderDashboard();
+    setSynced();
+  }, () => setOffline());
+
+  // Workouts
+  db.ref('/workouts').on('value', snap => {
+    workouts = snap.val() || {};
+    renderWorkoutsList();
+    renderCalendar();
+    renderDashboard();
+    setSynced();
+  }, () => setOffline());
+
+  // Planner config
+  db.ref('/plannerConfig').on('value', snap => {
+    plannerConfig = snap.val() || {};
+    if (plannerConfig.fitnessLevel) {
+      document.getElementById('planFitness').value = plannerConfig.fitnessLevel;
+      document.getElementById('planBaseKm').value = plannerConfig.baseKm || 40;
+      document.getElementById('baseKmVal').textContent = plannerConfig.baseKm || 40;
+      document.getElementById('planLongRun').value = plannerConfig.longRunMax || 30;
+      document.getElementById('longRunVal').textContent = plannerConfig.longRunMax || 30;
+      if (plannerConfig.peakKm) document.getElementById('planPeakKm').value = plannerConfig.peakKm;
+      if (plannerConfig.startDate) document.getElementById('planStartDate').value = plannerConfig.startDate;
+    }
+    setSynced();
+  }, () => setOffline());
+
+  // Nutrition Log
+  db.ref('/nutritionLog').on('value', snap => {
+    nutritionLog = snap.val() || {};
+    if (currentPage === 'nutrition-check') renderNutritionWeek();
+    setSynced();
+  }, () => setOffline());
+
+  // Seed data if races empty
+  db.ref('/races').once('value', snap => {
+    if (!snap.val()) {
+      setSyncing();
+      db.ref('/races/kanazawa2026').set({
+        id: 'kanazawa2026',
+        name: 'Kanazawa Marathon 2026',
+        date: '2026-10-25',
+        location: 'Kanazawa, Japan',
+        distance: 'Marathon',
+        targetTime: '04:30:00',
+        url: 'https://www.kanazawa-marathon.jp',
+        elevationGain: 285,
+        elevationLoss: 285,
+        notes: 'Target sub-4:30. Rolling course through Kanazawa city.'
+      }).then(setSynced).catch(setSynced);
+    }
+  });
+}
+
+// ═══════════════════════════════════════════════════════════════════════
+// DASHBOARD
+// ═══════════════════════════════════════════════════════════════════════
+function renderDashboard() {
+  // Greeting
+  const hour = new Date().getHours();
+  const greet = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening';
+  document.getElementById('dashGreeting').textContent = greet + ' 👋';
+  document.getElementById('dashDate').textContent = new Date().toLocaleDateString('en-US', { weekday:'long', year:'numeric', month:'long', day:'numeric' });
+
+  // Stats
+  const totalRaces = Object.keys(races).length;
+  const wArr = Object.values(workouts);
+  const totalWorkouts = wArr.length;
+  const totalKm = wArr.reduce((s,w) => s + (parseFloat(w.distance)||0), 0);
+  const longest = Math.max(0, ...wArr.map(w => parseFloat(w.distance)||0));
+  document.getElementById('statRaces').textContent = totalRaces;
+  document.getElementById('statWorkouts').textContent = totalWorkouts;
+  document.getElementById('statKm').textContent = totalKm.toFixed(1);
+  document.getElementById('statLongest').textContent = longest > 0 ? longest.toFixed(1) + ' km' : '—';
+
+  // Next Race
+  const now = new Date(); now.setHours(0,0,0,0);
+  const upcomingRaces = Object.values(races)
+    .filter(r => new Date(r.date) >= now)
+    .sort((a,b) => new Date(a.date) - new Date(b.date));
+  const nextRaceEl = document.getElementById('nextRaceContent');
+  if (upcomingRaces.length === 0) {
+    nextRaceEl.innerHTML = `<div class="empty-state"><div class="empty-state-icon">🏁</div><div class="empty-state-text">No upcoming races. <button class="btn btn-primary btn-sm" onclick="navigate('races')" style="margin-top:10px;">Add a Race</button></div></div>`;
+  } else {
+    const r = upcomingRaces[0];
+    const daysUntil = Math.ceil((new Date(r.date) - now) / 86400000);
+    nextRaceEl.innerHTML = `
+      <div style="text-align:center;margin-bottom:16px;">
+        <div style="font-family:'JetBrains Mono',monospace;font-size:3rem;color:var(--accent);font-weight:400;">${daysUntil}</div>
+        <div style="color:var(--text-2);font-size:0.85rem;">days away</div>
+      </div>
+      <div style="font-family:'Cabinet Grotesk',sans-serif;font-size:1.2rem;font-weight:700;">${escHtml(r.name)}</div>
+      <div style="color:var(--text-2);font-size:0.85rem;margin-top:4px;">📍 ${escHtml(r.location||'—')} &nbsp;|&nbsp; 🏃 ${escHtml(r.distance||'—')}</div>
+      ${r.targetTime ? `<div style="font-family:'JetBrains Mono',monospace;margin-top:8px;color:var(--green);">🎯 Target: ${escHtml(r.targetTime)}</div>` : ''}
+      <div style="color:var(--text-2);font-size:0.82rem;margin-top:6px;">📅 ${formatDate(r.date)}</div>`;
+  }
+
+  // Recent workouts
+  const recentEl = document.getElementById('recentWorkoutsContent');
+  const sorted = Object.values(workouts).sort((a,b) => new Date(b.date)-new Date(a.date)).slice(0,5);
+  if (sorted.length === 0) {
+    recentEl.innerHTML = `<div class="empty-state"><div class="empty-state-icon">📅</div><div class="empty-state-text">No workouts yet.</div></div>`;
+  } else {
+    recentEl.innerHTML = sorted.map(w => `
+      <div class="workout-item">
+        <div>${workoutDot(w.type)}</div>
+        <div class="workout-item-info">
+          <div class="workout-item-title">${escHtml(w.type)}</div>
+          <div class="workout-item-meta">${formatDate(w.date)}${w.distance?' — '+w.distance+'km':''}${w.duration?' — '+w.duration+'min':''}</div>
+        </div>
+        ${workoutBadge(w.type)}
+      </div>`).join('');
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════════════
+// RACES
+// ═══════════════════════════════════════════════════════════════════════
+function renderRacesList() {
+  const el = document.getElementById('racesList');
+  const arr = Object.values(races).sort((a,b) => new Date(a.date)-new Date(b.date));
+  if (arr.length === 0) {
+    el.innerHTML = `<div class="empty-state" style="grid-column:1/-1;"><div class="empty-state-icon">🏁</div><div class="empty-state-text">No races yet. Add your first race!</div></div>`;
+    return;
+  }
+  el.innerHTML = arr.map(r => `
+    <div class="race-card" onclick="showRaceDetail('${r.id}')">
+      <div class="race-card-name">${escHtml(r.name)}</div>
+      <div class="race-card-meta">
+        <span>📅 ${formatDate(r.date)}</span>
+        <span>🏃 ${escHtml(r.distance||'—')}</span>
+        ${r.location ? `<span>📍 ${escHtml(r.location)}</span>` : ''}
+        ${r.targetTime ? `<span>🎯 ${escHtml(r.targetTime)}</span>` : ''}
+        ${r.elevationGain ? `<span>⬆️ ${r.elevationGain}m</span>` : ''}
+      </div>
+      ${r.notes ? `<div style="font-size:0.8rem;color:var(--text-2);margin-top:8px;border-top:1px solid var(--border);padding-top:8px;">${escHtml(r.notes)}</div>` : ''}
+    </div>`).join('');
+}
+
+function showRaceDetail(id) {
+  const r = races[id];
+  if (!r) return;
+  document.getElementById('racesListView').style.display = 'none';
+  document.getElementById('raceDetailView').style.display = 'block';
+
+  // Pacing strategy
+  const distKm = distanceToKm(r.distance);
+  let pacingHTML = '';
+  if (r.targetTime && distKm) {
+    const totalSec = timeToSeconds(r.targetTime);
+    const targetPaceSecPerKm = totalSec / distKm;
+    const firstHalf = secondsToPace(targetPaceSecPerKm + 15);
+    const targetPace = secondsToPace(targetPaceSecPerKm);
+    const secondHalf = secondsToPace(targetPaceSecPerKm - 10);
+    pacingHTML = `
+      <div class="section-title" style="margin-bottom:12px;">Pacing Strategy</div>
+      <table class="data-table" style="margin-bottom:24px;">
+        <thead><tr><th>Split</th><th>Pace (per km)</th><th>Approach</th></tr></thead>
+        <tbody>
+          <tr><td>First Half (${(distKm/2).toFixed(1)} km)</td><td class="mono">${firstHalf}</td><td>Conservative start (+15s/km)</td></tr>
+          <tr><td>Target Pace</td><td class="mono" style="color:var(--accent);">${targetPace}</td><td>Race goal pace</td></tr>
+          <tr><td>Second Half (${(distKm/2).toFixed(1)} km)</td><td class="mono">${secondHalf}</td><td>Negative split (-10s/km)</td></tr>
+        </tbody>
+      </table>`;
+  }
+
+  // Race alerts
+  const elev = parseInt(r.elevationGain) || 0;
+  let alertHTML = '';
+  if (elev < 100) alertHTML = `<div class="alert alert-success">🟢 Flat course — focus on even pacing throughout. Aim for negative split strategy.</div>`;
+  else if (elev <= 300) alertHTML = `<div class="alert alert-warning">🟡 Rolling course — conserve energy on uphills, let gravity help on downs. Expect 3–5 min slower than flat equivalent.</div>`;
+  else alertHTML = `<div class="alert alert-danger">🔴 Hilly course — expect 10–15 min slower than flat equivalent. Use effort-based pacing, not pace-based.</div>`;
+
+  // Elevation SVG
+  const svgEl = generateElevationSVG(elev, parseInt(r.elevationLoss)||0);
+
+  document.getElementById('raceDetailContent').innerHTML = `
+    <div class="race-detail-header">
+      <div>
+        <h1 style="font-family:'Cabinet Grotesk',sans-serif;font-size:1.8rem;font-weight:800;">${escHtml(r.name)}</h1>
+        ${r.url ? `<a href="${escHtml(r.url)}" target="_blank" style="color:var(--accent);font-size:0.85rem;">🔗 Official Website</a>` : ''}
+      </div>
+      <div style="display:flex;gap:10px;">
+        <button class="btn btn-secondary btn-sm" onclick="openEditRaceModal('${r.id}')">✏️ Edit</button>
+        <button class="btn btn-danger btn-sm" onclick="deleteRace('${r.id}')">🗑️ Delete</button>
+      </div>
+    </div>
+
+    <div class="race-detail-stats">
+      <div class="rds-card"><div class="rds-label">Date</div><div class="rds-value mono" style="font-size:0.9rem;">${formatDate(r.date)}</div></div>
+      <div class="rds-card"><div class="rds-label">Distance</div><div class="rds-value">${escHtml(r.distance||'—')}</div></div>
+      ${r.targetTime?`<div class="rds-card"><div class="rds-label">Target Time</div><div class="rds-value mono">${escHtml(r.targetTime)}</div></div>`:''}
+      ${r.elevationGain?`<div class="rds-card"><div class="rds-label">Elev Gain</div><div class="rds-value mono">${r.elevationGain}m</div></div>`:''}
+      ${r.elevationLoss?`<div class="rds-card"><div class="rds-label">Elev Loss</div><div class="rds-value mono">${r.elevationLoss}m</div></div>`:''}
+      ${r.location?`<div class="rds-card"><div class="rds-label">Location</div><div class="rds-value" style="font-size:0.85rem;">${escHtml(r.location)}</div></div>`:''}
+    </div>
+
+    <div class="card" style="margin-bottom:20px;">
+      <div class="section-title" style="margin-bottom:12px;">Elevation Profile</div>
+      ${svgEl}
+      <div style="display:flex;gap:20px;font-size:0.78rem;color:var(--text-2);margin-top:8px;">
+        <span>⬆️ Gain: ${r.elevationGain||0}m</span>
+        <span>⬇️ Loss: ${r.elevationLoss||0}m</span>
+      </div>
+    </div>
+
+    ${pacingHTML}
+
+    <div class="card" style="margin-bottom:20px;">
+      <div class="section-title" style="margin-bottom:12px;">Race Alerts</div>
+      ${alertHTML}
+    </div>
+
+    ${r.notes ? `<div class="card"><div class="section-title">Notes</div><p style="font-size:0.875rem;color:var(--text-2);line-height:1.7;">${escHtml(r.notes)}</p></div>` : ''}
+  `;
+}
+
+function generateElevationSVG(gain, loss) {
+  const w = 560, h = 120;
+  const points = [];
+  const segments = 20;
+  let y = 60;
+  for (let i = 0; i <= segments; i++) {
+    const x = (i / segments) * w;
+    if (i < segments * 0.5) y = 60 - (gain / 10) * Math.sin((i / (segments * 0.5)) * Math.PI);
+    else y = 60 - (loss / 10) * Math.sin(((segments - i) / (segments * 0.5)) * Math.PI);
+    y = Math.max(10, Math.min(110, y));
+    points.push([x, y]);
+  }
+  const pathD = points.map((p,i) => (i===0?'M':'L') + p[0].toFixed(1)+','+p[1].toFixed(1)).join(' ');
+  const fillD = pathD + ` L${w},${h} L0,${h} Z`;
+  return `<svg viewBox="0 0 ${w} ${h}" id="elevation-svg" preserveAspectRatio="none">
+    <defs>
+      <linearGradient id="elevGrad" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="#e8602a" stop-opacity="0.4"/>
+        <stop offset="100%" stop-color="#e8602a" stop-opacity="0.05"/>
+      </linearGradient>
+    </defs>
+    <path d="${fillD}" fill="url(#elevGrad)"/>
+    <path d="${pathD}" stroke="#e8602a" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+  </svg>`;
+}
+
+function showRaceList() {
+  document.getElementById('racesListView').style.display = 'block';
+  document.getElementById('raceDetailView').style.display = 'none';
+}
+
+function openAddRaceModal() {
+  document.getElementById('raceModalTitle').textContent = 'Add Race';
+  document.getElementById('raceForm').reset();
+  document.getElementById('raceFormId').value = '';
+  openModal('raceModal');
+}
+function openEditRaceModal(id) {
+  const r = races[id];
+  if (!r) return;
+  document.getElementById('raceModalTitle').textContent = 'Edit Race';
+  document.getElementById('raceFormId').value = id;
+  document.getElementById('raceFormName').value = r.name||'';
+  document.getElementById('raceFormDate').value = r.date||'';
+  document.getElementById('raceFormLocation').value = r.location||'';
+  document.getElementById('raceFormDistance').value = r.distance||'Marathon';
+  document.getElementById('raceFormTarget').value = r.targetTime||'';
+  document.getElementById('raceFormUrl').value = r.url||'';
+  document.getElementById('raceFormElevGain').value = r.elevationGain||'';
+  document.getElementById('raceFormElevLoss').value = r.elevationLoss||'';
+  document.getElementById('raceFormNotes').value = r.notes||'';
+  openModal('raceModal');
+}
+function saveRace(e) {
+  e.preventDefault();
+  const existingId = document.getElementById('raceFormId').value;
+  const id = existingId || Date.now().toString();
+  const data = {
+    id,
+    name: document.getElementById('raceFormName').value.trim(),
+    date: document.getElementById('raceFormDate').value,
+    location: document.getElementById('raceFormLocation').value.trim(),
+    distance: document.getElementById('raceFormDistance').value,
+    targetTime: document.getElementById('raceFormTarget').value.trim(),
+    url: document.getElementById('raceFormUrl').value.trim(),
+    elevationGain: parseInt(document.getElementById('raceFormElevGain').value)||0,
+    elevationLoss: parseInt(document.getElementById('raceFormElevLoss').value)||0,
+    notes: document.getElementById('raceFormNotes').value.trim(),
+  };
+  setSyncing();
+  db.ref('/races/' + id).set(data).then(() => { setSynced(); closeModal('raceModal'); }).catch(err => { setSynced(); alert('Error saving race: ' + err.message); });
+}
+function deleteRace(id) {
+  showConfirm('Are you sure you want to delete this race?', () => {
+    setSyncing();
+    db.ref('/races/' + id).remove().then(() => { setSynced(); showRaceList(); }).catch(err => { setSynced(); alert('Error: ' + err.message); });
+  });
+}
+
+// ═══════════════════════════════════════════════════════════════════════
+// CALENDAR / WORKOUT LOG
+// ═══════════════════════════════════════════════════════════════════════
+function renderCalendar() {
+  const title = document.getElementById('calMonthTitle');
+  if (!title) return;
+  title.textContent = new Date(calYear, calMonth, 1).toLocaleDateString('en-US', { month:'long', year:'numeric' });
+  const grid = document.getElementById('calendarGrid');
+  const days = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+  const firstDay = new Date(calYear, calMonth, 1).getDay();
+  const daysInMonth = new Date(calYear, calMonth+1, 0).getDate();
+  const today = new Date(); today.setHours(0,0,0,0);
+
+  let html = days.map(d => `<div class="cal-day-header">${d}</div>`).join('');
+
+  for (let i = 0; i < firstDay; i++) html += `<div class="cal-day empty"></div>`;
+  for (let d = 1; d <= daysInMonth; d++) {
+    const dateStr = `${calYear}-${String(calMonth+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    const isToday = new Date(calYear,calMonth,d).getTime() === today.getTime();
+    const isSelected = calSelectedDate === dateStr;
+    const dayWorkouts = Object.values(workouts).filter(w => w.date === dateStr);
+    const dots = dayWorkouts.map(w => `<div class="cal-dot dot-${typeToClass(w.type)}"></div>`).join('');
+    html += `<div class="cal-day ${isToday?'today':''} ${isSelected?'selected':''}" onclick="selectCalDay('${dateStr}')">
+      <div class="cal-day-num">${d}</div>
+      <div class="cal-dots">${dots}</div>
+    </div>`;
+  }
+  grid.innerHTML = html;
+}
+
+function selectCalDay(dateStr) {
+  calSelectedDate = dateStr;
+  renderCalendar();
+  const panel = document.getElementById('calDayPanel');
+  const dayTitle = document.getElementById('calDayTitle');
+  const dayWorkoutsEl = document.getElementById('calDayWorkouts');
+  const addBtn = document.getElementById('calAddBtn');
+  panel.style.display = 'block';
+  dayTitle.textContent = formatDate(dateStr);
+  addBtn.onclick = () => openAddWorkoutModal(dateStr);
+  const dayWorkouts = Object.values(workouts).filter(w => w.date === dateStr);
+  if (dayWorkouts.length === 0) {
+    dayWorkoutsEl.innerHTML = `<div style="color:var(--text-2);font-size:0.85rem;">No workouts on this day.</div>`;
+  } else {
+    dayWorkoutsEl.innerHTML = dayWorkouts.map(w => `
+      <div class="workout-item">
+        <div>${workoutDot(w.type)}</div>
+        <div class="workout-item-info">
+          <div class="workout-item-title">${escHtml(w.type)}</div>
+          <div class="workout-item-meta">${w.distance?w.distance+'km':''}${w.duration?' — '+w.duration+'min':''}${w.pace?' — '+w.pace+'/km':''}${w.heartRate?' — ❤️'+w.heartRate+'bpm':''}</div>
+          ${w.notes?`<div style="font-size:0.78rem;color:var(--text-2);margin-top:3px;">${escHtml(w.notes)}</div>`:''}
+        </div>
+        <div class="workout-item-actions">
+          <button class="icon-btn" onclick="openEditWorkoutModal('${w.id}')" title="Edit">✏️</button>
+          <button class="icon-btn danger" onclick="deleteWorkout('${w.id}')" title="Delete">🗑️</button>
+        </div>
+      </div>`).join('');
+  }
+}
+
+function changeMonth(delta) {
+  calMonth += delta;
+  if (calMonth > 11) { calMonth = 0; calYear++; }
+  if (calMonth < 0) { calMonth = 11; calYear--; }
+  calSelectedDate = null;
+  document.getElementById('calDayPanel').style.display = 'none';
+  renderCalendar();
+}
+
+function renderWorkoutsList() {
+  const el = document.getElementById('workoutsList');
+  if (!el) return;
+  const arr = Object.values(workouts).sort((a,b) => new Date(b.date)-new Date(a.date)).slice(0,20);
+  if (arr.length === 0) {
+    el.innerHTML = `<div class="empty-state"><div class="empty-state-icon">📅</div><div class="empty-state-text">No workouts logged yet.</div></div>`;
+    return;
+  }
+  el.innerHTML = arr.map(w => `
+    <div class="workout-item">
+      <div>${workoutDot(w.type)}</div>
+      <div class="workout-item-info">
+        <div class="workout-item-title">${escHtml(w.type)} — ${formatDate(w.date)}</div>
+        <div class="workout-item-meta">${w.distance?'📏 '+w.distance+'km':''}${w.duration?' ⏱ '+w.duration+'min':''}${w.pace?' 🏃 '+w.pace+'/km':''}${w.heartRate?' ❤️ '+w.heartRate+'bpm':''}${w.completed===false?' <span style="color:var(--orange);">Planned</span>':''}</div>
+        ${w.notes?`<div style="font-size:0.78rem;color:var(--text-2);margin-top:2px;">${escHtml(w.notes)}</div>`:''}
+      </div>
+      <div class="workout-item-actions">
+        <button class="icon-btn" onclick="openEditWorkoutModal('${w.id}')" title="Edit">✏️</button>
+        <button class="icon-btn danger" onclick="deleteWorkout('${w.id}')" title="Delete">🗑️</button>
+      </div>
+    </div>`).join('');
+}
+
+function openAddWorkoutModal(dateStr) {
+  document.getElementById('workoutModalTitle').textContent = 'Log Workout';
+  document.getElementById('workoutForm').reset();
+  document.getElementById('wkId').value = '';
+  document.getElementById('wkDate').value = dateStr || new Date().toISOString().split('T')[0];
+  document.getElementById('wkCompleted').checked = true;
+  openModal('workoutModal');
+}
+function openEditWorkoutModal(id) {
+  const w = workouts[id];
+  if (!w) return;
+  document.getElementById('workoutModalTitle').textContent = 'Edit Workout';
+  document.getElementById('wkId').value = id;
+  document.getElementById('wkDate').value = w.date||'';
+  document.getElementById('wkType').value = w.type||'Easy Run';
+  document.getElementById('wkDist').value = w.distance||'';
+  document.getElementById('wkDuration').value = w.duration||'';
+  document.getElementById('wkPace').value = w.pace||'';
+  document.getElementById('wkHr').value = w.heartRate||'';
+  document.getElementById('wkNotes').value = w.notes||'';
+  document.getElementById('wkCompleted').checked = w.completed !== false;
+  openModal('workoutModal');
+}
+function saveWorkout(e) {
+  e.preventDefault();
+  const existingId = document.getElementById('wkId').value;
+  const id = existingId || Date.now().toString();
+  const data = {
+    id,
+    date: document.getElementById('wkDate').value,
+    type: document.getElementById('wkType').value,
+    distance: parseFloat(document.getElementById('wkDist').value)||null,
+    duration: parseInt(document.getElementById('wkDuration').value)||null,
+    pace: document.getElementById('wkPace').value.trim()||null,
+    heartRate: parseInt(document.getElementById('wkHr').value)||null,
+    notes: document.getElementById('wkNotes').value.trim()||null,
+    completed: document.getElementById('wkCompleted').checked,
+  };
+  setSyncing();
+  db.ref('/workouts/' + id).set(data).then(() => { setSynced(); closeModal('workoutModal'); if (calSelectedDate) selectCalDay(calSelectedDate); }).catch(err => { setSynced(); alert('Error: ' + err.message); });
+}
+function deleteWorkout(id) {
+  showConfirm('Delete this workout?', () => {
+    setSyncing();
+    db.ref('/workouts/' + id).remove().then(() => { setSynced(); if (calSelectedDate) selectCalDay(calSelectedDate); }).catch(err => { setSynced(); alert('Error: ' + err.message); });
+  });
+}
+
+// ═══════════════════════════════════════════════════════════════════════
+// PLANNER
+// ═══════════════════════════════════════════════════════════════════════
+function loadPlannerConfig() {}
+
+function generatePlan() {
+  const fitness = document.getElementById('planFitness').value;
+  const baseKm = parseFloat(document.getElementById('planBaseKm').value) || 40;
+  const longRunMax = parseFloat(document.getElementById('planLongRun').value) || 30;
+  const peakOverride = parseFloat(document.getElementById('planPeakKm').value) || null;
+  const startDateStr = document.getElementById('planStartDate').value;
+  const startDate = startDateStr ? new Date(startDateStr) : new Date();
+
+  // Weekly multipliers for 12 weeks (10% rule + taper)
+  const multipliers = [1, 1.1, 1.2, 1.1, 1.25, 1.35, 1.2, 1.4, 1.35, 0.9, 0.75, 0.6];
+  const peakKm = peakOverride || (fitness === 'beginner' ? baseKm * 1.3 : fitness === 'advanced' ? baseKm * 1.6 : baseKm * 1.45);
+
+  // Day template: Mon=Rest, Tue=Easy, Wed=Tempo, Thu=Easy, Fri=Rest, Sat=Long, Sun=Recovery
+  const dayNames = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+  const dayTypes = ['Rest','Easy Run','Tempo','Easy Run','Rest','Long Run','Recovery'];
+  const dayPct = [0, 0.18, 0.2, 0.18, 0, 0.32, 0.12]; // % of weekly km
+
+  let html = `<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px;">
+    <div class="section-title" style="margin:0;">12-Week Training Plan</div>
+    <div style="display:flex;gap:8px;">
+      <button class="btn btn-secondary btn-sm" onclick="copyPlanToClipboard()">📋 Copy Plan</button>
+    </div>
+  </div>`;
+
+  html += `<div style="overflow-x:auto;"><table class="planner-table"><thead><tr><th>Week</th><th>Dates</th>${dayNames.map(d=>`<th>${d}</th>`).join('')}<th>Total km</th></tr></thead><tbody>`;
+
+  for (let wk = 0; wk < 12; wk++) {
+    const weekKm = +(peakKm * multipliers[wk]).toFixed(1);
+    const weekStart = new Date(startDate);
+    weekStart.setDate(weekStart.getDate() + wk * 7);
+    const weekEnd = new Date(weekStart);
+    weekEnd.setDate(weekEnd.getDate() + 6);
+    const phase = wk < 3 ? 'Base' : wk < 6 ? 'Build' : wk < 9 ? 'Peak' : 'Taper';
+    const phaseColor = { Base: 'var(--blue)', Build: 'var(--orange)', Peak: 'var(--accent)', Taper: 'var(--green)' }[phase];
+    const longKm = Math.min(longRunMax, +(weekKm * dayPct[5]).toFixed(1));
+    const dayKms = dayPct.map((pct, i) => i === 5 ? longKm : pct > 0 ? +(weekKm * pct).toFixed(1) : 0);
+
+    html += `<tr>
+      <td><strong>W${wk+1}</strong><br><span style="font-size:0.7rem;color:${phaseColor};">${phase}</span></td>
+      <td style="font-size:0.75rem;white-space:nowrap;">${weekStart.toLocaleDateString('en-GB',{day:'2-digit',month:'short'})}<br>–${weekEnd.toLocaleDateString('en-GB',{day:'2-digit',month:'short'})}</td>
+      ${dayNames.map((_,i) => {
+        const type = dayTypes[i];
+        const km = dayKms[i];
+        const color = type === 'Rest' ? 'var(--text-2)' : type === 'Long Run' ? 'var(--blue)' : type === 'Tempo' ? 'var(--orange)' : type === 'Recovery' ? 'var(--green)' : 'var(--text)';
+        return `<td class="plan-day-cell"><div class="plan-day-type" style="color:${color};">${type}</div>${km>0?`<div class="plan-day-km">${km}km</div>`:''}</td>`;
+      }).join('')}
+      <td><strong class="mono" style="color:var(--accent);">${weekKm}</strong></td>
+    </tr>`;
+  }
+  html += '</tbody></table></div>';
+  document.getElementById('planOutput').innerHTML = html;
+}
+
+function copyPlanToClipboard() {
+  const table = document.querySelector('#planOutput table');
+  if (!table) return;
+  let text = 'PaceForge 12-Week Training Plan\n\n';
+  table.querySelectorAll('tr').forEach(row => {
+    text += Array.from(row.querySelectorAll('th,td')).map(c => c.textContent.trim().replace(/\n/g,' ')).join('\t') + '\n';
+  });
+  navigator.clipboard.writeText(text).then(() => alert('Plan copied to clipboard!')).catch(() => alert('Could not copy to clipboard.'));
+}
+
+function savePlanConfig() {
+  const data = {
+    fitnessLevel: document.getElementById('planFitness').value,
+    baseKm: parseFloat(document.getElementById('planBaseKm').value)||40,
+    longRunMax: parseFloat(document.getElementById('planLongRun').value)||30,
+    peakKm: parseFloat(document.getElementById('planPeakKm').value)||null,
+    startDate: document.getElementById('planStartDate').value||null,
+  };
+  setSyncing();
+  db.ref('/plannerConfig').set(data).then(() => { setSynced(); alert('Plan settings saved!'); }).catch(err => { setSynced(); alert('Error: '+err.message); });
+}
+
+// ═══════════════════════════════════════════════════════════════════════
+// PACE CALCULATOR
+// ═══════════════════════════════════════════════════════════════════════
+document.getElementById('paceDistance').addEventListener('change', function() {
+  document.getElementById('customDistGroup').style.display = this.value === 'custom' ? 'block' : 'none';
+});
+
+function calcPace() {
+  const distSel = document.getElementById('paceDistance').value;
+  const dist = distSel === 'custom' ? parseFloat(document.getElementById('paceCustomDist').value) : parseFloat(distSel);
+  const timeStr = document.getElementById('paceTime').value.trim();
+  if (!dist || !timeStr) { alert('Please enter both distance and time.'); return; }
+  const totalSec = timeToSeconds(timeStr);
+  if (!totalSec) { alert('Invalid time format. Use HH:MM:SS or MM:SS.'); return; }
+  const paceSecPerKm = totalSec / dist;
+  const paceStr = secondsToPace(paceSecPerKm);
+  document.getElementById('paceResult').style.display = 'block';
+  document.getElementById('paceResultVal').textContent = paceStr + '/km';
+  document.getElementById('paceResultSub').textContent = `Distance: ${dist} km | Total Time: ${timeStr}`;
+  // Update zones
+  updateZones(paceSecPerKm);
+}
+
+function updateZones(targetSecPerKm) {
+  // Zone multipliers relative to target marathon pace
+  const zones = [
+    { id:'z1', factor: 1.28, label: 'Easy' },
+    { id:'z2', factor: 1.15, label: 'Aerobic' },
+    { id:'z3', factor: 1.05, label: 'Threshold' },
+    { id:'z4', factor: 0.97, label: 'VO2 Max' },
+    { id:'z5', factor: 0.90, label: 'Sprint' },
+  ];
+  const colors = ['#4a9eff','#4caf50','#ff9800','#e8602a','#f44336'];
+  zones.forEach((z, i) => {
+    const sec = targetSecPerKm * z.factor;
+    document.getElementById(z.id).textContent = secondsToPace(sec) + '/km';
+    document.getElementById(z.id).style.color = colors[i];
+  });
+}
+
+function predictRaces() {
+  const dist = parseFloat(document.getElementById('predDistance').value);
+  const timeStr = document.getElementById('predTime').value.trim();
+  if (!dist || !timeStr) { alert('Please enter distance and time.'); return; }
+  const totalSec = timeToSeconds(timeStr);
+  if (!totalSec) { alert('Invalid time format.'); return; }
+  // Riegel formula: T2 = T1 × (D2/D1)^1.06
+  const targets = [
+    { label: '5K', d: 5 },
+    { label: '10K', d: 10 },
+    { label: 'Half Marathon', d: 21.0975 },
+    { label: 'Marathon', d: 42.195 },
+  ];
+  const predictions = targets
+    .filter(t => Math.abs(t.d - dist) > 0.01)
+    .map(t => {
+      const pred = totalSec * Math.pow(t.d / dist, 1.06);
+      return `<tr><td>${t.label}</td><td class="mono" style="color:var(--accent);">${secondsToTime(pred)}</td><td class="mono" style="color:var(--text-2);">${secondsToPace(pred/t.d)}/km</td></tr>`;
+    }).join('');
+  document.getElementById('predResult').innerHTML = `
+    <table class="data-table"><thead><tr><th>Distance</th><th>Predicted Time</th><th>Pace</th></tr></thead>
+    <tbody>${predictions}</tbody></table>`;
+}
+
+function calcSplits() {
+  const dist = parseFloat(document.getElementById('splitDist').value);
+  const paceStr = document.getElementById('splitPace').value.trim();
+  const every = parseFloat(document.getElementById('splitEvery').value) || 5;
+  if (!dist || !paceStr) { alert('Please enter distance and pace.'); return; }
+  const [mm, ss] = paceStr.split(':').map(Number);
+  if (isNaN(mm) || isNaN(ss)) { alert('Invalid pace format. Use MM:SS.'); return; }
+  const paceSec = mm * 60 + ss;
+  const splits = [];
+  let cumDist = 0, cumTime = 0;
+  while (cumDist < dist) {
+    const splitDist = Math.min(every, dist - cumDist);
+    const splitTime = splitDist * paceSec;
+    cumDist += splitDist;
+    cumTime += splitTime;
+    splits.push({ splitDist: splitDist.toFixed(2), cumDist: cumDist.toFixed(2), splitTime: secondsToTime(splitTime), cumTime: secondsToTime(cumTime) });
+  }
+  document.getElementById('splitsResult').innerHTML = `
+    <table class="data-table"><thead><tr><th>Split</th><th>Distance</th><th>Cum. km</th><th>Split Time</th><th>Elapsed</th></tr></thead>
+    <tbody>${splits.map((s,i) => `<tr><td>${i+1}</td><td class="mono">${s.splitDist} km</td><td class="mono">${s.cumDist} km</td><td class="mono">${s.splitTime}</td><td class="mono" style="color:var(--accent);">${s.cumTime}</td></tr>`).join('')}</tbody></table>`;
+}
+
+// ═══════════════════════════════════════════════════════════════════════
+// STRETCHING
+// ═══════════════════════════════════════════════════════════════════════
+const PRE_STRETCHES = [
+  { name: 'Leg Swings (Forward)', meta: '10 each side — 30s', desc: 'Stand on one leg, swing other leg forward and back in a controlled pendulum. Activates hip flexors and hamstrings.' },
+  { name: 'Leg Swings (Lateral)', meta: '10 each side — 30s', desc: 'Stand sideways to a wall, swing leg side to side across your body. Opens the hip abductors and adductors.' },
+  { name: 'Hip Circles', meta: '10 each side — 30s', desc: 'Stand with hands on hips, feet shoulder-width. Draw large slow circles with your pelvis. Lubricates the hip joint.' },
+  { name: 'High Knees', meta: '30 seconds', desc: 'Run in place bringing knees up to hip height. Start slow and increase tempo. Activates hip flexors and raises core temperature.' },
+  { name: 'Butt Kicks', meta: '30 seconds', desc: 'Run in place kicking heels up toward glutes. Focus on fast heel recovery. Activates hamstrings and improves running mechanics.' },
+  { name: 'Walking Lunges with Twist', meta: '10 steps — 45s', desc: 'Step into a lunge and rotate torso toward lead knee. Activates hip flexors, quads, and thoracic rotation all at once.' },
+  { name: 'Ankle Circles', meta: '10 each side — 20s', desc: 'Lift one foot, draw full circles with the ankle — clockwise and counter-clockwise. Warms up the ankle joints and reduces injury risk.' },
+  { name: 'Lateral Crab Walks', meta: '10 steps each way — 30s', desc: 'Squat slightly and step sideways, keeping tension. Activates glutes and hip stabilizers critical for running economy.' },
+];
+const POST_STRETCHES = [
+  { name: 'Quad Stretch', meta: 'Hold 30–45s each side', desc: 'Stand on one leg, pull ankle toward glutes. Keep knees together, stand tall. Release tightness from quads after hard efforts.' },
+  { name: 'Hamstring Stretch', meta: 'Hold 30–45s each side', desc: 'Sit on floor, one leg extended. Reach toward toes keeping back flat. Relieves the most commonly tight muscle in runners.' },
+  { name: 'Hip Flexor Lunge', meta: 'Hold 30–45s each side', desc: 'Kneeling lunge, shift weight forward until stretch in front hip. Arms up overhead for a deeper stretch. Critical after long runs.' },
+  { name: 'Calf Stretch (Straight Knee)', meta: 'Hold 30–45s each side', desc: 'Hands on wall, back leg straight with heel on floor. Stretches the gastrocnemius — prevents Achilles issues.' },
+  { name: 'Calf Stretch (Bent Knee)', meta: 'Hold 30–45s each side', desc: 'Same as above but bend the back knee slightly. Targets the soleus — important for long-distance runners.' },
+  { name: 'Pigeon Pose', meta: 'Hold 45–60s each side', desc: 'From all-fours, bring one knee toward wrist, extend back leg. One of the deepest hip openers — essential for long-run recovery.' },
+  { name: 'IT Band Stretch', meta: 'Hold 30–45s each side', desc: 'Cross one ankle over the other, lean sideways. Prevents IT band syndrome — a common runner\'s overuse injury.' },
+  { name: 'Child\'s Pose', meta: 'Hold 60s', desc: 'Knees wide, arms forward, sink hips back. Releases lower back, hips, and shoulders. Perfect finisher for every run.' },
+  { name: 'Supine Spinal Twist', meta: 'Hold 30s each side', desc: 'Lie on back, draw one knee across body. Releases thoracic spine and IT band. Enhances recovery and reduces DOMS.' },
+];
+const INJURIES = [
+  { name: 'IT Band Syndrome', exercises: 'Foam roll IT band, Side-lying clamshells (3×15), Lateral band walks (3×20), Hip hinge exercises, Avoid sudden mileage increases.' },
+  { name: 'Shin Splints', exercises: 'Towel scrunches (seated), Calf raises (3×20), Tibialis anterior raises, Rest 3–5 days, Gradual return to running.' },
+  { name: 'Plantar Fasciitis', exercises: 'Towel stretch plantar fascia (morning), Marble toe pickups, Single leg calf raises (3×20), Frozen water bottle roll 5 min, Avoid barefoot on hard floors.' },
+  { name: 'Runner\'s Knee (PFPS)', exercises: 'Quad strengthening (terminal knee extensions), Glute bridges (3×20), Step-downs (3×15), Avoid downhill running initially, VMO activation exercises.' },
+  { name: 'Achilles Tendinopathy', exercises: 'Eccentric calf lowering (3×15), Soleus stretch (bent knee), No heel drop running shoes, Load management is #1 treatment, Patience — 8–12 weeks minimum.' },
+];
+const STRENGTH = [
+  { name: 'Single Leg Calf Raises', meta: '3×20 each side', desc: 'Stand on edge of step, lower heel below step level, raise to full extension. The best exercise to prevent Achilles and calf injuries.' },
+  { name: 'Glute Bridges', meta: '3×20 reps', desc: 'Lie on back, feet flat, drive hips up. Hold 2 seconds at top. Strengthens posterior chain — essential for every runner.' },
+  { name: 'Clamshells', meta: '3×15 each side', desc: 'Side-lying, knees bent, feet together. Open top knee like a clamshell. Targets hip abductors that stabilize the knee and pelvis.' },
+  { name: 'Lateral Band Walks', meta: '3×20 steps each direction', desc: 'Resistance band above knees, slight squat, step laterally. Activates glute medius — prevents knee collapse and IT band issues.' },
+  { name: 'Single Leg Squat', meta: '3×10 each side', desc: 'Balance on one leg, bend knee to 90°. Maintain knee tracking over toes. The ultimate runner strength and stability test.' },
+  { name: 'Dead Bug', meta: '3×10 each side', desc: 'Lie on back, arms up, knees at 90°. Lower opposite arm and leg without lower back lifting. Core stability for injury-free running.' },
+];
+const RACE_DAY_TIMELINE = [
+  { time: 'T−3:00', text: 'Wake up', sub: 'Give yourself 3 hours before gun time if possible.' },
+  { time: 'T−2:45', text: 'Breakfast', sub: '3g/kg bodyweight carbs. Familiar foods only — no experiments today.' },
+  { time: 'T−2:00', text: 'Travel to venue', sub: 'Leave early to avoid stress. Know your exact route and parking.' },
+  { time: 'T−1:30', text: 'Bag check & number pickup', sub: 'Pin race number, prepare gear belt with gels and timing chip.' },
+  { time: 'T−1:00', text: 'Final hydration', sub: '400–500ml water sipped slowly. No large gulps.' },
+  { time: 'T−0:40', text: 'Warm-up', sub: '5 min easy jog, then dynamic stretches and strides.' },
+  { time: 'T−0:15', text: 'Corral entry', sub: 'Get into starting corral. Final mental preparation.' },
+  { time: 'T−0:05', text: 'Final prep', sub: 'Quick leg swings, deep breaths, visualize first mile.' },
+  { time: 'Start', text: 'Go time! 🏁', sub: 'Start conservative — first 5km should feel easy.' },
+];
+
+function buildStretchingData() {
+  document.getElementById('preStretchGrid').innerHTML = PRE_STRETCHES.map(s => `
+    <div class="stretch-card">
+      <div class="stretch-name">${s.name}</div>
+      <div class="stretch-meta">${s.meta}</div>
+      <div class="stretch-desc">${s.desc}</div>
+    </div>`).join('');
+
+  document.getElementById('postStretchGrid').innerHTML = POST_STRETCHES.map(s => `
+    <div class="stretch-card">
+      <div class="stretch-name">${s.name}</div>
+      <div class="stretch-meta">${s.meta}</div>
+      <div class="stretch-desc">${s.desc}</div>
+    </div>`).join('');
+
+  document.getElementById('injuryList').innerHTML = INJURIES.map(inj => `
+    <div class="injury-card">
+      <div class="injury-name">⚠️ ${inj.name}</div>
+      <div class="injury-exercises">${inj.exercises.split(', ').map(e => '• ' + e).join('<br>')}</div>
+    </div>`).join('');
+
+  document.getElementById('strengthGrid').innerHTML = STRENGTH.map(s => `
+    <div class="stretch-card">
+      <div class="stretch-name">${s.name}</div>
+      <div class="stretch-meta">${s.meta}</div>
+      <div class="stretch-desc">${s.desc}</div>
+    </div>`).join('');
+
+  document.getElementById('raceDayTimeline').innerHTML = RACE_DAY_TIMELINE.map(t => `
+    <div class="timeline-item">
+      <div class="timeline-dot"></div>
+      <div class="timeline-time">${t.time}</div>
+      <div class="timeline-text">${t.text}</div>
+      <div class="timeline-sub">${t.sub}</div>
+    </div>`).join('');
+}
+
+// ═══════════════════════════════════════════════════════════════════════
+// NUTRITION CHECK
+// ═══════════════════════════════════════════════════════════════════════
+const NC_TARGETS_BY_PHASE = {
+  base:  { calories: 45, carbs: 6, protein: 1.6, fat: 1.0, iron: 18, b12: 2.4, vitd: 800 },
+  build: { calories: 50, carbs: 8, protein: 1.8, fat: 1.0, iron: 18, b12: 2.4, vitd: 800 },
+  peak:  { calories: 55, carbs: 9, protein: 2.0, fat: 0.8, iron: 18, b12: 2.4, vitd: 800 },
+  taper: { calories: 42, carbs: 6, protein: 2.0, fat: 1.0, iron: 18, b12: 2.4, vitd: 800 },
+};
+
+function getNcTargets() {
+  const weight = parseFloat(document.getElementById('ncWeight').value) || 65;
+  const phase = document.getElementById('ncPhase').value;
+  const t = NC_TARGETS_BY_PHASE[phase];
+  return {
+    calories: Math.round(weight * t.calories),
+    carbs: Math.round(weight * t.carbs),
+    protein: Math.round(weight * t.protein),
+    fat: Math.round(weight * t.fat),
+    iron: t.iron,
+    b12: t.b12,
+    vitd: t.vitd,
+  };
+}
+
+function updateNcTargets() {
+  const targets = getNcTargets();
+  const labels = { calories:'Calories (kcal)', carbs:'Carbs (g)', protein:'Protein (g)', fat:'Fat (g)', iron:'Iron (mg)', b12:'B12 (mcg)', vitd:'Vit D (IU)' };
+  document.getElementById('ncTargetsGrid').innerHTML = Object.entries(targets).map(([k,v]) => `
+    <div class="card-sm" style="text-align:center;">
+      <div style="font-size:0.72rem;font-weight:700;color:var(--text-2);text-transform:uppercase;margin-bottom:6px;">${labels[k]}</div>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:1.1rem;color:var(--accent);">${v}</div>
+    </div>`).join('');
+  renderNutritionWeek();
+}
+
+function getWeekId() {
+  const ws = document.getElementById('ncWeekStart').value;
+  return ws ? ws.replace(/-/g,'') : 'w' + Math.floor(Date.now()/604800000);
+}
+
+function initNutritionCheck() {
+  const today = new Date();
+  const dayOfWeek = today.getDay();
+  const monday = new Date(today);
+  monday.setDate(today.getDate() - (dayOfWeek === 0 ? 6 : dayOfWeek - 1));
+  document.getElementById('ncWeekStart').value = monday.toISOString().split('T')[0];
+  updateNcTargets();
+}
+
+function loadNutritionWeek() {
+  renderNutritionWeek();
+}
+
+function renderNutritionWeek() {
+  const targets = getNcTargets();
+  const weekId = getWeekId();
+  const weekData = nutritionLog[weekId] || {};
+  const days = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
+  const fields = ['calories','carbs','protein','fat','iron','b12','vitd'];
+  const fieldLabels = ['Cal','Carbs','Prot','Fat','Iron','B12','VitD'];
+  const fieldUnits = ['kcal','g','g','g','mg','mcg','IU'];
+
+  document.getElementById('ncDayGrid').innerHTML = days.map((day, idx) => {
+    const dayData = weekData[idx] || {};
+    const isTraining = idx < 5;
+    return `
+      <div class="day-log-card">
+        <div class="day-log-header">
+          <div class="day-log-title">${day}</div>
+          <div style="font-size:0.72rem;color:${isTraining?'var(--orange)':'var(--blue)'};">${isTraining?'Training':'Rest'}</div>
+        </div>
+        ${fields.map((f,fi) => {
+          const val = dayData[f] || '';
+          const target = targets[f];
+          const pct = val ? (parseFloat(val)/target*100) : 0;
+          const statusClass = pct>=100?'met':pct>=80?'close':pct>0?'low':'';
+          return `<div style="display:flex;align-items:center;gap:6px;margin-bottom:6px;">
+            <div style="font-size:0.72rem;color:var(--text-2);width:36px;flex-shrink:0;">${fieldLabels[fi]}</div>
+            <input type="number" class="nc-input" placeholder="${target}${fieldUnits[fi]}"
+              value="${val}" data-week="${weekId}" data-day="${idx}" data-field="${f}"
+              onchange="saveNcDay(this)" style="border-color:${statusClass==='met'?'var(--green)':statusClass==='close'?'var(--orange)':statusClass==='low'?'var(--red)':'var(--border)'};">
+          </div>`;
+        }).join('')}
+        <div class="status-bar">
+          ${fields.map(f => {
+            const val = parseFloat(dayData[f]||0);
+            const pct = val/(targets[f]||1)*100;
+            return `<div class="status-pip ${pct>=100?'met':pct>=80?'close':pct>0?'low':''}"></div>`;
+          }).join('')}
+        </div>
+      </div>`;
+  }).join('');
+
+  // Weekly summary
+  const fields2 = ['calories','carbs','protein','fat','iron','b12','vitd'];
+  const avgVals = fields2.map(f => {
+    const vals = [0,1,2,3,4,5,6].map(i => parseFloat((weekData[i]||{})[f]||0)).filter(v=>v>0);
+    return vals.length ? (vals.reduce((a,b)=>a+b,0)/vals.length).toFixed(1) : null;
+  });
+  const targArr = fields2.map(f => targets[f]);
+  const labArr = ['Calories','Carbs','Protein','Fat','Iron','B12','Vit D'];
+  const unitArr = ['kcal','g','g','g','mg','mcg','IU'];
+  const hasData = avgVals.some(v => v !== null);
+  if (!hasData) {
+    document.getElementById('ncSummaryContent').innerHTML = '<p style="color:var(--text-2);">Complete at least one day to see your weekly summary.</p>';
+    return;
+  }
+  document.getElementById('ncSummaryContent').innerHTML = `
+    <table class="data-table">
+      <thead><tr><th>Nutrient</th><th>Daily Avg</th><th>Target</th><th>Status</th></tr></thead>
+      <tbody>${fields2.map((f,i) => {
+        const avg = avgVals[i];
+        const tgt = targArr[i];
+        const pct = avg ? (avg/tgt*100) : 0;
+        const statusClass = pct>=100?'met-text':pct>=80?'close-text':avg?'low-text':'';
+        const statusLabel = pct>=100?'✅ Met':pct>=80?'⚠️ Close':avg?'❌ Low':'—';
+        return `<tr>
+          <td>${labArr[i]}</td>
+          <td class="mono">${avg||'—'} ${unitArr[i]}</td>
+          <td class="mono">${tgt} ${unitArr[i]}</td>
+          <td class="${statusClass}">${statusLabel}</td>
+        </tr>`;
+      }).join('')}</tbody>
+    </table>
+    ${avgVals[4] && parseFloat(avgVals[4]) < targets.iron * 0.8 ? `<div class="alert alert-danger" style="margin-top:12px;">⚠️ <strong>Iron consistently low this week.</strong> Increase lentils, tofu, and fortified foods. Take iron supplement on empty stomach with Vitamin C for best absorption.</div>` : ''}`;
+}
+
+function saveNcDay(el) {
+  const weekId = el.dataset.week;
+  const day = el.dataset.day;
+  const field = el.dataset.field;
+  const val = parseFloat(el.value) || null;
+  setSyncing();
+  const updateObj = {};
+  updateObj[field] = val;
+  db.ref(`/nutritionLog/${weekId}/${day}`).update(updateObj).then(setSynced).catch(err => { setSynced(); alert('Error: '+err.message); });
+}
+
+// ═══════════════════════════════════════════════════════════════════════
+// TABS
+// ═══════════════════════════════════════════════════════════════════════
+function switchTab(group, id) {
+  const panels = document.querySelectorAll(`[id^="${group}-tab-"]`);
+  panels.forEach(p => p.classList.remove('active'));
+  document.getElementById(`${group}-tab-${id}`).classList.add('active');
+
+  // Update buttons
+  const parentEl = document.querySelector(`#page-${group} .tabs`) || document.querySelector(`#stretch-tab-${id}`)?.closest('.page')?.querySelector('.tabs');
+  if (parentEl) {
+    parentEl.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+    // Find matching button
+    parentEl.querySelectorAll('.tab-btn').forEach(btn => {
+      if (btn.getAttribute('onclick') && btn.getAttribute('onclick').includes(`'${id}'`)) btn.classList.add('active');
+    });
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════════════
+// MODALS
+// ═══════════════════════════════════════════════════════════════════════
+function openModal(id) {
+  const overlay = document.getElementById(id);
+  overlay.classList.add('open');
+  // Trap focus
+  const focusable = overlay.querySelectorAll('input,select,textarea,button');
+  if (focusable.length) focusable[0].focus();
+}
+function closeModal(id) {
+  document.getElementById(id).classList.remove('open');
+}
+// Close modal on overlay click
+document.querySelectorAll('.modal-overlay').forEach(overlay => {
+  overlay.addEventListener('click', e => { if (e.target === overlay) overlay.classList.remove('open'); });
+});
+// ESC to close
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') document.querySelectorAll('.modal-overlay.open').forEach(m => m.classList.remove('open'));
+});
+
+let confirmCallback = null;
+function showConfirm(msg, callback) {
+  document.getElementById('confirmMessage').textContent = msg;
+  confirmCallback = callback;
+  openModal('confirmModal');
+}
+document.getElementById('confirmOkBtn').addEventListener('click', () => {
+  if (confirmCallback) confirmCallback();
+  closeModal('confirmModal');
+  confirmCallback = null;
+});
+
+// ═══════════════════════════════════════════════════════════════════════
+// UTILITY FUNCTIONS
+// ═══════════════════════════════════════════════════════════════════════
+function escHtml(str) {
+  if (!str) return '';
+  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
+function formatDate(dateStr) {
+  if (!dateStr) return '—';
+  try {
+    return new Date(dateStr + 'T00:00:00').toLocaleDateString('en-US', { year:'numeric', month:'short', day:'numeric' });
+  } catch { return dateStr; }
+}
+function timeToSeconds(t) {
+  if (!t) return 0;
+  const parts = t.split(':').map(Number);
+  if (parts.length === 3) return parts[0]*3600 + parts[1]*60 + parts[2];
+  if (parts.length === 2) return parts[0]*60 + parts[1];
+  return 0;
+}
+function secondsToPace(sec) {
+  if (!sec || sec < 0) return '--:--';
+  const m = Math.floor(sec / 60);
+  const s = Math.round(sec % 60);
+  return `${m}:${String(s).padStart(2,'0')}`;
+}
+function secondsToTime(sec) {
+  if (!sec || sec < 0) return '--:--:--';
+  const h = Math.floor(sec / 3600);
+  const m = Math.floor((sec % 3600) / 60);
+  const s = Math.round(sec % 60);
+  return h > 0 ? `${h}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}` : `${m}:${String(s).padStart(2,'0')}`;
+}
+function distanceToKm(dist) {
+  if (!dist) return 42.195;
+  const map = { '5K': 5, '10K': 10, 'Half Marathon': 21.0975, 'Marathon': 42.195, 'Ultra': 50 };
+  return map[dist] || 42.195;
+}
+function typeToClass(type) {
+  const map = {
+    'Easy Run':'easy', 'Long Run':'long', 'Tempo':'tempo', 'Interval':'interval',
+    'HIIT':'hiit', 'Rest':'rest', 'Cross Training':'cross', 'Race':'race', 'Recovery':'easy'
+  };
+  return map[type] || 'rest';
+}
+function workoutDot(type) {
+  const c = typeToClass(type);
+  const colors = { easy:'var(--green)', long:'var(--blue)', tempo:'var(--orange)', interval:'var(--red)', hiit:'var(--red)', rest:'var(--text-2)', cross:'var(--purple)', race:'var(--accent)' };
+  return `<div style="width:10px;height:10px;border-radius:50%;background:${colors[c]||'var(--text-2)'};flex-shrink:0;"></div>`;
+}
+function workoutBadge(type) {
+  const c = typeToClass(type);
+  return `<span class="badge badge-${c}">${escHtml(type)}</span>`;
+}
+
+// ═══════════════════════════════════════════════════════════════════════
+// RESPONSIVE LAYOUT FIX
+// ═══════════════════════════════════════════════════════════════════════
+function applyResponsiveStyles() {
+  const isMobile = window.innerWidth <= 768;
+  // planner layout
+  const plannerLayout = document.querySelector('.planner-layout');
+  if (plannerLayout) plannerLayout.style.gridTemplateColumns = isMobile ? '1fr' : '300px 1fr';
+  // dash two-col
+  const dashTwoCol = document.querySelector('.dash-two-col');
+  if (dashTwoCol) dashTwoCol.style.gridTemplateColumns = isMobile ? '1fr' : '1fr 1fr';
+  // pace two-col
+  const paceTwoCol = document.querySelector('.pace-two-col');
+  if (paceTwoCol) paceTwoCol.style.gridTemplateColumns = isMobile ? '1fr' : '1fr 1fr';
+  // raceday grid
+  const racedayGrid = document.querySelector('.raceday-grid');
+  if (racedayGrid) racedayGrid.style.gridTemplateColumns = isMobile ? '1fr' : '1fr 1fr';
+  // pb three-col
+  const pbThreeCol = document.querySelector('.pb-three-col');
+  if (pbThreeCol) pbThreeCol.style.gridTemplateColumns = isMobile ? '1fr' : '1fr 1fr 1fr';
+  // pb timing grid
+  const pbTimingGrid = document.querySelector('.pb-timing-grid');
+  if (pbTimingGrid) pbTimingGrid.style.gridTemplateColumns = isMobile ? '1fr' : '1fr 1fr 1fr';
+  // iron tips
+  const ironTipsGrid = document.querySelector('.iron-tips-grid');
+  if (ironTipsGrid) ironTipsGrid.style.gridTemplateColumns = isMobile ? '1fr' : '1fr 1fr 1fr';
+  // nc settings
+  const ncSettingsGrid = document.querySelector('.nc-settings-grid');
+  if (ncSettingsGrid) ncSettingsGrid.style.gridTemplateColumns = isMobile ? '1fr' : '1fr 1fr 1fr';
+  // splits input grid
+  const splitsGrid = document.querySelector('.splits-input-grid');
+  if (splitsGrid) splitsGrid.style.gridTemplateColumns = isMobile ? '1fr' : '1fr 1fr 1fr';
+  // race day two col
+  const raceDayTwoCol = document.querySelector('.race-day-two-col');
+  if (raceDayTwoCol) raceDayTwoCol.style.gridTemplateColumns = isMobile ? '1fr' : '1fr 1fr';
+}
+window.addEventListener('resize', applyResponsiveStyles);
+
+// ═══════════════════════════════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════════════════════════════
+function init() {
+  // Set initial date for workout modal
+  document.getElementById('wkDate').value = new Date().toISOString().split('T')[0];
+  // Set planner start date default
+  document.getElementById('planStartDate').value = new Date().toISOString().split('T')[0];
+
+  // Build nav
+  buildNav();
+
+  // Build static data
+  buildStretchingData();
+
+  // Route from hash
+  const hash = window.location.hash.replace('#', '') || 'dashboard';
+  navigate(hash);
+
+  // Firebase listeners
+  initFirebase();
+
+  // Calendar
+  renderCalendar();
+
+  // Nutrition check
+  initNutritionCheck();
+
+  // Responsive
+  applyResponsiveStyles();
+}
+
+document.addEventListener('DOMContentLoaded', init);
+</script>
+</body>
+</html>
